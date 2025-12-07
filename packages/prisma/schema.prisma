@@ -1,0 +1,179 @@
+// packages/prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client"
+  output   = "./generated/client"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ---- Enums ----
+
+enum RoleName {
+  ADMIN   // Office user - can do everything
+  CAPTAIN // Vessel user - 1 per vessel, can create/edit ship staff fields
+}
+
+enum InspectionStatus {
+  OPEN
+  FURTHER_ACTION_NEEDED
+  CLOSED_SATISFACTORILY
+}
+
+// ---- Organization Settings ----
+
+model Organization {
+  id   String @id @default(cuid())
+  name String // Company name for report headers (e.g., "FAREAST SHIPMANAGEMENT HONGKONG LIMITED")
+  logo String? // URL/path to company logo
+
+  // Default form settings
+  defaultFormNo String? // Default FORM NO for new reports
+  footerText    String? // Copyright text for PDF footer
+
+  vessels Vessel[]
+  users   User[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ---- Core Models ----
+
+model User {
+  id             String  @id @default(cuid())
+  email          String  @unique
+  passwordHash   String
+  name           String?
+  isActive       Boolean @default(true)
+  signatureImage String? // URL/path to digital signature image
+
+  role   RoleName @default(CAPTAIN)
+
+  // Organization relationship
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+
+  // Captain is assigned to one vessel
+  assignedVesselId String? @unique
+  assignedVessel   Vessel? @relation("VesselCaptain", fields: [assignedVesselId], references: [id])
+
+  createdReports InspectionReport[] @relation("ReportCreatedBy")
+  signedEntries  InspectionEntry[]  @relation("OfficeSignedBy")
+
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  auditLogs AuditLog[]
+}
+
+model Vessel {
+  id        String  @id @default(cuid())
+  name      String
+  imoNumber String? @unique
+  callSign  String?
+  flag      String?
+
+  // Organization relationship
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+
+  // Vessel-specific settings
+  shipFileNo String? // SHIP'S FILE NO for reports (e.g., "M31")
+
+  // Captain assignment (1 captain per vessel)
+  captain User? @relation("VesselCaptain")
+
+  inspections InspectionReport[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Top-level inspection report (Third Party Deficiency Summary)
+model InspectionReport {
+  id String @id @default(cuid())
+
+  // Vessel relationship (auto-populated from Captain's vessel)
+  vesselId String
+  vessel   Vessel @relation(fields: [vesselId], references: [id])
+
+  // Report title/type
+  title String @default("THIRD PARTY DEFICIENCY SUMMARY")
+
+  // Header fields (Office editable)
+  shipFileNo            String? // SHIP'S FILE NO (can override vessel default)
+  officeFileNo          String? // OFFICE FILE NO (e.g., "180.2.10")
+  revisionNo            String? // REVISION# (e.g., "1")
+  formNo                String? // FORM NO (e.g., "1.11")
+  applicableFomSections String? // APPLICABLE FOM SECTIONS
+
+  // Sub-header fields
+  inspectedBy    String?   // INSPECTED BY (e.g., "RIGHTSHIP") - Office only
+  inspectionDate DateTime? // DATE beside INSPECTED BY - Office only
+
+  // Created by (Captain who created the report)
+  createdById String
+  createdBy   User @relation("ReportCreatedBy", fields: [createdById], references: [id])
+
+  entries InspectionEntry[]
+
+  createdAt DateTime @default(now()) // Used for DATE in header
+  updatedAt DateTime @updatedAt
+}
+
+// One row in the deficiency table (up to 100 per report)
+model InspectionEntry {
+  id String @id @default(cuid())
+
+  reportId String
+  report   InspectionReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
+
+  // === SHIP STAFF Fields (Captain + Admin editable) ===
+  srNo                 String    // SR NO - alphanumeric incl '.', max 5 chars
+  deficiency           String    // DEFICIENCY - max 1000 chars
+  mastersCauseAnalysis String?   // MASTER'S CAUSE ANALYSIS - max 1000 chars
+  correctiveAction     String?   // CORRECTIVE ACTION - max 1000 chars
+  preventiveAction     String?   // PREVENTIVE ACTION - max 1000 chars
+  completionDate       DateTime? // COMPL DATE
+
+  // === OFFICE Fields (Admin only) ===
+  companyAnalysis String? // COMPANY ANALYSIS - max 1000 chars
+
+  // REMARKS section (Admin only)
+  status           InspectionStatus @default(OPEN) // Status: Closed satisfactorily / Further action needed
+  officeSignUserId String?                         // Auto-populated from admin login
+  officeSignUser   User?            @relation("OfficeSignedBy", fields: [officeSignUserId], references: [id])
+  officeSignDate   DateTime?                       // Date entered by office
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([reportId])
+}
+
+// Audit logging at the core
+model AuditLog {
+  id String @id @default(cuid())
+
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id])
+
+  entityType String // e.g. "InspectionEntry"
+  entityId   String // ID of the entity that changed
+
+  action String // e.g. "CREATE", "UPDATE", "DELETE", "STATUS_CHANGE"
+
+  before Json?
+  after  Json?
+
+  ip        String?
+  userAgent String?
+  requestId String?
+
+  createdAt DateTime @default(now())
+
+  @@index([entityType, entityId])
+  @@index([userId])
+}

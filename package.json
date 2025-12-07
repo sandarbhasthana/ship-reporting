@@ -1,0 +1,23 @@
+{
+  "name": "ship-reporting",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "frontend",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:backend": "npm run start:dev --workspace backend",
+    "dev:frontend": "npm run dev --workspace frontend",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "db:generate": "npm run generate --workspace @ship-reporting/prisma",
+    "db:migrate": "npm run migrate:dev --workspace @ship-reporting/prisma",
+    "db:push": "npm run db:push --workspace @ship-reporting/prisma",
+    "db:studio": "npm run studio --workspace @ship-reporting/prisma"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.0",
+    "prisma": "^7.1.0"
+  }
+}

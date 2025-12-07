@@ -1,0 +1,270 @@
+.headerContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.headerTitle {
+  margin: 0 0 4px 0;
+}
+
+.filtersContainer {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.filterInput {
+  width: 200px;
+}
+
+.filterSelect {
+  width: 180px;
+}
+
+.actionsContainer {
+  display: flex;
+  gap: 8px;
+}
+
+.formSection {
+  margin-bottom: 24px;
+  padding: 16px;
+  background: #fafafa;
+  border-radius: 8px;
+}
+
+.formSectionTitle {
+  margin-bottom: 16px;
+  font-weight: 600;
+}
+
+.entriesTable {
+  margin-top: 16px;
+}
+
+.entryCell {
+  padding: 8px;
+  vertical-align: top;
+}
+
+.entryCellTextarea {
+  width: 100%;
+  min-height: 60px;
+}
+
+.entriesSectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.formActions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.viewSection {
+  margin-bottom: 24px;
+}
+
+.viewLabel {
+  font-weight: 500;
+  color: #666;
+  margin-bottom: 4px;
+}
+
+.viewValue {
+  font-size: 14px;
+}
+
+.statusOpen {
+  color: #fa8c16;
+}
+
+.statusFurtherAction {
+  color: #f5222d;
+}
+
+.statusClosed {
+  color: #52c41a;
+}
+
+.printButton {
+  margin-right: 8px;
+}
+
+.entryRow {
+  transition: background-color 0.2s;
+}
+
+.entryRow:hover {
+  background-color: #f5f5f5;
+}
+
+.shipStaffColumn {
+  background-color: #e6f7ff;
+}
+
+.officeColumn {
+  background-color: #fff7e6;
+}
+
+.columnHeader {
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+/* Text cell with modal trigger */
+.textCellContainer {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  cursor: pointer;
+  padding: 6px;
+  border: 1px solid #d9d9d9;
+  border-radius: 4px;
+  min-height: 50px;
+  background: #fff;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+}
+
+.textCellContainer:hover {
+  border-color: #1890ff;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.1);
+}
+
+.textCellContent {
+  flex: 1;
+  font-size: 13px;
+  line-height: 1.5;
+  word-break: break-word;
+  overflow: hidden;
+}
+
+.textCellIcon {
+  color: #1890ff;
+  font-size: 14px;
+  margin-left: 8px;
+  flex-shrink: 0;
+}
+
+/* Modal textarea styles */
+.textModalContent {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.textModalTextarea {
+  resize: none !important;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.charCounter {
+  text-align: right;
+  padding-right: 4px;
+}
+
+/* Compact table styles */
+.entriesTableCompact {
+  width: 100%;
+}
+
+.entriesTableCompact :global(.ant-table-thead > tr > th) {
+  white-space: nowrap;
+  padding: 8px 6px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.entriesTableCompact :global(.ant-table-tbody > tr > td) {
+  padding: 6px;
+  vertical-align: top;
+}
+
+.srNoInput {
+  width: 55px;
+  text-align: center;
+  padding: 4px 6px;
+}
+
+.datePickerCompact {
+  width: 100%;
+}
+
+.datePickerCompact :global(.ant-picker-input > input) {
+  font-size: 12px;
+}
+
+.statusSelect {
+  width: 100%;
+  font-size: 12px;
+}
+
+/* Remarks cell styling */
+.remarksCell {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.remarksRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.remarksLabel {
+  font-size: 11px;
+  min-width: 38px;
+}
+
+.remarksValue {
+  font-size: 12px;
+}
+
+.remarksSelect {
+  flex: 1;
+  font-size: 11px;
+}
+
+.remarksSelect :global(.ant-select-selection-item) {
+  font-size: 11px;
+}
+
+.remarksDatePicker {
+  flex: 1;
+}
+
+.remarksDatePicker :global(.ant-picker-input > input) {
+  font-size: 11px;
+}
+
+/* Remarks view cell (read-only) */
+.remarksViewCell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.remarksViewRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.remarksViewLabel {
+  font-size: 11px;
+  min-width: 38px;
+}

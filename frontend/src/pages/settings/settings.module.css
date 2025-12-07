@@ -1,0 +1,61 @@
+.headerContainer {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.headerTitle {
+  margin: 0;
+}
+
+.formContainer {
+  max-width: 600px;
+}
+
+.formContainerSmall {
+  max-width: 400px;
+}
+
+.formContainerMarginTop {
+  margin-top: 24px;
+  max-width: 600px;
+}
+
+.profileSection {
+  margin-bottom: 24px;
+}
+
+.signaturePreview {
+  max-width: 200px;
+  max-height: 100px;
+  margin-top: 8px;
+}
+
+.logoPreview {
+  max-width: 200px;
+  max-height: 100px;
+  margin-top: 8px;
+  object-fit: contain;
+}
+
+.fullWidth {
+  width: 100%;
+}
+
+.inputMedium {
+  width: 300px;
+}
+
+.helpText {
+  font-size: 12px;
+}
+
+.helpTextBlock {
+  display: block;
+  margin-top: 8px;
+  font-size: 12px;
+}
+
+.marginTop16 {
+  margin-top: 16px;
+}

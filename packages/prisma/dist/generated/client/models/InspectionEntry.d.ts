@@ -1,0 +1,1668 @@
+import type * as runtime from "@prisma/client/runtime/client";
+import type * as $Enums from "../enums";
+import type * as Prisma from "../internal/prismaNamespace";
+/**
+ * Model InspectionEntry
+ *
+ */
+export type InspectionEntryModel = runtime.Types.Result.DefaultSelection<Prisma.$InspectionEntryPayload>;
+export type AggregateInspectionEntry = {
+    _count: InspectionEntryCountAggregateOutputType | null;
+    _min: InspectionEntryMinAggregateOutputType | null;
+    _max: InspectionEntryMaxAggregateOutputType | null;
+};
+export type InspectionEntryMinAggregateOutputType = {
+    id: string | null;
+    reportId: string | null;
+    srNo: string | null;
+    deficiency: string | null;
+    mastersCauseAnalysis: string | null;
+    correctiveAction: string | null;
+    preventiveAction: string | null;
+    completionDate: Date | null;
+    companyAnalysis: string | null;
+    status: $Enums.InspectionStatus | null;
+    officeSignUserId: string | null;
+    officeSignDate: Date | null;
+    createdAt: Date | null;
+    updatedAt: Date | null;
+};
+export type InspectionEntryMaxAggregateOutputType = {
+    id: string | null;
+    reportId: string | null;
+    srNo: string | null;
+    deficiency: string | null;
+    mastersCauseAnalysis: string | null;
+    correctiveAction: string | null;
+    preventiveAction: string | null;
+    completionDate: Date | null;
+    companyAnalysis: string | null;
+    status: $Enums.InspectionStatus | null;
+    officeSignUserId: string | null;
+    officeSignDate: Date | null;
+    createdAt: Date | null;
+    updatedAt: Date | null;
+};
+export type InspectionEntryCountAggregateOutputType = {
+    id: number;
+    reportId: number;
+    srNo: number;
+    deficiency: number;
+    mastersCauseAnalysis: number;
+    correctiveAction: number;
+    preventiveAction: number;
+    completionDate: number;
+    companyAnalysis: number;
+    status: number;
+    officeSignUserId: number;
+    officeSignDate: number;
+    createdAt: number;
+    updatedAt: number;
+    _all: number;
+};
+export type InspectionEntryMinAggregateInputType = {
+    id?: true;
+    reportId?: true;
+    srNo?: true;
+    deficiency?: true;
+    mastersCauseAnalysis?: true;
+    correctiveAction?: true;
+    preventiveAction?: true;
+    completionDate?: true;
+    companyAnalysis?: true;
+    status?: true;
+    officeSignUserId?: true;
+    officeSignDate?: true;
+    createdAt?: true;
+    updatedAt?: true;
+};
+export type InspectionEntryMaxAggregateInputType = {
+    id?: true;
+    reportId?: true;
+    srNo?: true;
+    deficiency?: true;
+    mastersCauseAnalysis?: true;
+    correctiveAction?: true;
+    preventiveAction?: true;
+    completionDate?: true;
+    companyAnalysis?: true;
+    status?: true;
+    officeSignUserId?: true;
+    officeSignDate?: true;
+    createdAt?: true;
+    updatedAt?: true;
+};
+export type InspectionEntryCountAggregateInputType = {
+    id?: true;
+    reportId?: true;
+    srNo?: true;
+    deficiency?: true;
+    mastersCauseAnalysis?: true;
+    correctiveAction?: true;
+    preventiveAction?: true;
+    completionDate?: true;
+    companyAnalysis?: true;
+    status?: true;
+    officeSignUserId?: true;
+    officeSignDate?: true;
+    createdAt?: true;
+    updatedAt?: true;
+    _all?: true;
+};
+export type InspectionEntryAggregateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Filter which InspectionEntry to aggregate.
+     */
+    where?: Prisma.InspectionEntryWhereInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of InspectionEntries to fetch.
+     */
+    orderBy?: Prisma.InspectionEntryOrderByWithRelationInput | Prisma.InspectionEntryOrderByWithRelationInput[];
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the start position
+     */
+    cursor?: Prisma.InspectionEntryWhereUniqueInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` InspectionEntries from the position of the cursor.
+     */
+    take?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` InspectionEntries.
+     */
+    skip?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Count returned InspectionEntries
+    **/
+    _count?: true | InspectionEntryCountAggregateInputType;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to find the minimum value
+    **/
+    _min?: InspectionEntryMinAggregateInputType;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to find the maximum value
+    **/
+    _max?: InspectionEntryMaxAggregateInputType;
+};
+export type GetInspectionEntryAggregateType<T extends InspectionEntryAggregateArgs> = {
+    [P in keyof T & keyof AggregateInspectionEntry]: P extends '_count' | 'count' ? T[P] extends true ? number : Prisma.GetScalarType<T[P], AggregateInspectionEntry[P]> : Prisma.GetScalarType<T[P], AggregateInspectionEntry[P]>;
+};
+export type InspectionEntryGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    where?: Prisma.InspectionEntryWhereInput;
+    orderBy?: Prisma.InspectionEntryOrderByWithAggregationInput | Prisma.InspectionEntryOrderByWithAggregationInput[];
+    by: Prisma.InspectionEntryScalarFieldEnum[] | Prisma.InspectionEntryScalarFieldEnum;
+    having?: Prisma.InspectionEntryScalarWhereWithAggregatesInput;
+    take?: number;
+    skip?: number;
+    _count?: InspectionEntryCountAggregateInputType | true;
+    _min?: InspectionEntryMinAggregateInputType;
+    _max?: InspectionEntryMaxAggregateInputType;
+};
+export type InspectionEntryGroupByOutputType = {
+    id: string;
+    reportId: string;
+    srNo: string;
+    deficiency: string;
+    mastersCauseAnalysis: string | null;
+    correctiveAction: string | null;
+    preventiveAction: string | null;
+    completionDate: Date | null;
+    companyAnalysis: string | null;
+    status: $Enums.InspectionStatus;
+    officeSignUserId: string | null;
+    officeSignDate: Date | null;
+    createdAt: Date;
+    updatedAt: Date;
+    _count: InspectionEntryCountAggregateOutputType | null;
+    _min: InspectionEntryMinAggregateOutputType | null;
+    _max: InspectionEntryMaxAggregateOutputType | null;
+};
+type GetInspectionEntryGroupByPayload<T extends InspectionEntryGroupByArgs> = Prisma.PrismaPromise<Array<Prisma.PickEnumerable<InspectionEntryGroupByOutputType, T['by']> & {
+    [P in ((keyof T) & (keyof InspectionEntryGroupByOutputType))]: P extends '_count' ? T[P] extends boolean ? number : Prisma.GetScalarType<T[P], InspectionEntryGroupByOutputType[P]> : Prisma.GetScalarType<T[P], InspectionEntryGroupByOutputType[P]>;
+}>>;
+export type InspectionEntryWhereInput = {
+    AND?: Prisma.InspectionEntryWhereInput | Prisma.InspectionEntryWhereInput[];
+    OR?: Prisma.InspectionEntryWhereInput[];
+    NOT?: Prisma.InspectionEntryWhereInput | Prisma.InspectionEntryWhereInput[];
+    id?: Prisma.StringFilter<"InspectionEntry"> | string;
+    reportId?: Prisma.StringFilter<"InspectionEntry"> | string;
+    srNo?: Prisma.StringFilter<"InspectionEntry"> | string;
+    deficiency?: Prisma.StringFilter<"InspectionEntry"> | string;
+    mastersCauseAnalysis?: Prisma.StringNullableFilter<"InspectionEntry"> | string | null;
+    correctiveAction?: Prisma.StringNullableFilter<"InspectionEntry"> | string | null;
+    preventiveAction?: Prisma.StringNullableFilter<"InspectionEntry"> | string | null;
+    completionDate?: Prisma.DateTimeNullableFilter<"InspectionEntry"> | Date | string | null;
+    companyAnalysis?: Prisma.StringNullableFilter<"InspectionEntry"> | string | null;
+    status?: Prisma.EnumInspectionStatusFilter<"InspectionEntry"> | $Enums.InspectionStatus;
+    officeSignUserId?: Prisma.StringNullableFilter<"InspectionEntry"> | string | null;
+    officeSignDate?: Prisma.DateTimeNullableFilter<"InspectionEntry"> | Date | string | null;
+    createdAt?: Prisma.DateTimeFilter<"InspectionEntry"> | Date | string;
+    updatedAt?: Prisma.DateTimeFilter<"InspectionEntry"> | Date | string;
+    report?: Prisma.XOR<Prisma.InspectionReportScalarRelationFilter, Prisma.InspectionReportWhereInput>;
+    officeSignUser?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null;
+};
+export type InspectionEntryOrderByWithRelationInput = {
+    id?: Prisma.SortOrder;
+    reportId?: Prisma.SortOrder;
+    srNo?: Prisma.SortOrder;
+    deficiency?: Prisma.SortOrder;
+    mastersCauseAnalysis?: Prisma.SortOrderInput | Prisma.SortOrder;
+    correctiveAction?: Prisma.SortOrderInput | Prisma.SortOrder;
+    preventiveAction?: Prisma.SortOrderInput | Prisma.SortOrder;
+    completionDate?: Prisma.SortOrderInput | Prisma.SortOrder;
+    companyAnalysis?: Prisma.SortOrderInput | Prisma.SortOrder;
+    status?: Prisma.SortOrder;
+    officeSignUserId?: Prisma.SortOrderInput | Prisma.SortOrder;
+    officeSignDate?: Prisma.SortOrderInput | Prisma.SortOrder;
+    createdAt?: Prisma.SortOrder;
+    updatedAt?: Prisma.SortOrder;
+    report?: Prisma.InspectionReportOrderByWithRelationInput;
+    officeSignUser?: Prisma.UserOrderByWithRelationInput;
+};
+export type InspectionEntryWhereUniqueInput = Prisma.AtLeast<{
+    id?: string;
+    AND?: Prisma.InspectionEntryWhereInput | Prisma.InspectionEntryWhereInput[];
+    OR?: Prisma.InspectionEntryWhereInput[];
+    NOT?: Prisma.InspectionEntryWhereInput | Prisma.InspectionEntryWhereInput[];
+    reportId?: Prisma.StringFilter<"InspectionEntry"> | string;
+    srNo?: Prisma.StringFilter<"InspectionEntry"> | string;
+    deficiency?: Prisma.StringFilter<"InspectionEntry"> | string;
+    mastersCauseAnalysis?: Prisma.StringNullableFilter<"InspectionEntry"> | string | null;
+    correctiveAction?: Prisma.StringNullableFilter<"InspectionEntry"> | string | null;
+    preventiveAction?: Prisma.StringNullableFilter<"InspectionEntry"> | string | null;
+    completionDate?: Prisma.DateTimeNullableFilter<"InspectionEntry"> | Date | string | null;
+    companyAnalysis?: Prisma.StringNullableFilter<"InspectionEntry"> | string | null;
+    status?: Prisma.EnumInspectionStatusFilter<"InspectionEntry"> | $Enums.InspectionStatus;
+    officeSignUserId?: Prisma.StringNullableFilter<"InspectionEntry"> | string | null;
+    officeSignDate?: Prisma.DateTimeNullableFilter<"InspectionEntry"> | Date | string | null;
+    createdAt?: Prisma.DateTimeFilter<"InspectionEntry"> | Date | string;
+    updatedAt?: Prisma.DateTimeFilter<"InspectionEntry"> | Date | string;
+    report?: Prisma.XOR<Prisma.InspectionReportScalarRelationFilter, Prisma.InspectionReportWhereInput>;
+    officeSignUser?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null;
+}, "id">;
+export type InspectionEntryOrderByWithAggregationInput = {
+    id?: Prisma.SortOrder;
+    reportId?: Prisma.SortOrder;
+    srNo?: Prisma.SortOrder;
+    deficiency?: Prisma.SortOrder;
+    mastersCauseAnalysis?: Prisma.SortOrderInput | Prisma.SortOrder;
+    correctiveAction?: Prisma.SortOrderInput | Prisma.SortOrder;
+    preventiveAction?: Prisma.SortOrderInput | Prisma.SortOrder;
+    completionDate?: Prisma.SortOrderInput | Prisma.SortOrder;
+    companyAnalysis?: Prisma.SortOrderInput | Prisma.SortOrder;
+    status?: Prisma.SortOrder;
+    officeSignUserId?: Prisma.SortOrderInput | Prisma.SortOrder;
+    officeSignDate?: Prisma.SortOrderInput | Prisma.SortOrder;
+    createdAt?: Prisma.SortOrder;
+    updatedAt?: Prisma.SortOrder;
+    _count?: Prisma.InspectionEntryCountOrderByAggregateInput;
+    _max?: Prisma.InspectionEntryMaxOrderByAggregateInput;
+    _min?: Prisma.InspectionEntryMinOrderByAggregateInput;
+};
+export type InspectionEntryScalarWhereWithAggregatesInput = {
+    AND?: Prisma.InspectionEntryScalarWhereWithAggregatesInput | Prisma.InspectionEntryScalarWhereWithAggregatesInput[];
+    OR?: Prisma.InspectionEntryScalarWhereWithAggregatesInput[];
+    NOT?: Prisma.InspectionEntryScalarWhereWithAggregatesInput | Prisma.InspectionEntryScalarWhereWithAggregatesInput[];
+    id?: Prisma.StringWithAggregatesFilter<"InspectionEntry"> | string;
+    reportId?: Prisma.StringWithAggregatesFilter<"InspectionEntry"> | string;
+    srNo?: Prisma.StringWithAggregatesFilter<"InspectionEntry"> | string;
+    deficiency?: Prisma.StringWithAggregatesFilter<"InspectionEntry"> | string;
+    mastersCauseAnalysis?: Prisma.StringNullableWithAggregatesFilter<"InspectionEntry"> | string | null;
+    correctiveAction?: Prisma.StringNullableWithAggregatesFilter<"InspectionEntry"> | string | null;
+    preventiveAction?: Prisma.StringNullableWithAggregatesFilter<"InspectionEntry"> | string | null;
+    completionDate?: Prisma.DateTimeNullableWithAggregatesFilter<"InspectionEntry"> | Date | string | null;
+    companyAnalysis?: Prisma.StringNullableWithAggregatesFilter<"InspectionEntry"> | string | null;
+    status?: Prisma.EnumInspectionStatusWithAggregatesFilter<"InspectionEntry"> | $Enums.InspectionStatus;
+    officeSignUserId?: Prisma.StringNullableWithAggregatesFilter<"InspectionEntry"> | string | null;
+    officeSignDate?: Prisma.DateTimeNullableWithAggregatesFilter<"InspectionEntry"> | Date | string | null;
+    createdAt?: Prisma.DateTimeWithAggregatesFilter<"InspectionEntry"> | Date | string;
+    updatedAt?: Prisma.DateTimeWithAggregatesFilter<"InspectionEntry"> | Date | string;
+};
+export type InspectionEntryCreateInput = {
+    id?: string;
+    srNo: string;
+    deficiency: string;
+    mastersCauseAnalysis?: string | null;
+    correctiveAction?: string | null;
+    preventiveAction?: string | null;
+    completionDate?: Date | string | null;
+    companyAnalysis?: string | null;
+    status?: $Enums.InspectionStatus;
+    officeSignDate?: Date | string | null;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+    report: Prisma.InspectionReportCreateNestedOneWithoutEntriesInput;
+    officeSignUser?: Prisma.UserCreateNestedOneWithoutSignedEntriesInput;
+};
+export type InspectionEntryUncheckedCreateInput = {
+    id?: string;
+    reportId: string;
+    srNo: string;
+    deficiency: string;
+    mastersCauseAnalysis?: string | null;
+    correctiveAction?: string | null;
+    preventiveAction?: string | null;
+    completionDate?: Date | string | null;
+    companyAnalysis?: string | null;
+    status?: $Enums.InspectionStatus;
+    officeSignUserId?: string | null;
+    officeSignDate?: Date | string | null;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+};
+export type InspectionEntryUpdateInput = {
+    id?: Prisma.StringFieldUpdateOperationsInput | string;
+    srNo?: Prisma.StringFieldUpdateOperationsInput | string;
+    deficiency?: Prisma.StringFieldUpdateOperationsInput | string;
+    mastersCauseAnalysis?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    correctiveAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    preventiveAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    completionDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    companyAnalysis?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    status?: Prisma.EnumInspectionStatusFieldUpdateOperationsInput | $Enums.InspectionStatus;
+    officeSignDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    report?: Prisma.InspectionReportUpdateOneRequiredWithoutEntriesNestedInput;
+    officeSignUser?: Prisma.UserUpdateOneWithoutSignedEntriesNestedInput;
+};
+export type InspectionEntryUncheckedUpdateInput = {
+    id?: Prisma.StringFieldUpdateOperationsInput | string;
+    reportId?: Prisma.StringFieldUpdateOperationsInput | string;
+    srNo?: Prisma.StringFieldUpdateOperationsInput | string;
+    deficiency?: Prisma.StringFieldUpdateOperationsInput | string;
+    mastersCauseAnalysis?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    correctiveAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    preventiveAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    completionDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    companyAnalysis?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    status?: Prisma.EnumInspectionStatusFieldUpdateOperationsInput | $Enums.InspectionStatus;
+    officeSignUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    officeSignDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
+export type InspectionEntryCreateManyInput = {
+    id?: string;
+    reportId: string;
+    srNo: string;
+    deficiency: string;
+    mastersCauseAnalysis?: string | null;
+    correctiveAction?: string | null;
+    preventiveAction?: string | null;
+    completionDate?: Date | string | null;
+    companyAnalysis?: string | null;
+    status?: $Enums.InspectionStatus;
+    officeSignUserId?: string | null;
+    officeSignDate?: Date | string | null;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+};
+export type InspectionEntryUpdateManyMutationInput = {
+    id?: Prisma.StringFieldUpdateOperationsInput | string;
+    srNo?: Prisma.StringFieldUpdateOperationsInput | string;
+    deficiency?: Prisma.StringFieldUpdateOperationsInput | string;
+    mastersCauseAnalysis?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    correctiveAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    preventiveAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    completionDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    companyAnalysis?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    status?: Prisma.EnumInspectionStatusFieldUpdateOperationsInput | $Enums.InspectionStatus;
+    officeSignDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
+export type InspectionEntryUncheckedUpdateManyInput = {
+    id?: Prisma.StringFieldUpdateOperationsInput | string;
+    reportId?: Prisma.StringFieldUpdateOperationsInput | string;
+    srNo?: Prisma.StringFieldUpdateOperationsInput | string;
+    deficiency?: Prisma.StringFieldUpdateOperationsInput | string;
+    mastersCauseAnalysis?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    correctiveAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    preventiveAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    completionDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    companyAnalysis?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    status?: Prisma.EnumInspectionStatusFieldUpdateOperationsInput | $Enums.InspectionStatus;
+    officeSignUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    officeSignDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
+export type InspectionEntryListRelationFilter = {
+    every?: Prisma.InspectionEntryWhereInput;
+    some?: Prisma.InspectionEntryWhereInput;
+    none?: Prisma.InspectionEntryWhereInput;
+};
+export type InspectionEntryOrderByRelationAggregateInput = {
+    _count?: Prisma.SortOrder;
+};
+export type InspectionEntryCountOrderByAggregateInput = {
+    id?: Prisma.SortOrder;
+    reportId?: Prisma.SortOrder;
+    srNo?: Prisma.SortOrder;
+    deficiency?: Prisma.SortOrder;
+    mastersCauseAnalysis?: Prisma.SortOrder;
+    correctiveAction?: Prisma.SortOrder;
+    preventiveAction?: Prisma.SortOrder;
+    completionDate?: Prisma.SortOrder;
+    companyAnalysis?: Prisma.SortOrder;
+    status?: Prisma.SortOrder;
+    officeSignUserId?: Prisma.SortOrder;
+    officeSignDate?: Prisma.SortOrder;
+    createdAt?: Prisma.SortOrder;
+    updatedAt?: Prisma.SortOrder;
+};
+export type InspectionEntryMaxOrderByAggregateInput = {
+    id?: Prisma.SortOrder;
+    reportId?: Prisma.SortOrder;
+    srNo?: Prisma.SortOrder;
+    deficiency?: Prisma.SortOrder;
+    mastersCauseAnalysis?: Prisma.SortOrder;
+    correctiveAction?: Prisma.SortOrder;
+    preventiveAction?: Prisma.SortOrder;
+    completionDate?: Prisma.SortOrder;
+    companyAnalysis?: Prisma.SortOrder;
+    status?: Prisma.SortOrder;
+    officeSignUserId?: Prisma.SortOrder;
+    officeSignDate?: Prisma.SortOrder;
+    createdAt?: Prisma.SortOrder;
+    updatedAt?: Prisma.SortOrder;
+};
+export type InspectionEntryMinOrderByAggregateInput = {
+    id?: Prisma.SortOrder;
+    reportId?: Prisma.SortOrder;
+    srNo?: Prisma.SortOrder;
+    deficiency?: Prisma.SortOrder;
+    mastersCauseAnalysis?: Prisma.SortOrder;
+    correctiveAction?: Prisma.SortOrder;
+    preventiveAction?: Prisma.SortOrder;
+    completionDate?: Prisma.SortOrder;
+    companyAnalysis?: Prisma.SortOrder;
+    status?: Prisma.SortOrder;
+    officeSignUserId?: Prisma.SortOrder;
+    officeSignDate?: Prisma.SortOrder;
+    createdAt?: Prisma.SortOrder;
+    updatedAt?: Prisma.SortOrder;
+};
+export type InspectionEntryCreateNestedManyWithoutOfficeSignUserInput = {
+    create?: Prisma.XOR<Prisma.InspectionEntryCreateWithoutOfficeSignUserInput, Prisma.InspectionEntryUncheckedCreateWithoutOfficeSignUserInput> | Prisma.InspectionEntryCreateWithoutOfficeSignUserInput[] | Prisma.InspectionEntryUncheckedCreateWithoutOfficeSignUserInput[];
+    connectOrCreate?: Prisma.InspectionEntryCreateOrConnectWithoutOfficeSignUserInput | Prisma.InspectionEntryCreateOrConnectWithoutOfficeSignUserInput[];
+    createMany?: Prisma.InspectionEntryCreateManyOfficeSignUserInputEnvelope;
+    connect?: Prisma.InspectionEntryWhereUniqueInput | Prisma.InspectionEntryWhereUniqueInput[];
+};
+export type InspectionEntryUncheckedCreateNestedManyWithoutOfficeSignUserInput = {
+    create?: Prisma.XOR<Prisma.InspectionEntryCreateWithoutOfficeSignUserInput, Prisma.InspectionEntryUncheckedCreateWithoutOfficeSignUserInput> | Prisma.InspectionEntryCreateWithoutOfficeSignUserInput[] | Prisma.InspectionEntryUncheckedCreateWithoutOfficeSignUserInput[];
+    connectOrCreate?: Prisma.InspectionEntryCreateOrConnectWithoutOfficeSignUserInput | Prisma.InspectionEntryCreateOrConnectWithoutOfficeSignUserInput[];
+    createMany?: Prisma.InspectionEntryCreateManyOfficeSignUserInputEnvelope;
+    connect?: Prisma.InspectionEntryWhereUniqueInput | Prisma.InspectionEntryWhereUniqueInput[];
+};
+export type InspectionEntryUpdateManyWithoutOfficeSignUserNestedInput = {
+    create?: Prisma.XOR<Prisma.InspectionEntryCreateWithoutOfficeSignUserInput, Prisma.InspectionEntryUncheckedCreateWithoutOfficeSignUserInput> | Prisma.InspectionEntryCreateWithoutOfficeSignUserInput[] | Prisma.InspectionEntryUncheckedCreateWithoutOfficeSignUserInput[];
+    connectOrCreate?: Prisma.InspectionEntryCreateOrConnectWithoutOfficeSignUserInput | Prisma.InspectionEntryCreateOrConnectWithoutOfficeSignUserInput[];
+    upsert?: Prisma.InspectionEntryUpsertWithWhereUniqueWithoutOfficeSignUserInput | Prisma.InspectionEntryUpsertWithWhereUniqueWithoutOfficeSignUserInput[];
+    createMany?: Prisma.InspectionEntryCreateManyOfficeSignUserInputEnvelope;
+    set?: Prisma.InspectionEntryWhereUniqueInput | Prisma.InspectionEntryWhereUniqueInput[];
+    disconnect?: Prisma.InspectionEntryWhereUniqueInput | Prisma.InspectionEntryWhereUniqueInput[];
+    delete?: Prisma.InspectionEntryWhereUniqueInput | Prisma.InspectionEntryWhereUniqueInput[];
+    connect?: Prisma.InspectionEntryWhereUniqueInput | Prisma.InspectionEntryWhereUniqueInput[];
+    update?: Prisma.InspectionEntryUpdateWithWhereUniqueWithoutOfficeSignUserInput | Prisma.InspectionEntryUpdateWithWhereUniqueWithoutOfficeSignUserInput[];
+    updateMany?: Prisma.InspectionEntryUpdateManyWithWhereWithoutOfficeSignUserInput | Prisma.InspectionEntryUpdateManyWithWhereWithoutOfficeSignUserInput[];
+    deleteMany?: Prisma.InspectionEntryScalarWhereInput | Prisma.InspectionEntryScalarWhereInput[];
+};
+export type InspectionEntryUncheckedUpdateManyWithoutOfficeSignUserNestedInput = {
+    create?: Prisma.XOR<Prisma.InspectionEntryCreateWithoutOfficeSignUserInput, Prisma.InspectionEntryUncheckedCreateWithoutOfficeSignUserInput> | Prisma.InspectionEntryCreateWithoutOfficeSignUserInput[] | Prisma.InspectionEntryUncheckedCreateWithoutOfficeSignUserInput[];
+    connectOrCreate?: Prisma.InspectionEntryCreateOrConnectWithoutOfficeSignUserInput | Prisma.InspectionEntryCreateOrConnectWithoutOfficeSignUserInput[];
+    upsert?: Prisma.InspectionEntryUpsertWithWhereUniqueWithoutOfficeSignUserInput | Prisma.InspectionEntryUpsertWithWhereUniqueWithoutOfficeSignUserInput[];
+    createMany?: Prisma.InspectionEntryCreateManyOfficeSignUserInputEnvelope;
+    set?: Prisma.InspectionEntryWhereUniqueInput | Prisma.InspectionEntryWhereUniqueInput[];
+    disconnect?: Prisma.InspectionEntryWhereUniqueInput | Prisma.InspectionEntryWhereUniqueInput[];
+    delete?: Prisma.InspectionEntryWhereUniqueInput | Prisma.InspectionEntryWhereUniqueInput[];
+    connect?: Prisma.InspectionEntryWhereUniqueInput | Prisma.InspectionEntryWhereUniqueInput[];
+    update?: Prisma.InspectionEntryUpdateWithWhereUniqueWithoutOfficeSignUserInput | Prisma.InspectionEntryUpdateWithWhereUniqueWithoutOfficeSignUserInput[];
+    updateMany?: Prisma.InspectionEntryUpdateManyWithWhereWithoutOfficeSignUserInput | Prisma.InspectionEntryUpdateManyWithWhereWithoutOfficeSignUserInput[];
+    deleteMany?: Prisma.InspectionEntryScalarWhereInput | Prisma.InspectionEntryScalarWhereInput[];
+};
+export type InspectionEntryCreateNestedManyWithoutReportInput = {
+    create?: Prisma.XOR<Prisma.InspectionEntryCreateWithoutReportInput, Prisma.InspectionEntryUncheckedCreateWithoutReportInput> | Prisma.InspectionEntryCreateWithoutReportInput[] | Prisma.InspectionEntryUncheckedCreateWithoutReportInput[];
+    connectOrCreate?: Prisma.InspectionEntryCreateOrConnectWithoutReportInput | Prisma.InspectionEntryCreateOrConnectWithoutReportInput[];
+    createMany?: Prisma.InspectionEntryCreateManyReportInputEnvelope;
+    connect?: Prisma.InspectionEntryWhereUniqueInput | Prisma.InspectionEntryWhereUniqueInput[];
+};
+export type InspectionEntryUncheckedCreateNestedManyWithoutReportInput = {
+    create?: Prisma.XOR<Prisma.InspectionEntryCreateWithoutReportInput, Prisma.InspectionEntryUncheckedCreateWithoutReportInput> | Prisma.InspectionEntryCreateWithoutReportInput[] | Prisma.InspectionEntryUncheckedCreateWithoutReportInput[];
+    connectOrCreate?: Prisma.InspectionEntryCreateOrConnectWithoutReportInput | Prisma.InspectionEntryCreateOrConnectWithoutReportInput[];
+    createMany?: Prisma.InspectionEntryCreateManyReportInputEnvelope;
+    connect?: Prisma.InspectionEntryWhereUniqueInput | Prisma.InspectionEntryWhereUniqueInput[];
+};
+export type InspectionEntryUpdateManyWithoutReportNestedInput = {
+    create?: Prisma.XOR<Prisma.InspectionEntryCreateWithoutReportInput, Prisma.InspectionEntryUncheckedCreateWithoutReportInput> | Prisma.InspectionEntryCreateWithoutReportInput[] | Prisma.InspectionEntryUncheckedCreateWithoutReportInput[];
+    connectOrCreate?: Prisma.InspectionEntryCreateOrConnectWithoutReportInput | Prisma.InspectionEntryCreateOrConnectWithoutReportInput[];
+    upsert?: Prisma.InspectionEntryUpsertWithWhereUniqueWithoutReportInput | Prisma.InspectionEntryUpsertWithWhereUniqueWithoutReportInput[];
+    createMany?: Prisma.InspectionEntryCreateManyReportInputEnvelope;
+    set?: Prisma.InspectionEntryWhereUniqueInput | Prisma.InspectionEntryWhereUniqueInput[];
+    disconnect?: Prisma.InspectionEntryWhereUniqueInput | Prisma.InspectionEntryWhereUniqueInput[];
+    delete?: Prisma.InspectionEntryWhereUniqueInput | Prisma.InspectionEntryWhereUniqueInput[];
+    connect?: Prisma.InspectionEntryWhereUniqueInput | Prisma.InspectionEntryWhereUniqueInput[];
+    update?: Prisma.InspectionEntryUpdateWithWhereUniqueWithoutReportInput | Prisma.InspectionEntryUpdateWithWhereUniqueWithoutReportInput[];
+    updateMany?: Prisma.InspectionEntryUpdateManyWithWhereWithoutReportInput | Prisma.InspectionEntryUpdateManyWithWhereWithoutReportInput[];
+    deleteMany?: Prisma.InspectionEntryScalarWhereInput | Prisma.InspectionEntryScalarWhereInput[];
+};
+export type InspectionEntryUncheckedUpdateManyWithoutReportNestedInput = {
+    create?: Prisma.XOR<Prisma.InspectionEntryCreateWithoutReportInput, Prisma.InspectionEntryUncheckedCreateWithoutReportInput> | Prisma.InspectionEntryCreateWithoutReportInput[] | Prisma.InspectionEntryUncheckedCreateWithoutReportInput[];
+    connectOrCreate?: Prisma.InspectionEntryCreateOrConnectWithoutReportInput | Prisma.InspectionEntryCreateOrConnectWithoutReportInput[];
+    upsert?: Prisma.InspectionEntryUpsertWithWhereUniqueWithoutReportInput | Prisma.InspectionEntryUpsertWithWhereUniqueWithoutReportInput[];
+    createMany?: Prisma.InspectionEntryCreateManyReportInputEnvelope;
+    set?: Prisma.InspectionEntryWhereUniqueInput | Prisma.InspectionEntryWhereUniqueInput[];
+    disconnect?: Prisma.InspectionEntryWhereUniqueInput | Prisma.InspectionEntryWhereUniqueInput[];
+    delete?: Prisma.InspectionEntryWhereUniqueInput | Prisma.InspectionEntryWhereUniqueInput[];
+    connect?: Prisma.InspectionEntryWhereUniqueInput | Prisma.InspectionEntryWhereUniqueInput[];
+    update?: Prisma.InspectionEntryUpdateWithWhereUniqueWithoutReportInput | Prisma.InspectionEntryUpdateWithWhereUniqueWithoutReportInput[];
+    updateMany?: Prisma.InspectionEntryUpdateManyWithWhereWithoutReportInput | Prisma.InspectionEntryUpdateManyWithWhereWithoutReportInput[];
+    deleteMany?: Prisma.InspectionEntryScalarWhereInput | Prisma.InspectionEntryScalarWhereInput[];
+};
+export type EnumInspectionStatusFieldUpdateOperationsInput = {
+    set?: $Enums.InspectionStatus;
+};
+export type InspectionEntryCreateWithoutOfficeSignUserInput = {
+    id?: string;
+    srNo: string;
+    deficiency: string;
+    mastersCauseAnalysis?: string | null;
+    correctiveAction?: string | null;
+    preventiveAction?: string | null;
+    completionDate?: Date | string | null;
+    companyAnalysis?: string | null;
+    status?: $Enums.InspectionStatus;
+    officeSignDate?: Date | string | null;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+    report: Prisma.InspectionReportCreateNestedOneWithoutEntriesInput;
+};
+export type InspectionEntryUncheckedCreateWithoutOfficeSignUserInput = {
+    id?: string;
+    reportId: string;
+    srNo: string;
+    deficiency: string;
+    mastersCauseAnalysis?: string | null;
+    correctiveAction?: string | null;
+    preventiveAction?: string | null;
+    completionDate?: Date | string | null;
+    companyAnalysis?: string | null;
+    status?: $Enums.InspectionStatus;
+    officeSignDate?: Date | string | null;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+};
+export type InspectionEntryCreateOrConnectWithoutOfficeSignUserInput = {
+    where: Prisma.InspectionEntryWhereUniqueInput;
+    create: Prisma.XOR<Prisma.InspectionEntryCreateWithoutOfficeSignUserInput, Prisma.InspectionEntryUncheckedCreateWithoutOfficeSignUserInput>;
+};
+export type InspectionEntryCreateManyOfficeSignUserInputEnvelope = {
+    data: Prisma.InspectionEntryCreateManyOfficeSignUserInput | Prisma.InspectionEntryCreateManyOfficeSignUserInput[];
+    skipDuplicates?: boolean;
+};
+export type InspectionEntryUpsertWithWhereUniqueWithoutOfficeSignUserInput = {
+    where: Prisma.InspectionEntryWhereUniqueInput;
+    update: Prisma.XOR<Prisma.InspectionEntryUpdateWithoutOfficeSignUserInput, Prisma.InspectionEntryUncheckedUpdateWithoutOfficeSignUserInput>;
+    create: Prisma.XOR<Prisma.InspectionEntryCreateWithoutOfficeSignUserInput, Prisma.InspectionEntryUncheckedCreateWithoutOfficeSignUserInput>;
+};
+export type InspectionEntryUpdateWithWhereUniqueWithoutOfficeSignUserInput = {
+    where: Prisma.InspectionEntryWhereUniqueInput;
+    data: Prisma.XOR<Prisma.InspectionEntryUpdateWithoutOfficeSignUserInput, Prisma.InspectionEntryUncheckedUpdateWithoutOfficeSignUserInput>;
+};
+export type InspectionEntryUpdateManyWithWhereWithoutOfficeSignUserInput = {
+    where: Prisma.InspectionEntryScalarWhereInput;
+    data: Prisma.XOR<Prisma.InspectionEntryUpdateManyMutationInput, Prisma.InspectionEntryUncheckedUpdateManyWithoutOfficeSignUserInput>;
+};
+export type InspectionEntryScalarWhereInput = {
+    AND?: Prisma.InspectionEntryScalarWhereInput | Prisma.InspectionEntryScalarWhereInput[];
+    OR?: Prisma.InspectionEntryScalarWhereInput[];
+    NOT?: Prisma.InspectionEntryScalarWhereInput | Prisma.InspectionEntryScalarWhereInput[];
+    id?: Prisma.StringFilter<"InspectionEntry"> | string;
+    reportId?: Prisma.StringFilter<"InspectionEntry"> | string;
+    srNo?: Prisma.StringFilter<"InspectionEntry"> | string;
+    deficiency?: Prisma.StringFilter<"InspectionEntry"> | string;
+    mastersCauseAnalysis?: Prisma.StringNullableFilter<"InspectionEntry"> | string | null;
+    correctiveAction?: Prisma.StringNullableFilter<"InspectionEntry"> | string | null;
+    preventiveAction?: Prisma.StringNullableFilter<"InspectionEntry"> | string | null;
+    completionDate?: Prisma.DateTimeNullableFilter<"InspectionEntry"> | Date | string | null;
+    companyAnalysis?: Prisma.StringNullableFilter<"InspectionEntry"> | string | null;
+    status?: Prisma.EnumInspectionStatusFilter<"InspectionEntry"> | $Enums.InspectionStatus;
+    officeSignUserId?: Prisma.StringNullableFilter<"InspectionEntry"> | string | null;
+    officeSignDate?: Prisma.DateTimeNullableFilter<"InspectionEntry"> | Date | string | null;
+    createdAt?: Prisma.DateTimeFilter<"InspectionEntry"> | Date | string;
+    updatedAt?: Prisma.DateTimeFilter<"InspectionEntry"> | Date | string;
+};
+export type InspectionEntryCreateWithoutReportInput = {
+    id?: string;
+    srNo: string;
+    deficiency: string;
+    mastersCauseAnalysis?: string | null;
+    correctiveAction?: string | null;
+    preventiveAction?: string | null;
+    completionDate?: Date | string | null;
+    companyAnalysis?: string | null;
+    status?: $Enums.InspectionStatus;
+    officeSignDate?: Date | string | null;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+    officeSignUser?: Prisma.UserCreateNestedOneWithoutSignedEntriesInput;
+};
+export type InspectionEntryUncheckedCreateWithoutReportInput = {
+    id?: string;
+    srNo: string;
+    deficiency: string;
+    mastersCauseAnalysis?: string | null;
+    correctiveAction?: string | null;
+    preventiveAction?: string | null;
+    completionDate?: Date | string | null;
+    companyAnalysis?: string | null;
+    status?: $Enums.InspectionStatus;
+    officeSignUserId?: string | null;
+    officeSignDate?: Date | string | null;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+};
+export type InspectionEntryCreateOrConnectWithoutReportInput = {
+    where: Prisma.InspectionEntryWhereUniqueInput;
+    create: Prisma.XOR<Prisma.InspectionEntryCreateWithoutReportInput, Prisma.InspectionEntryUncheckedCreateWithoutReportInput>;
+};
+export type InspectionEntryCreateManyReportInputEnvelope = {
+    data: Prisma.InspectionEntryCreateManyReportInput | Prisma.InspectionEntryCreateManyReportInput[];
+    skipDuplicates?: boolean;
+};
+export type InspectionEntryUpsertWithWhereUniqueWithoutReportInput = {
+    where: Prisma.InspectionEntryWhereUniqueInput;
+    update: Prisma.XOR<Prisma.InspectionEntryUpdateWithoutReportInput, Prisma.InspectionEntryUncheckedUpdateWithoutReportInput>;
+    create: Prisma.XOR<Prisma.InspectionEntryCreateWithoutReportInput, Prisma.InspectionEntryUncheckedCreateWithoutReportInput>;
+};
+export type InspectionEntryUpdateWithWhereUniqueWithoutReportInput = {
+    where: Prisma.InspectionEntryWhereUniqueInput;
+    data: Prisma.XOR<Prisma.InspectionEntryUpdateWithoutReportInput, Prisma.InspectionEntryUncheckedUpdateWithoutReportInput>;
+};
+export type InspectionEntryUpdateManyWithWhereWithoutReportInput = {
+    where: Prisma.InspectionEntryScalarWhereInput;
+    data: Prisma.XOR<Prisma.InspectionEntryUpdateManyMutationInput, Prisma.InspectionEntryUncheckedUpdateManyWithoutReportInput>;
+};
+export type InspectionEntryCreateManyOfficeSignUserInput = {
+    id?: string;
+    reportId: string;
+    srNo: string;
+    deficiency: string;
+    mastersCauseAnalysis?: string | null;
+    correctiveAction?: string | null;
+    preventiveAction?: string | null;
+    completionDate?: Date | string | null;
+    companyAnalysis?: string | null;
+    status?: $Enums.InspectionStatus;
+    officeSignDate?: Date | string | null;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+};
+export type InspectionEntryUpdateWithoutOfficeSignUserInput = {
+    id?: Prisma.StringFieldUpdateOperationsInput | string;
+    srNo?: Prisma.StringFieldUpdateOperationsInput | string;
+    deficiency?: Prisma.StringFieldUpdateOperationsInput | string;
+    mastersCauseAnalysis?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    correctiveAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    preventiveAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    completionDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    companyAnalysis?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    status?: Prisma.EnumInspectionStatusFieldUpdateOperationsInput | $Enums.InspectionStatus;
+    officeSignDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    report?: Prisma.InspectionReportUpdateOneRequiredWithoutEntriesNestedInput;
+};
+export type InspectionEntryUncheckedUpdateWithoutOfficeSignUserInput = {
+    id?: Prisma.StringFieldUpdateOperationsInput | string;
+    reportId?: Prisma.StringFieldUpdateOperationsInput | string;
+    srNo?: Prisma.StringFieldUpdateOperationsInput | string;
+    deficiency?: Prisma.StringFieldUpdateOperationsInput | string;
+    mastersCauseAnalysis?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    correctiveAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    preventiveAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    completionDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    companyAnalysis?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    status?: Prisma.EnumInspectionStatusFieldUpdateOperationsInput | $Enums.InspectionStatus;
+    officeSignDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
+export type InspectionEntryUncheckedUpdateManyWithoutOfficeSignUserInput = {
+    id?: Prisma.StringFieldUpdateOperationsInput | string;
+    reportId?: Prisma.StringFieldUpdateOperationsInput | string;
+    srNo?: Prisma.StringFieldUpdateOperationsInput | string;
+    deficiency?: Prisma.StringFieldUpdateOperationsInput | string;
+    mastersCauseAnalysis?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    correctiveAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    preventiveAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    completionDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    companyAnalysis?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    status?: Prisma.EnumInspectionStatusFieldUpdateOperationsInput | $Enums.InspectionStatus;
+    officeSignDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
+export type InspectionEntryCreateManyReportInput = {
+    id?: string;
+    srNo: string;
+    deficiency: string;
+    mastersCauseAnalysis?: string | null;
+    correctiveAction?: string | null;
+    preventiveAction?: string | null;
+    completionDate?: Date | string | null;
+    companyAnalysis?: string | null;
+    status?: $Enums.InspectionStatus;
+    officeSignUserId?: string | null;
+    officeSignDate?: Date | string | null;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+};
+export type InspectionEntryUpdateWithoutReportInput = {
+    id?: Prisma.StringFieldUpdateOperationsInput | string;
+    srNo?: Prisma.StringFieldUpdateOperationsInput | string;
+    deficiency?: Prisma.StringFieldUpdateOperationsInput | string;
+    mastersCauseAnalysis?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    correctiveAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    preventiveAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    completionDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    companyAnalysis?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    status?: Prisma.EnumInspectionStatusFieldUpdateOperationsInput | $Enums.InspectionStatus;
+    officeSignDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    officeSignUser?: Prisma.UserUpdateOneWithoutSignedEntriesNestedInput;
+};
+export type InspectionEntryUncheckedUpdateWithoutReportInput = {
+    id?: Prisma.StringFieldUpdateOperationsInput | string;
+    srNo?: Prisma.StringFieldUpdateOperationsInput | string;
+    deficiency?: Prisma.StringFieldUpdateOperationsInput | string;
+    mastersCauseAnalysis?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    correctiveAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    preventiveAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    completionDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    companyAnalysis?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    status?: Prisma.EnumInspectionStatusFieldUpdateOperationsInput | $Enums.InspectionStatus;
+    officeSignUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    officeSignDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
+export type InspectionEntryUncheckedUpdateManyWithoutReportInput = {
+    id?: Prisma.StringFieldUpdateOperationsInput | string;
+    srNo?: Prisma.StringFieldUpdateOperationsInput | string;
+    deficiency?: Prisma.StringFieldUpdateOperationsInput | string;
+    mastersCauseAnalysis?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    correctiveAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    preventiveAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    completionDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    companyAnalysis?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    status?: Prisma.EnumInspectionStatusFieldUpdateOperationsInput | $Enums.InspectionStatus;
+    officeSignUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    officeSignDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
+export type InspectionEntrySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+    id?: boolean;
+    reportId?: boolean;
+    srNo?: boolean;
+    deficiency?: boolean;
+    mastersCauseAnalysis?: boolean;
+    correctiveAction?: boolean;
+    preventiveAction?: boolean;
+    completionDate?: boolean;
+    companyAnalysis?: boolean;
+    status?: boolean;
+    officeSignUserId?: boolean;
+    officeSignDate?: boolean;
+    createdAt?: boolean;
+    updatedAt?: boolean;
+    report?: boolean | Prisma.InspectionReportDefaultArgs<ExtArgs>;
+    officeSignUser?: boolean | Prisma.InspectionEntry$officeSignUserArgs<ExtArgs>;
+}, ExtArgs["result"]["inspectionEntry"]>;
+export type InspectionEntrySelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+    id?: boolean;
+    reportId?: boolean;
+    srNo?: boolean;
+    deficiency?: boolean;
+    mastersCauseAnalysis?: boolean;
+    correctiveAction?: boolean;
+    preventiveAction?: boolean;
+    completionDate?: boolean;
+    companyAnalysis?: boolean;
+    status?: boolean;
+    officeSignUserId?: boolean;
+    officeSignDate?: boolean;
+    createdAt?: boolean;
+    updatedAt?: boolean;
+    report?: boolean | Prisma.InspectionReportDefaultArgs<ExtArgs>;
+    officeSignUser?: boolean | Prisma.InspectionEntry$officeSignUserArgs<ExtArgs>;
+}, ExtArgs["result"]["inspectionEntry"]>;
+export type InspectionEntrySelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+    id?: boolean;
+    reportId?: boolean;
+    srNo?: boolean;
+    deficiency?: boolean;
+    mastersCauseAnalysis?: boolean;
+    correctiveAction?: boolean;
+    preventiveAction?: boolean;
+    completionDate?: boolean;
+    companyAnalysis?: boolean;
+    status?: boolean;
+    officeSignUserId?: boolean;
+    officeSignDate?: boolean;
+    createdAt?: boolean;
+    updatedAt?: boolean;
+    report?: boolean | Prisma.InspectionReportDefaultArgs<ExtArgs>;
+    officeSignUser?: boolean | Prisma.InspectionEntry$officeSignUserArgs<ExtArgs>;
+}, ExtArgs["result"]["inspectionEntry"]>;
+export type InspectionEntrySelectScalar = {
+    id?: boolean;
+    reportId?: boolean;
+    srNo?: boolean;
+    deficiency?: boolean;
+    mastersCauseAnalysis?: boolean;
+    correctiveAction?: boolean;
+    preventiveAction?: boolean;
+    completionDate?: boolean;
+    companyAnalysis?: boolean;
+    status?: boolean;
+    officeSignUserId?: boolean;
+    officeSignDate?: boolean;
+    createdAt?: boolean;
+    updatedAt?: boolean;
+};
+export type InspectionEntryOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "reportId" | "srNo" | "deficiency" | "mastersCauseAnalysis" | "correctiveAction" | "preventiveAction" | "completionDate" | "companyAnalysis" | "status" | "officeSignUserId" | "officeSignDate" | "createdAt" | "updatedAt", ExtArgs["result"]["inspectionEntry"]>;
+export type InspectionEntryInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    report?: boolean | Prisma.InspectionReportDefaultArgs<ExtArgs>;
+    officeSignUser?: boolean | Prisma.InspectionEntry$officeSignUserArgs<ExtArgs>;
+};
+export type InspectionEntryIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    report?: boolean | Prisma.InspectionReportDefaultArgs<ExtArgs>;
+    officeSignUser?: boolean | Prisma.InspectionEntry$officeSignUserArgs<ExtArgs>;
+};
+export type InspectionEntryIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    report?: boolean | Prisma.InspectionReportDefaultArgs<ExtArgs>;
+    officeSignUser?: boolean | Prisma.InspectionEntry$officeSignUserArgs<ExtArgs>;
+};
+export type $InspectionEntryPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    name: "InspectionEntry";
+    objects: {
+        report: Prisma.$InspectionReportPayload<ExtArgs>;
+        officeSignUser: Prisma.$UserPayload<ExtArgs> | null;
+    };
+    scalars: runtime.Types.Extensions.GetPayloadResult<{
+        id: string;
+        reportId: string;
+        srNo: string;
+        deficiency: string;
+        mastersCauseAnalysis: string | null;
+        correctiveAction: string | null;
+        preventiveAction: string | null;
+        completionDate: Date | null;
+        companyAnalysis: string | null;
+        status: $Enums.InspectionStatus;
+        officeSignUserId: string | null;
+        officeSignDate: Date | null;
+        createdAt: Date;
+        updatedAt: Date;
+    }, ExtArgs["result"]["inspectionEntry"]>;
+    composites: {};
+};
+export type InspectionEntryGetPayload<S extends boolean | null | undefined | InspectionEntryDefaultArgs> = runtime.Types.Result.GetResult<Prisma.$InspectionEntryPayload, S>;
+export type InspectionEntryCountArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = Omit<InspectionEntryFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+    select?: InspectionEntryCountAggregateInputType | true;
+};
+export interface InspectionEntryDelegate<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: {
+        types: Prisma.TypeMap<ExtArgs>['model']['InspectionEntry'];
+        meta: {
+            name: 'InspectionEntry';
+        };
+    };
+    /**
+     * Find zero or one InspectionEntry that matches the filter.
+     * @param {InspectionEntryFindUniqueArgs} args - Arguments to find a InspectionEntry
+     * @example
+     * // Get one InspectionEntry
+     * const inspectionEntry = await prisma.inspectionEntry.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends InspectionEntryFindUniqueArgs>(args: Prisma.SelectSubset<T, InspectionEntryFindUniqueArgs<ExtArgs>>): Prisma.Prisma__InspectionEntryClient<runtime.Types.Result.GetResult<Prisma.$InspectionEntryPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>;
+    /**
+     * Find one InspectionEntry that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {InspectionEntryFindUniqueOrThrowArgs} args - Arguments to find a InspectionEntry
+     * @example
+     * // Get one InspectionEntry
+     * const inspectionEntry = await prisma.inspectionEntry.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends InspectionEntryFindUniqueOrThrowArgs>(args: Prisma.SelectSubset<T, InspectionEntryFindUniqueOrThrowArgs<ExtArgs>>): Prisma.Prisma__InspectionEntryClient<runtime.Types.Result.GetResult<Prisma.$InspectionEntryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
+    /**
+     * Find the first InspectionEntry that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InspectionEntryFindFirstArgs} args - Arguments to find a InspectionEntry
+     * @example
+     * // Get one InspectionEntry
+     * const inspectionEntry = await prisma.inspectionEntry.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends InspectionEntryFindFirstArgs>(args?: Prisma.SelectSubset<T, InspectionEntryFindFirstArgs<ExtArgs>>): Prisma.Prisma__InspectionEntryClient<runtime.Types.Result.GetResult<Prisma.$InspectionEntryPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>;
+    /**
+     * Find the first InspectionEntry that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InspectionEntryFindFirstOrThrowArgs} args - Arguments to find a InspectionEntry
+     * @example
+     * // Get one InspectionEntry
+     * const inspectionEntry = await prisma.inspectionEntry.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends InspectionEntryFindFirstOrThrowArgs>(args?: Prisma.SelectSubset<T, InspectionEntryFindFirstOrThrowArgs<ExtArgs>>): Prisma.Prisma__InspectionEntryClient<runtime.Types.Result.GetResult<Prisma.$InspectionEntryPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
+    /**
+     * Find zero or more InspectionEntries that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InspectionEntryFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all InspectionEntries
+     * const inspectionEntries = await prisma.inspectionEntry.findMany()
+     *
+     * // Get first 10 InspectionEntries
+     * const inspectionEntries = await prisma.inspectionEntry.findMany({ take: 10 })
+     *
+     * // Only select the `id`
+     * const inspectionEntryWithIdOnly = await prisma.inspectionEntry.findMany({ select: { id: true } })
+     *
+     */
+    findMany<T extends InspectionEntryFindManyArgs>(args?: Prisma.SelectSubset<T, InspectionEntryFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InspectionEntryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>;
+    /**
+     * Create a InspectionEntry.
+     * @param {InspectionEntryCreateArgs} args - Arguments to create a InspectionEntry.
+     * @example
+     * // Create one InspectionEntry
+     * const InspectionEntry = await prisma.inspectionEntry.create({
+     *   data: {
+     *     // ... data to create a InspectionEntry
+     *   }
+     * })
+     *
+     */
+    create<T extends InspectionEntryCreateArgs>(args: Prisma.SelectSubset<T, InspectionEntryCreateArgs<ExtArgs>>): Prisma.Prisma__InspectionEntryClient<runtime.Types.Result.GetResult<Prisma.$InspectionEntryPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
+    /**
+     * Create many InspectionEntries.
+     * @param {InspectionEntryCreateManyArgs} args - Arguments to create many InspectionEntries.
+     * @example
+     * // Create many InspectionEntries
+     * const inspectionEntry = await prisma.inspectionEntry.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     */
+    createMany<T extends InspectionEntryCreateManyArgs>(args?: Prisma.SelectSubset<T, InspectionEntryCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>;
+    /**
+     * Create many InspectionEntries and returns the data saved in the database.
+     * @param {InspectionEntryCreateManyAndReturnArgs} args - Arguments to create many InspectionEntries.
+     * @example
+     * // Create many InspectionEntries
+     * const inspectionEntry = await prisma.inspectionEntry.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     * // Create many InspectionEntries and only return the `id`
+     * const inspectionEntryWithIdOnly = await prisma.inspectionEntry.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     *
+     */
+    createManyAndReturn<T extends InspectionEntryCreateManyAndReturnArgs>(args?: Prisma.SelectSubset<T, InspectionEntryCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InspectionEntryPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>;
+    /**
+     * Delete a InspectionEntry.
+     * @param {InspectionEntryDeleteArgs} args - Arguments to delete one InspectionEntry.
+     * @example
+     * // Delete one InspectionEntry
+     * const InspectionEntry = await prisma.inspectionEntry.delete({
+     *   where: {
+     *     // ... filter to delete one InspectionEntry
+     *   }
+     * })
+     *
+     */
+    delete<T extends InspectionEntryDeleteArgs>(args: Prisma.SelectSubset<T, InspectionEntryDeleteArgs<ExtArgs>>): Prisma.Prisma__InspectionEntryClient<runtime.Types.Result.GetResult<Prisma.$InspectionEntryPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
+    /**
+     * Update one InspectionEntry.
+     * @param {InspectionEntryUpdateArgs} args - Arguments to update one InspectionEntry.
+     * @example
+     * // Update one InspectionEntry
+     * const inspectionEntry = await prisma.inspectionEntry.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     *
+     */
+    update<T extends InspectionEntryUpdateArgs>(args: Prisma.SelectSubset<T, InspectionEntryUpdateArgs<ExtArgs>>): Prisma.Prisma__InspectionEntryClient<runtime.Types.Result.GetResult<Prisma.$InspectionEntryPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
+    /**
+     * Delete zero or more InspectionEntries.
+     * @param {InspectionEntryDeleteManyArgs} args - Arguments to filter InspectionEntries to delete.
+     * @example
+     * // Delete a few InspectionEntries
+     * const { count } = await prisma.inspectionEntry.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     *
+     */
+    deleteMany<T extends InspectionEntryDeleteManyArgs>(args?: Prisma.SelectSubset<T, InspectionEntryDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>;
+    /**
+     * Update zero or more InspectionEntries.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InspectionEntryUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many InspectionEntries
+     * const inspectionEntry = await prisma.inspectionEntry.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     *
+     */
+    updateMany<T extends InspectionEntryUpdateManyArgs>(args: Prisma.SelectSubset<T, InspectionEntryUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>;
+    /**
+     * Update zero or more InspectionEntries and returns the data updated in the database.
+     * @param {InspectionEntryUpdateManyAndReturnArgs} args - Arguments to update many InspectionEntries.
+     * @example
+     * // Update many InspectionEntries
+     * const inspectionEntry = await prisma.inspectionEntry.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     * // Update zero or more InspectionEntries and only return the `id`
+     * const inspectionEntryWithIdOnly = await prisma.inspectionEntry.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     *
+     */
+    updateManyAndReturn<T extends InspectionEntryUpdateManyAndReturnArgs>(args: Prisma.SelectSubset<T, InspectionEntryUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InspectionEntryPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>;
+    /**
+     * Create or update one InspectionEntry.
+     * @param {InspectionEntryUpsertArgs} args - Arguments to update or create a InspectionEntry.
+     * @example
+     * // Update or create a InspectionEntry
+     * const inspectionEntry = await prisma.inspectionEntry.upsert({
+     *   create: {
+     *     // ... data to create a InspectionEntry
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the InspectionEntry we want to update
+     *   }
+     * })
+     */
+    upsert<T extends InspectionEntryUpsertArgs>(args: Prisma.SelectSubset<T, InspectionEntryUpsertArgs<ExtArgs>>): Prisma.Prisma__InspectionEntryClient<runtime.Types.Result.GetResult<Prisma.$InspectionEntryPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
+    /**
+     * Count the number of InspectionEntries.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InspectionEntryCountArgs} args - Arguments to filter InspectionEntries to count.
+     * @example
+     * // Count the number of InspectionEntries
+     * const count = await prisma.inspectionEntry.count({
+     *   where: {
+     *     // ... the filter for the InspectionEntries we want to count
+     *   }
+     * })
+    **/
+    count<T extends InspectionEntryCountArgs>(args?: Prisma.Subset<T, InspectionEntryCountArgs>): Prisma.PrismaPromise<T extends runtime.Types.Utils.Record<'select', any> ? T['select'] extends true ? number : Prisma.GetScalarType<T['select'], InspectionEntryCountAggregateOutputType> : number>;
+    /**
+     * Allows you to perform aggregations operations on a InspectionEntry.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InspectionEntryAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends InspectionEntryAggregateArgs>(args: Prisma.Subset<T, InspectionEntryAggregateArgs>): Prisma.PrismaPromise<GetInspectionEntryAggregateType<T>>;
+    /**
+     * Group by InspectionEntry.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InspectionEntryGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     *
+    **/
+    groupBy<T extends InspectionEntryGroupByArgs, HasSelectOrTake extends Prisma.Or<Prisma.Extends<'skip', Prisma.Keys<T>>, Prisma.Extends<'take', Prisma.Keys<T>>>, OrderByArg extends Prisma.True extends HasSelectOrTake ? {
+        orderBy: InspectionEntryGroupByArgs['orderBy'];
+    } : {
+        orderBy?: InspectionEntryGroupByArgs['orderBy'];
+    }, OrderFields extends Prisma.ExcludeUnderscoreKeys<Prisma.Keys<Prisma.MaybeTupleToUnion<T['orderBy']>>>, ByFields extends Prisma.MaybeTupleToUnion<T['by']>, ByValid extends Prisma.Has<ByFields, OrderFields>, HavingFields extends Prisma.GetHavingFields<T['having']>, HavingValid extends Prisma.Has<ByFields, HavingFields>, ByEmpty extends T['by'] extends never[] ? Prisma.True : Prisma.False, InputErrors extends ByEmpty extends Prisma.True ? `Error: "by" must not be empty.` : HavingValid extends Prisma.False ? {
+        [P in HavingFields]: P extends ByFields ? never : P extends string ? `Error: Field "${P}" used in "having" needs to be provided in "by".` : [
+            Error,
+            'Field ',
+            P,
+            ` in "having" needs to be provided in "by"`
+        ];
+    }[HavingFields] : 'take' extends Prisma.Keys<T> ? 'orderBy' extends Prisma.Keys<T> ? ByValid extends Prisma.True ? {} : {
+        [P in OrderFields]: P extends ByFields ? never : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+    }[OrderFields] : 'Error: If you provide "take", you also need to provide "orderBy"' : 'skip' extends Prisma.Keys<T> ? 'orderBy' extends Prisma.Keys<T> ? ByValid extends Prisma.True ? {} : {
+        [P in OrderFields]: P extends ByFields ? never : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+    }[OrderFields] : 'Error: If you provide "skip", you also need to provide "orderBy"' : ByValid extends Prisma.True ? {} : {
+        [P in OrderFields]: P extends ByFields ? never : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+    }[OrderFields]>(args: Prisma.SubsetIntersection<T, InspectionEntryGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetInspectionEntryGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>;
+    /**
+     * Fields of the InspectionEntry model
+     */
+    readonly fields: InspectionEntryFieldRefs;
+}
+/**
+ * The delegate class that acts as a "Promise-like" for InspectionEntry.
+ * Why is this prefixed with `Prisma__`?
+ * Because we want to prevent naming conflicts as mentioned in
+ * https://github.com/prisma/prisma-client-js/issues/707
+ */
+export interface Prisma__InspectionEntryClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise";
+    report<T extends Prisma.InspectionReportDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.InspectionReportDefaultArgs<ExtArgs>>): Prisma.Prisma__InspectionReportClient<runtime.Types.Result.GetResult<Prisma.$InspectionReportPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>;
+    officeSignUser<T extends Prisma.InspectionEntry$officeSignUserArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.InspectionEntry$officeSignUserArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>;
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): runtime.Types.Utils.JsPromise<TResult1 | TResult2>;
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): runtime.Types.Utils.JsPromise<T | TResult>;
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): runtime.Types.Utils.JsPromise<T>;
+}
+/**
+ * Fields of the InspectionEntry model
+ */
+export interface InspectionEntryFieldRefs {
+    readonly id: Prisma.FieldRef<"InspectionEntry", 'String'>;
+    readonly reportId: Prisma.FieldRef<"InspectionEntry", 'String'>;
+    readonly srNo: Prisma.FieldRef<"InspectionEntry", 'String'>;
+    readonly deficiency: Prisma.FieldRef<"InspectionEntry", 'String'>;
+    readonly mastersCauseAnalysis: Prisma.FieldRef<"InspectionEntry", 'String'>;
+    readonly correctiveAction: Prisma.FieldRef<"InspectionEntry", 'String'>;
+    readonly preventiveAction: Prisma.FieldRef<"InspectionEntry", 'String'>;
+    readonly completionDate: Prisma.FieldRef<"InspectionEntry", 'DateTime'>;
+    readonly companyAnalysis: Prisma.FieldRef<"InspectionEntry", 'String'>;
+    readonly status: Prisma.FieldRef<"InspectionEntry", 'InspectionStatus'>;
+    readonly officeSignUserId: Prisma.FieldRef<"InspectionEntry", 'String'>;
+    readonly officeSignDate: Prisma.FieldRef<"InspectionEntry", 'DateTime'>;
+    readonly createdAt: Prisma.FieldRef<"InspectionEntry", 'DateTime'>;
+    readonly updatedAt: Prisma.FieldRef<"InspectionEntry", 'DateTime'>;
+}
+/**
+ * InspectionEntry findUnique
+ */
+export type InspectionEntryFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InspectionEntry
+     */
+    select?: Prisma.InspectionEntrySelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the InspectionEntry
+     */
+    omit?: Prisma.InspectionEntryOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.InspectionEntryInclude<ExtArgs> | null;
+    /**
+     * Filter, which InspectionEntry to fetch.
+     */
+    where: Prisma.InspectionEntryWhereUniqueInput;
+};
+/**
+ * InspectionEntry findUniqueOrThrow
+ */
+export type InspectionEntryFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InspectionEntry
+     */
+    select?: Prisma.InspectionEntrySelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the InspectionEntry
+     */
+    omit?: Prisma.InspectionEntryOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.InspectionEntryInclude<ExtArgs> | null;
+    /**
+     * Filter, which InspectionEntry to fetch.
+     */
+    where: Prisma.InspectionEntryWhereUniqueInput;
+};
+/**
+ * InspectionEntry findFirst
+ */
+export type InspectionEntryFindFirstArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InspectionEntry
+     */
+    select?: Prisma.InspectionEntrySelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the InspectionEntry
+     */
+    omit?: Prisma.InspectionEntryOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.InspectionEntryInclude<ExtArgs> | null;
+    /**
+     * Filter, which InspectionEntry to fetch.
+     */
+    where?: Prisma.InspectionEntryWhereInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of InspectionEntries to fetch.
+     */
+    orderBy?: Prisma.InspectionEntryOrderByWithRelationInput | Prisma.InspectionEntryOrderByWithRelationInput[];
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for searching for InspectionEntries.
+     */
+    cursor?: Prisma.InspectionEntryWhereUniqueInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` InspectionEntries from the position of the cursor.
+     */
+    take?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` InspectionEntries.
+     */
+    skip?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of InspectionEntries.
+     */
+    distinct?: Prisma.InspectionEntryScalarFieldEnum | Prisma.InspectionEntryScalarFieldEnum[];
+};
+/**
+ * InspectionEntry findFirstOrThrow
+ */
+export type InspectionEntryFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InspectionEntry
+     */
+    select?: Prisma.InspectionEntrySelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the InspectionEntry
+     */
+    omit?: Prisma.InspectionEntryOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.InspectionEntryInclude<ExtArgs> | null;
+    /**
+     * Filter, which InspectionEntry to fetch.
+     */
+    where?: Prisma.InspectionEntryWhereInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of InspectionEntries to fetch.
+     */
+    orderBy?: Prisma.InspectionEntryOrderByWithRelationInput | Prisma.InspectionEntryOrderByWithRelationInput[];
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for searching for InspectionEntries.
+     */
+    cursor?: Prisma.InspectionEntryWhereUniqueInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` InspectionEntries from the position of the cursor.
+     */
+    take?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` InspectionEntries.
+     */
+    skip?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of InspectionEntries.
+     */
+    distinct?: Prisma.InspectionEntryScalarFieldEnum | Prisma.InspectionEntryScalarFieldEnum[];
+};
+/**
+ * InspectionEntry findMany
+ */
+export type InspectionEntryFindManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InspectionEntry
+     */
+    select?: Prisma.InspectionEntrySelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the InspectionEntry
+     */
+    omit?: Prisma.InspectionEntryOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.InspectionEntryInclude<ExtArgs> | null;
+    /**
+     * Filter, which InspectionEntries to fetch.
+     */
+    where?: Prisma.InspectionEntryWhereInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of InspectionEntries to fetch.
+     */
+    orderBy?: Prisma.InspectionEntryOrderByWithRelationInput | Prisma.InspectionEntryOrderByWithRelationInput[];
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for listing InspectionEntries.
+     */
+    cursor?: Prisma.InspectionEntryWhereUniqueInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` InspectionEntries from the position of the cursor.
+     */
+    take?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` InspectionEntries.
+     */
+    skip?: number;
+    distinct?: Prisma.InspectionEntryScalarFieldEnum | Prisma.InspectionEntryScalarFieldEnum[];
+};
+/**
+ * InspectionEntry create
+ */
+export type InspectionEntryCreateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InspectionEntry
+     */
+    select?: Prisma.InspectionEntrySelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the InspectionEntry
+     */
+    omit?: Prisma.InspectionEntryOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.InspectionEntryInclude<ExtArgs> | null;
+    /**
+     * The data needed to create a InspectionEntry.
+     */
+    data: Prisma.XOR<Prisma.InspectionEntryCreateInput, Prisma.InspectionEntryUncheckedCreateInput>;
+};
+/**
+ * InspectionEntry createMany
+ */
+export type InspectionEntryCreateManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many InspectionEntries.
+     */
+    data: Prisma.InspectionEntryCreateManyInput | Prisma.InspectionEntryCreateManyInput[];
+    skipDuplicates?: boolean;
+};
+/**
+ * InspectionEntry createManyAndReturn
+ */
+export type InspectionEntryCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InspectionEntry
+     */
+    select?: Prisma.InspectionEntrySelectCreateManyAndReturn<ExtArgs> | null;
+    /**
+     * Omit specific fields from the InspectionEntry
+     */
+    omit?: Prisma.InspectionEntryOmit<ExtArgs> | null;
+    /**
+     * The data used to create many InspectionEntries.
+     */
+    data: Prisma.InspectionEntryCreateManyInput | Prisma.InspectionEntryCreateManyInput[];
+    skipDuplicates?: boolean;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.InspectionEntryIncludeCreateManyAndReturn<ExtArgs> | null;
+};
+/**
+ * InspectionEntry update
+ */
+export type InspectionEntryUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InspectionEntry
+     */
+    select?: Prisma.InspectionEntrySelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the InspectionEntry
+     */
+    omit?: Prisma.InspectionEntryOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.InspectionEntryInclude<ExtArgs> | null;
+    /**
+     * The data needed to update a InspectionEntry.
+     */
+    data: Prisma.XOR<Prisma.InspectionEntryUpdateInput, Prisma.InspectionEntryUncheckedUpdateInput>;
+    /**
+     * Choose, which InspectionEntry to update.
+     */
+    where: Prisma.InspectionEntryWhereUniqueInput;
+};
+/**
+ * InspectionEntry updateMany
+ */
+export type InspectionEntryUpdateManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * The data used to update InspectionEntries.
+     */
+    data: Prisma.XOR<Prisma.InspectionEntryUpdateManyMutationInput, Prisma.InspectionEntryUncheckedUpdateManyInput>;
+    /**
+     * Filter which InspectionEntries to update
+     */
+    where?: Prisma.InspectionEntryWhereInput;
+    /**
+     * Limit how many InspectionEntries to update.
+     */
+    limit?: number;
+};
+/**
+ * InspectionEntry updateManyAndReturn
+ */
+export type InspectionEntryUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InspectionEntry
+     */
+    select?: Prisma.InspectionEntrySelectUpdateManyAndReturn<ExtArgs> | null;
+    /**
+     * Omit specific fields from the InspectionEntry
+     */
+    omit?: Prisma.InspectionEntryOmit<ExtArgs> | null;
+    /**
+     * The data used to update InspectionEntries.
+     */
+    data: Prisma.XOR<Prisma.InspectionEntryUpdateManyMutationInput, Prisma.InspectionEntryUncheckedUpdateManyInput>;
+    /**
+     * Filter which InspectionEntries to update
+     */
+    where?: Prisma.InspectionEntryWhereInput;
+    /**
+     * Limit how many InspectionEntries to update.
+     */
+    limit?: number;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.InspectionEntryIncludeUpdateManyAndReturn<ExtArgs> | null;
+};
+/**
+ * InspectionEntry upsert
+ */
+export type InspectionEntryUpsertArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InspectionEntry
+     */
+    select?: Prisma.InspectionEntrySelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the InspectionEntry
+     */
+    omit?: Prisma.InspectionEntryOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.InspectionEntryInclude<ExtArgs> | null;
+    /**
+     * The filter to search for the InspectionEntry to update in case it exists.
+     */
+    where: Prisma.InspectionEntryWhereUniqueInput;
+    /**
+     * In case the InspectionEntry found by the `where` argument doesn't exist, create a new InspectionEntry with this data.
+     */
+    create: Prisma.XOR<Prisma.InspectionEntryCreateInput, Prisma.InspectionEntryUncheckedCreateInput>;
+    /**
+     * In case the InspectionEntry was found with the provided `where` argument, update it with this data.
+     */
+    update: Prisma.XOR<Prisma.InspectionEntryUpdateInput, Prisma.InspectionEntryUncheckedUpdateInput>;
+};
+/**
+ * InspectionEntry delete
+ */
+export type InspectionEntryDeleteArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InspectionEntry
+     */
+    select?: Prisma.InspectionEntrySelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the InspectionEntry
+     */
+    omit?: Prisma.InspectionEntryOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.InspectionEntryInclude<ExtArgs> | null;
+    /**
+     * Filter which InspectionEntry to delete.
+     */
+    where: Prisma.InspectionEntryWhereUniqueInput;
+};
+/**
+ * InspectionEntry deleteMany
+ */
+export type InspectionEntryDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Filter which InspectionEntries to delete
+     */
+    where?: Prisma.InspectionEntryWhereInput;
+    /**
+     * Limit how many InspectionEntries to delete.
+     */
+    limit?: number;
+};
+/**
+ * InspectionEntry.officeSignUser
+ */
+export type InspectionEntry$officeSignUserArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: Prisma.UserSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: Prisma.UserOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.UserInclude<ExtArgs> | null;
+    where?: Prisma.UserWhereInput;
+};
+/**
+ * InspectionEntry without action
+ */
+export type InspectionEntryDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InspectionEntry
+     */
+    select?: Prisma.InspectionEntrySelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the InspectionEntry
+     */
+    omit?: Prisma.InspectionEntryOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.InspectionEntryInclude<ExtArgs> | null;
+};
+export {};
+//# sourceMappingURL=InspectionEntry.d.ts.map

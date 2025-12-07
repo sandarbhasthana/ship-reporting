@@ -1,0 +1,103 @@
+﻿Tab 1
+
+This platform is designed to assign, track and close deficiencies/ observations during ship inspections and to keep an auditable record of actions taken
+
+The platform will have 2 user groups-
+1. Vessel (1 user for 1 ship)
+2. Office ( multiple users. Vessel mapping to be decided)
+
+The information will be recorded through ‘inspection reports’
+
+Vessel can create a new inspection report, name it and add observations to it.
+
+An Inspection report will have following parameters and can have up to 100 entries 
+
+1. Sr. No- this is alphanumeric including ‘.’ and limit of 5 chars. Manually entered
+2. Deficiency- free text upto 1000 chars
+3. Master’s cause analysis- free text upto 1000 chars
+4. Corrective action - free text upto 1000 chars
+5. Preventive action - free text upto 1000 chars
+6. Complete date- date 
+7. Company analysis - free text upto 1000 chars
+8. Remarks- this has 3 parts-
+a. Status ( Choice of ‘ Closed satisfactorily’, ‘Further action needed’)
+b. Sign (auto populated from login Id)
+c. Date- entered by company
+
+1st 6 parameters can be added and edited by vessel. Office has edit rights to same
+Parameters 7 and 8 can be added only by office
+
+
+
+
+
+
+Tab 2
+
+Project plan analysis
+Strengths:
+● Clear user roles and permissions
+● Well-defined data model
+● Audit trail requirement
+● Field-level edit permissions
+Considerations:
+● Vessel-to-office mapping logic
+● Offline support (vessels may have limited connectivity)
+● Report versioning/history
+● Notifications/alerts for status changes
+● Bulk operations for 100-entry reports
+● Export/reporting capabilities
+Recommended architecture
+1. Frontend (web application)
+Tech stack:
+● Next.js 14+ (App Router) with TypeScript
+● React Server Components
+● Server-side rendering
+● API routes
+● Built-in authentication helpers
+● UI:
+● Tailwind CSS
+● shadcn/ui
+● React Hook Form + Zod
+● TanStack Table
+
+2. Backend
+Tech stack:
+● Next.js API routes (simple) or separate API service
+● Database: PostgreSQL with Prisma ORM
+● Type safety
+● Migrations
+● Audit logging support
+● Authentication: NextAuth.js (Auth.js)
+● Role-based access control (RBAC)
+● Session management
+3. Additional services
+● Audit logging: Custom middleware logging all actions
+● File storage: AWS S3 / Azure Blob (if attachments needed later)
+● Real-time: Server-Sent Events or WebSockets (optional)
+
+
+Implementation plan
+Phase 1: Foundation (Weeks 1-2)
+● Set up Next.js with TypeScript
+● Database schema and migrations
+● Authentication with role-based access
+● Basic UI layout
+Phase 2: Core features (Weeks 3-4)
+● Inspection report CRUD
+● Entry management (add/edit/delete)
+● Permission enforcement
+● Validation
+
+
+Phase 3: Advanced features (Weeks 5-6)
+● Audit logging
+● Office analysis and remarks
+● Status workflow
+● Search and filtering
+Phase 4: Polish (Weeks 7-8)
+● UI/UX improvements
+● Performance optimization
+● Testing
+● Documentation
+
