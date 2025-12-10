@@ -1,0 +1,9 @@
+# Nixpacks configuration for Railway
+# Ensures Node.js 20 is used for all services
+
+[phases.setup]
+nixPkgs = ["nodejs_20", "npm"]
+
+[phases.install]
+cmds = ["npm ci"]
+

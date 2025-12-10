@@ -1,0 +1,12 @@
+# This package is a shared library, not a deployable service
+# It is consumed by the backend service during its build phase
+
+[build]
+# Skip building - this is not a standalone service
+watch = false
+
+[deploy]
+# Prevent deployment - no start command means nothing to run
+startCommand = ""
+numReplicas = 0
+
