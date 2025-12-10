@@ -250,11 +250,14 @@ export const InspectionList = () => {
           </Title>
           <Text type="secondary">View and manage inspection reports</Text>
         </div>
-        <Link to="/inspections/create">
-          <Button type="primary" icon={<PlusOutlined />}>
-            New Inspection
-          </Button>
-        </Link>
+        {/* Only Captains can create new inspection reports */}
+        {!isAdmin && (
+          <Link to="/inspections/create">
+            <Button type="primary" icon={<PlusOutlined />}>
+              New Inspection
+            </Button>
+          </Link>
+        )}
       </div>
 
       <div className={styles.filtersContainer}>

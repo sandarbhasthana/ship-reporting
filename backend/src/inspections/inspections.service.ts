@@ -4,12 +4,16 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { AuditService } from '../audit/audit.service';
 import { CreateInspectionDto, UpdateInspectionDto } from './dto';
 import { RoleName } from '@ship-reporting/prisma';
 
 @Injectable()
 export class InspectionsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly auditService: AuditService,
+  ) {}
 
   async create(
     createInspectionDto: CreateInspectionDto,
@@ -71,7 +75,7 @@ export class InspectionsService {
       };
     });
 
-    return this.prisma.inspectionReport.create({
+    const report = await this.prisma.inspectionReport.create({
       data: {
         vesselId,
         createdById: userId,
@@ -95,6 +99,18 @@ export class InspectionsService {
         entries: true,
       },
     });
+
+    // Log audit
+    await this.auditService.log(
+      'InspectionReport',
+      report.id,
+      'CREATE',
+      null,
+      report,
+      { userId },
+    );
+
+    return report;
   }
 
   async findAll(userRole: RoleName, assignedVesselId: string | null) {
@@ -155,11 +171,12 @@ export class InspectionsService {
   async update(
     id: string,
     updateInspectionDto: UpdateInspectionDto,
+    userId: string,
     userRole: RoleName,
     assignedVesselId: string | null,
   ) {
-    // First verify access
-    await this.findOne(id, userRole, assignedVesselId);
+    // First verify access and get before state
+    const before = await this.findOne(id, userRole, assignedVesselId);
 
     // Destructure entries and vesselId from the rest of the DTO
     // vesselId should not be updated after creation
@@ -202,7 +219,7 @@ export class InspectionsService {
       });
     }
 
-    return this.prisma.inspectionReport.update({
+    const after = await this.prisma.inspectionReport.update({
       where: { id },
       data: {
         ...reportData,
@@ -216,6 +233,18 @@ export class InspectionsService {
         entries: true,
       },
     });
+
+    // Log audit
+    await this.auditService.log(
+      'InspectionReport',
+      id,
+      'UPDATE',
+      before,
+      after,
+      { userId },
+    );
+
+    return after;
   }
 
   async remove(id: string) {

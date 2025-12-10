@@ -8,6 +8,7 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { Throttle } from '@nestjs/throttler';
 import { AuthService } from './auth.service';
 import { LoginDto, RegisterDto, ChangePasswordDto } from './dto';
 import { Public } from './decorators/public.decorator';
@@ -24,6 +25,8 @@ export class AuthController {
   @Public()
   @Post('login')
   @HttpCode(HttpStatus.OK)
+  // Stricter rate limit for login attempts (5 per minute)
+  @Throttle({ default: { ttl: 60000, limit: 5 } })
   async login(@Body() loginDto: LoginDto) {
     return this.authService.login(loginDto);
   }

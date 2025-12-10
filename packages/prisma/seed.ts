@@ -11,9 +11,26 @@ const connectionString = process.env.DATABASE_URL;
 if (!connectionString) {
   throw new Error("DATABASE_URL environment variable is required");
 }
-const pool = new Pool({ connectionString });
-const adapter = new PrismaPg(pool);
-const prisma = new PrismaClient({ adapter });
+
+// Detect if using Prisma Accelerate or direct connection
+const isAccelerate = connectionString.startsWith("prisma+postgres://");
+
+let pool: Pool | null = null;
+let prisma: PrismaClient;
+
+if (isAccelerate) {
+  // Use Prisma Accelerate - pass accelerateUrl explicitly
+  console.log("🔗 Using Prisma Accelerate connection");
+  prisma = new PrismaClient({
+    accelerateUrl: connectionString
+  });
+} else {
+  // Use direct PostgreSQL connection with pg adapter
+  console.log("🔗 Using direct PostgreSQL connection");
+  pool = new Pool({ connectionString });
+  const adapter = new PrismaPg(pool);
+  prisma = new PrismaClient({ adapter });
+}
 
 async function main() {
   console.log("🌱 Seeding database...");
@@ -92,5 +109,7 @@ main()
   })
   .finally(async () => {
     await prisma.$disconnect();
-    await pool.end();
+    if (pool) {
+      await pool.end();
+    }
   });

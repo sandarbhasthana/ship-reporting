@@ -1,0 +1,91 @@
+.pageContainer {
+  padding: 20px;
+}
+
+/* Username in welcome header */
+.userName {
+  font-weight: 400;
+  font-size: 0.85em;
+  color: var(--color-primary) !important;
+}
+
+/* Stats row spacing */
+.statsRow {
+  margin-bottom: 24px;
+}
+
+/* Card styles with colored left border accents */
+.cardPrimary {
+  border-left: 4px solid var(--color-primary) !important;
+}
+
+.cardPrimary:hover {
+  box-shadow: 0 4px 12px rgba(160, 90, 255, 0.15);
+}
+
+.cardSecondary {
+  border-left: 4px solid var(--color-secondary) !important;
+}
+
+.cardSecondary:hover {
+  box-shadow: 0 4px 12px rgba(27, 207, 180, 0.15);
+}
+
+.cardCoral {
+  border-left: 4px solid var(--color-accent-coral) !important;
+}
+
+.cardCoral:hover {
+  box-shadow: 0 4px 12px rgba(254, 148, 150, 0.15);
+}
+
+.cardBlue {
+  border-left: 4px solid var(--color-accent-blue) !important;
+}
+
+.cardBlue:hover {
+  box-shadow: 0 4px 12px rgba(75, 203, 235, 0.15);
+}
+
+/* Users table card */
+.usersCard {
+  margin-top: 24px;
+}
+
+/* Vessel text under captain name */
+.vesselText {
+  display: block;
+  font-size: 12px;
+}
+
+/* Report link in activity table */
+.reportLink {
+  color: var(--color-primary);
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.reportLink:hover {
+  color: var(--color-primary-hover);
+}
+
+/* Icon styles */
+.iconPrimary {
+  color: var(--color-primary);
+  font-size: 24px;
+}
+
+.iconSecondary {
+  color: var(--color-secondary);
+  font-size: 24px;
+}
+
+.iconCoral {
+  color: var(--color-accent-coral);
+  font-size: 24px;
+}
+
+.iconBlue {
+  color: var(--color-accent-blue);
+  font-size: 24px;
+}

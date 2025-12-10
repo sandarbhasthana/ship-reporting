@@ -1,0 +1,134 @@
+/**
+ * Ship Reporting App - Theme CSS Variables
+ * 
+ * Color Palette:
+ * Primary: #A05AFF (Purple), #1BCFB4 (Teal)
+ * Supporting: #4BCBEB (Light Blue), #FE9496 (Coral), #9E58FF (Purple variant)
+ */
+
+:root {
+  /* ========================================
+   * Brand Colors
+   * ======================================== */
+  --color-primary: #A05AFF;
+  --color-primary-hover: #B574FF;
+  --color-primary-active: #8A4AE0;
+  --color-primary-light: #E8DBFF;
+  --color-primary-dark: #7340BF;
+
+  --color-secondary: #1BCFB4;
+  --color-secondary-hover: #3ED9C2;
+  --color-secondary-active: #15B59D;
+  --color-secondary-light: #D0F5EF;
+  --color-secondary-dark: #129683;
+
+  /* Supporting Colors */
+  --color-accent-blue: #4BCBEB;
+  --color-accent-blue-light: #D6F2FA;
+  --color-accent-coral: #FE9496;
+  --color-accent-coral-light: #FFE5E6;
+  --color-accent-purple: #9E58FF;
+  --color-accent-purple-light: #E6D6FF;
+
+  /* ========================================
+   * Semantic Colors
+   * ======================================== */
+  --color-success: #1BCFB4;
+  --color-success-light: #D0F5EF;
+  --color-warning: #FE9496;
+  --color-warning-light: #FFE5E6;
+  --color-error: #FF4D4F;
+  --color-error-light: #FFCCC7;
+  --color-info: #4BCBEB;
+  --color-info-light: #D6F2FA;
+
+  /* ========================================
+   * Light Theme (Default)
+   * ======================================== */
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #F5F5F5;
+  --bg-tertiary: #FAFAFA;
+  --bg-elevated: #FFFFFF;
+  
+  --text-primary: #1F1F1F;
+  --text-secondary: #666666;
+  --text-tertiary: #999999;
+  --text-inverse: #FFFFFF;
+  
+  --border-color: #E8E8E8;
+  --border-color-light: #F0F0F0;
+  --border-color-dark: #D9D9D9;
+  
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.03), 0 1px 6px -1px rgba(0, 0, 0, 0.02);
+  --shadow-md: 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 6px 16px 0 rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 6px 16px -8px rgba(0, 0, 0, 0.16), 0 9px 28px 0 rgba(0, 0, 0, 0.12);
+
+  /* Layout */
+  --layout-header-bg: #FFFFFF;
+  --layout-sider-bg: #FFFFFF;
+  --layout-body-bg: #F5F5F5;
+  
+  /* Component Specific */
+  --card-bg: #FFFFFF;
+  --table-header-bg: #FAFAFA;
+  --table-row-hover-bg: #F5F5F5;
+  --input-bg: #FFFFFF;
+  --input-border: #D9D9D9;
+}
+
+/* ========================================
+ * Dark Theme
+ * ======================================== */
+[data-theme="dark"] {
+  --bg-primary: #141414;
+  --bg-secondary: #1F1F1F;
+  --bg-tertiary: #262626;
+  --bg-elevated: #1F1F1F;
+  
+  --text-primary: #FFFFFF;
+  --text-secondary: #A6A6A6;
+  --text-tertiary: #737373;
+  --text-inverse: #1F1F1F;
+  
+  --border-color: #303030;
+  --border-color-light: #262626;
+  --border-color-dark: #424242;
+  
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.4), 0 1px 6px -1px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 3px 6px -4px rgba(0, 0, 0, 0.48), 0 6px 16px 0 rgba(0, 0, 0, 0.32);
+  --shadow-lg: 0 6px 16px -8px rgba(0, 0, 0, 0.64), 0 9px 28px 0 rgba(0, 0, 0, 0.48);
+
+  /* Layout */
+  --layout-header-bg: #141414;
+  --layout-sider-bg: #141414;
+  --layout-body-bg: #0A0A0A;
+  
+  /* Component Specific */
+  --card-bg: #1F1F1F;
+  --table-header-bg: #262626;
+  --table-row-hover-bg: #262626;
+  --input-bg: #1F1F1F;
+  --input-border: #424242;
+
+  /* Adjusted Primary Colors for Dark Mode */
+  --color-primary-light: #3D2866;
+  --color-secondary-light: #164E44;
+  --color-accent-blue-light: #1A3D47;
+  --color-accent-coral-light: #4D2C2D;
+  --color-accent-purple-light: #3B2366;
+}
+
+/* ========================================
+ * Transition for Theme Switching
+ * ======================================== */
+body {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+[data-theme="dark"] ._headerContainer_1igie_1{
+  background-color: #262626 !important;
+}
+[data-theme="light"] ._headerContainer_1igie_1{
+  background-color: #ffffff !important;
+}
+

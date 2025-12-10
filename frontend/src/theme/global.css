@@ -1,0 +1,158 @@
+/**
+ * Ship Reporting App - Global Styles
+ * 
+ * Base styles and CSS reset additions
+ */
+
+/* Import Google Fonts - Inter */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
+
+/* Base HTML styling */
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family:
+    "Inter",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
+}
+
+/* Scrollbar styling for dark mode */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-color-dark);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-tertiary);
+}
+
+/* Focus styles with brand colors */
+*:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Selection styling */
+::selection {
+  background-color: var(--color-primary-light);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] ::selection {
+  background-color: rgba(160, 90, 255, 0.3);
+}
+
+/* Link styling */
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: var(--color-primary-hover);
+}
+
+/* Typography */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: var(--text-primary);
+  margin-top: 0;
+}
+
+/* Code blocks */
+code,
+pre {
+  font-family: "Fira Code", "SF Mono", "Menlo", monospace;
+  background-color: var(--bg-tertiary);
+  border-radius: 4px;
+}
+
+code {
+  padding: 2px 6px;
+  font-size: 0.875em;
+}
+
+pre {
+  padding: 16px;
+  overflow-x: auto;
+}
+
+/* Utility classes */
+.text-primary {
+  color: var(--color-primary) !important;
+}
+
+.text-secondary {
+  color: var(--color-secondary) !important;
+}
+
+.bg-primary {
+  background-color: var(--bg-primary) !important;
+}
+
+.bg-secondary {
+  background-color: var(--bg-secondary) !important;
+}
+
+/* Header background colors */
+.ant-layout-header {
+  background-color: #ffffff !important;
+}
+
+[data-theme="dark"] .ant-layout-header {
+  background-color: #262626 !important;
+}
+
+.ant-layout-header > * {
+  background-color: transparent !important;
+}
+
+/* Tooltip styling - light background in light mode */
+[data-theme="light"] .ant-tooltip .ant-tooltip-inner{
+  background-color: #ffffff;
+  color: #1f1f1f;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+[data-theme="light"] .ant-tooltip .ant-tooltip-arrow::before {
+  background-color: #ffffff;
+}
+
+[data-theme="dark"] .ant-tooltip .ant-tooltip-inner {
+  background-color: #262626;
+  color: #ffffff;
+}
+
+[data-theme="dark"] .ant-tooltip .ant-tooltip-arrow::before {
+  background-color: #262626;
+}

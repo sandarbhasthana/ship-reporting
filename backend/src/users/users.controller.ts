@@ -38,6 +38,12 @@ export class UsersController {
     return this.usersService.findOne(userId);
   }
 
+  @Get('captain-activity')
+  @Roles(RoleName.ADMIN)
+  getCaptainActivity() {
+    return this.usersService.getCaptainActivity();
+  }
+
   @Get(':id')
   @Roles(RoleName.ADMIN)
   findOne(@Param('id') id: string) {
@@ -56,4 +62,3 @@ export class UsersController {
     return this.usersService.remove(id);
   }
 }
-

@@ -7,9 +7,13 @@ import {
   Param,
   Delete,
   UseGuards,
+  Res,
+  Header,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags, ApiOperation } from '@nestjs/swagger';
+import { Response } from 'express';
 import { InspectionsService } from './inspections.service';
+import { PdfService } from './pdf.service';
 import { CreateInspectionDto, UpdateInspectionDto } from './dto';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -21,10 +25,14 @@ import { RoleName } from '@ship-reporting/prisma';
 @Controller('inspections')
 @UseGuards(RolesGuard)
 export class InspectionsController {
-  constructor(private readonly inspectionsService: InspectionsService) {}
+  constructor(
+    private readonly inspectionsService: InspectionsService,
+    private readonly pdfService: PdfService,
+  ) {}
 
   @Post()
-  @ApiOperation({ summary: 'Create a new inspection report' })
+  @Roles(RoleName.CAPTAIN)
+  @ApiOperation({ summary: 'Create a new inspection report (Captain only)' })
   create(
     @Body() createInspectionDto: CreateInspectionDto,
     @CurrentUser('id') userId: string,
@@ -63,12 +71,14 @@ export class InspectionsController {
   update(
     @Param('id') id: string,
     @Body() updateInspectionDto: UpdateInspectionDto,
+    @CurrentUser('id') userId: string,
     @CurrentUser('role') userRole: RoleName,
     @CurrentUser('assignedVesselId') assignedVesselId: string | null,
   ) {
     return this.inspectionsService.update(
       id,
       updateInspectionDto,
+      userId,
       userRole,
       assignedVesselId,
     );
@@ -80,5 +90,19 @@ export class InspectionsController {
   remove(@Param('id') id: string) {
     return this.inspectionsService.remove(id);
   }
-}
 
+  @Get(':id/pdf')
+  @Header('Content-Type', 'application/pdf')
+  @ApiOperation({ summary: 'Download inspection report as PDF' })
+  async downloadPdf(@Param('id') id: string, @Res() res: Response) {
+    const pdfBuffer = await this.pdfService.generateInspectionPdf(id);
+
+    res.set({
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': `attachment; filename="inspection-report-${id}.pdf"`,
+      'Content-Length': pdfBuffer.length,
+    });
+
+    res.end(pdfBuffer);
+  }
+}
