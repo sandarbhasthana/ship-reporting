@@ -1,0 +1,10 @@
+# Railway configuration for Frontend Service
+# Serves static Vite build files
+
+[build]
+builder = "nixpacks"
+buildCommand = "npm ci && npm run build"
+
+[deploy]
+startCommand = "npx serve dist -s -l $PORT"
+
