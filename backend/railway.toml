@@ -2,8 +2,8 @@
 # NestJS API server
 
 [build]
-builder = "nixpacks"
-# Build command is now handled in nixpacks.toml to avoid automatic npm install issues
+builder = "DOCKERFILE"
+dockerfilePath = "backend/Dockerfile"
 
 [deploy]
 startCommand = "node dist/main.js"
