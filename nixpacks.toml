@@ -4,3 +4,8 @@
 [phases.setup]
 nixPkgs = ["nodejs_20"]
 
+[phases.install]
+# Skip automatic npm install to prevent issues with workspace dependencies
+# Installation is handled in the buildCommand
+cmds = ["echo 'Installation handled in buildCommand'"]
+

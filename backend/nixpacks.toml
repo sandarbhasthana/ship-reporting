@@ -1,6 +1,4 @@
 # Nixpacks configuration for Railway - Backend Service
-# Ensures Node.js 20 is used (npm is bundled with nodejs)
-
-[phases.setup]
-nixPkgs = ["nodejs_20"]
+# This file is not used when deploying from monorepo root
+# See ../nixpacks.toml and railway.json for actual configuration
 
