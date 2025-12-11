@@ -59,3 +59,24 @@
 .marginTop16 {
   margin-top: 16px;
 }
+
+.spinnerContainer {
+  text-align: center;
+  padding: 50px;
+}
+
+.formSection {
+  margin-bottom: 24px;
+}
+
+.formSectionTitle {
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-color, #f0f0f0);
+}
+
+.hint {
+  font-size: 12px;
+  color: var(--text-secondary, #8c8c8c);
+  margin-top: 4px;
+}

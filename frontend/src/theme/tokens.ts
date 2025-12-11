@@ -65,7 +65,7 @@ export const lightTheme: ThemeConfig = {
 
     // Font
     fontFamily:
-      "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif",
+      "'Fira Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
     fontSize: 14,
 
     // Shadows
@@ -146,7 +146,7 @@ export const darkTheme: ThemeConfig = {
 
     // Font
     fontFamily:
-      "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif",
+      "'Fira Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
     fontSize: 14,
 
     // Shadows

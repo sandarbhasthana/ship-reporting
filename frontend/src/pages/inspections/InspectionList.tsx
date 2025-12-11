@@ -3,23 +3,24 @@ import {
   Table,
   Card,
   Button,
-  Space,
   Tag,
   Input,
   Select,
   Typography,
-  Popconfirm,
-  message
+  Dropdown,
+  App
 } from "antd";
+import type { MenuProps } from "antd";
 import {
   PlusOutlined,
   EyeOutlined,
   EditOutlined,
   DeleteOutlined,
-  SearchOutlined
+  SearchOutlined,
+  MoreOutlined
 } from "@ant-design/icons";
 import { useGetIdentity, useApiUrl } from "@refinedev/core";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import type { ColumnsType } from "antd/es/table";
 import dayjs from "dayjs";
 import styles from "./inspections.module.css";
@@ -53,6 +54,8 @@ export const InspectionList = () => {
   const apiUrl = useApiUrl();
   const { data: identity } = useGetIdentity<UserIdentity>();
   const isAdmin = identity?.role === "ADMIN";
+  const navigate = useNavigate();
+  const { message, modal } = App.useApp();
 
   const [inspections, setInspections] = useState<InspectionReport[]>([]);
   const [loading, setLoading] = useState(true);
@@ -101,22 +104,55 @@ export const InspectionList = () => {
     fetchVessels();
   }, [fetchInspections, fetchVessels]);
 
-  const handleDelete = async (id: string) => {
-    try {
-      const token = localStorage.getItem("access_token");
-      const response = await fetch(`${apiUrl}/inspections/${id}`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      if (response.ok) {
-        message.success("Inspection deleted successfully");
-        fetchInspections();
-      } else {
-        message.error("Failed to delete inspection");
+  const handleDelete = (id: string) => {
+    modal.confirm({
+      title: "Delete Inspection",
+      content:
+        "Are you sure you want to delete this inspection? This action cannot be undone.",
+      okText: "Delete",
+      okType: "danger",
+      onOk: async () => {
+        try {
+          const token = localStorage.getItem("access_token");
+          const response = await fetch(`${apiUrl}/inspections/${id}`, {
+            method: "DELETE",
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          if (response.ok) {
+            message.success("Inspection deleted successfully");
+            fetchInspections();
+          } else {
+            message.error("Failed to delete inspection");
+          }
+        } catch {
+          message.error("Failed to delete inspection");
+        }
       }
-    } catch {
-      message.error("Failed to delete inspection");
-    }
+    });
+  };
+
+  const getActionMenuItems = (record: InspectionReport): MenuProps["items"] => {
+    return [
+      {
+        key: "view",
+        label: "View",
+        icon: <EyeOutlined />,
+        onClick: () => navigate(`/inspections/show/${record.id}`)
+      },
+      {
+        key: "edit",
+        label: "Edit",
+        icon: <EditOutlined />,
+        onClick: () => navigate(`/inspections/edit/${record.id}`)
+      },
+      {
+        key: "delete",
+        label: "Delete",
+        icon: <DeleteOutlined />,
+        danger: true,
+        onClick: () => handleDelete(record.id)
+      }
+    ];
   };
 
   const getOverallStatus = (entries?: Array<{ status: string }>) => {
@@ -213,30 +249,16 @@ export const InspectionList = () => {
     {
       title: "Actions",
       key: "actions",
+      width: 80,
+      align: "center" as const,
       render: (_: unknown, record: InspectionReport) => (
-        <Space size="small">
-          <Link to={`/inspections/show/${record.id}`}>
-            <Button type="text" icon={<EyeOutlined />} title="View" />
-          </Link>
-          <Link to={`/inspections/edit/${record.id}`}>
-            <Button type="text" icon={<EditOutlined />} title="Edit" />
-          </Link>
-          {isAdmin && (
-            <Popconfirm
-              title="Delete this inspection?"
-              onConfirm={() => handleDelete(record.id)}
-              okText="Yes"
-              cancelText="No"
-            >
-              <Button
-                type="text"
-                danger
-                icon={<DeleteOutlined />}
-                title="Delete"
-              />
-            </Popconfirm>
-          )}
-        </Space>
+        <Dropdown
+          menu={{ items: getActionMenuItems(record) }}
+          trigger={["click"]}
+          placement="bottomRight"
+        >
+          <Button type="text" icon={<MoreOutlined />} />
+        </Dropdown>
       )
     }
   ];

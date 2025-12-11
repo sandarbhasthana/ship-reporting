@@ -14,16 +14,19 @@ import {
   SettingOutlined
 } from "@ant-design/icons";
 
-import { authProvider, dataProvider } from "./providers";
+import { authProvider, dataProvider, accessControlProvider } from "./providers";
 import {
   LoginPage,
   DashboardPage,
   OrganizationSettings,
   VesselSettings,
+  VesselForm,
   UserProfile,
   InspectionList,
   InspectionForm,
-  InspectionView
+  InspectionView,
+  UserList,
+  UserForm
 } from "./pages";
 import { ThemeProvider, useTheme } from "./theme";
 import { Header } from "./components";
@@ -47,6 +50,7 @@ function AppWithTheme() {
           routerProvider={routerProvider}
           authProvider={authProvider}
           dataProvider={dataProvider}
+          accessControlProvider={accessControlProvider}
           notificationProvider={useNotificationProvider}
           resources={[
             {
@@ -115,6 +119,8 @@ function AppWithTheme() {
               <Route index element={<DashboardPage />} />
               {/* Vessel routes */}
               <Route path="/vessels" element={<VesselSettings />} />
+              <Route path="/vessels/create" element={<VesselForm />} />
+              <Route path="/vessels/edit/:id" element={<VesselForm />} />
               {/* Inspection routes */}
               <Route path="/inspections" element={<InspectionList />} />
               <Route path="/inspections/create" element={<InspectionForm />} />
@@ -126,11 +132,10 @@ function AppWithTheme() {
                 path="/inspections/show/:id"
                 element={<InspectionView />}
               />
-              {/* User routes - to be implemented */}
-              <Route
-                path="/users"
-                element={<div>Users List (Coming Soon)</div>}
-              />
+              {/* User routes */}
+              <Route path="/users" element={<UserList />} />
+              <Route path="/users/create" element={<UserForm />} />
+              <Route path="/users/edit/:id" element={<UserForm />} />
               {/* Settings routes */}
               <Route path="/settings" element={<OrganizationSettings />} />
               <Route

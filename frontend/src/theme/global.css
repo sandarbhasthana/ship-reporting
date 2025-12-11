@@ -1,11 +1,25 @@
 /**
  * Ship Reporting App - Global Styles
- * 
+ *
  * Base styles and CSS reset additions
  */
 
-/* Import Google Fonts - Inter */
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
+/* Fira Sans Font */
+@font-face {
+  font-family: "Fira Sans";
+  src: url("/fonts/FiraSans-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Fira Sans";
+  src: url("/fonts/FiraSans-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
 
 /* Base HTML styling */
 html {
@@ -18,12 +32,10 @@ body {
   margin: 0;
   padding: 0;
   font-family:
-    "Inter",
+    "Fira Sans",
     -apple-system,
     BlinkMacSystemFont,
     "Segoe UI",
-    Roboto,
-    "Helvetica Neue",
     sans-serif;
   background-color: var(--bg-primary);
   color: var(--text-primary);
@@ -138,7 +150,7 @@ pre {
 }
 
 /* Tooltip styling - light background in light mode */
-[data-theme="light"] .ant-tooltip .ant-tooltip-inner{
+[data-theme="light"] .ant-tooltip .ant-tooltip-inner {
   background-color: #ffffff;
   color: #1f1f1f;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
@@ -155,4 +167,20 @@ pre {
 
 [data-theme="dark"] .ant-tooltip .ant-tooltip-arrow::before {
   background-color: #262626;
+}
+
+/* Dropdown menu - align inner item border radius with container */
+.ant-dropdown .ant-dropdown-menu {
+  border-radius: 8px;
+  overflow: hidden;
+  padding: 4px;
+}
+
+.ant-dropdown .ant-dropdown-menu .ant-dropdown-menu-item {
+  border-radius: 6px;
+  margin: 0;
+}
+
+.ant-dropdown .ant-dropdown-menu .ant-dropdown-menu-item-divider {
+  margin: 4px 0;
 }
