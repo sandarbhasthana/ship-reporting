@@ -11,7 +11,7 @@
     "backend": {
       "build": {
         "builder": "NIXPACKS",
-        "buildCommand": "npm install --include=workspace-root && cd packages/prisma && npx prisma generate && npm run build && cd ../../backend && npm run build",
+        "buildCommand": "npm install --include=dev && cd packages/prisma && npx prisma generate && npm run build && cd ../../backend && npm run build",
         "watchPatterns": ["backend/**", "packages/prisma/**"]
       },
       "deploy": {
