@@ -12,6 +12,12 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  height: auto;
+  padding: 4px 8px;
+}
+
+.userAvatar {
+  flex-shrink: 0;
 }
 
 .userName {

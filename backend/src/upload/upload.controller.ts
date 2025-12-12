@@ -4,7 +4,6 @@ import {
   UseInterceptors,
   UploadedFile,
   UseGuards,
-  Patch,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBearerAuth, ApiTags, ApiConsumes, ApiBody } from '@nestjs/swagger';
@@ -82,6 +81,38 @@ export class UploadController {
     await this.prisma.user.update({
       where: { id: userId },
       data: { signatureImage: filePath },
+    });
+
+    return { path: filePath };
+  }
+
+  @Post('profile-image')
+  @UseInterceptors(FileInterceptor('file'))
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  async uploadProfileImage(
+    @UploadedFile() file: Express.Multer.File,
+    @CurrentUser('id') userId: string,
+  ) {
+    const filePath = await this.uploadService.uploadFile(
+      file,
+      'profile-images',
+    );
+
+    // Update user's profile image
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { profileImage: filePath },
     });
 
     return { path: filePath };

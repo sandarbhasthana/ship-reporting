@@ -49,6 +49,7 @@ model User {
   name           String?
   isActive       Boolean @default(true)
   signatureImage String? // URL/path to digital signature image
+  profileImage   String? // URL/path to profile image
 
   role   RoleName @default(CAPTAIN)
 

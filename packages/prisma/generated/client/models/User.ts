@@ -31,6 +31,7 @@ export type UserMinAggregateOutputType = {
   name: string | null
   isActive: boolean | null
   signatureImage: string | null
+  profileImage: string | null
   role: $Enums.RoleName | null
   organizationId: string | null
   assignedVesselId: string | null
@@ -45,6 +46,7 @@ export type UserMaxAggregateOutputType = {
   name: string | null
   isActive: boolean | null
   signatureImage: string | null
+  profileImage: string | null
   role: $Enums.RoleName | null
   organizationId: string | null
   assignedVesselId: string | null
@@ -59,6 +61,7 @@ export type UserCountAggregateOutputType = {
   name: number
   isActive: number
   signatureImage: number
+  profileImage: number
   role: number
   organizationId: number
   assignedVesselId: number
@@ -75,6 +78,7 @@ export type UserMinAggregateInputType = {
   name?: true
   isActive?: true
   signatureImage?: true
+  profileImage?: true
   role?: true
   organizationId?: true
   assignedVesselId?: true
@@ -89,6 +93,7 @@ export type UserMaxAggregateInputType = {
   name?: true
   isActive?: true
   signatureImage?: true
+  profileImage?: true
   role?: true
   organizationId?: true
   assignedVesselId?: true
@@ -103,6 +108,7 @@ export type UserCountAggregateInputType = {
   name?: true
   isActive?: true
   signatureImage?: true
+  profileImage?: true
   role?: true
   organizationId?: true
   assignedVesselId?: true
@@ -190,6 +196,7 @@ export type UserGroupByOutputType = {
   name: string | null
   isActive: boolean
   signatureImage: string | null
+  profileImage: string | null
   role: $Enums.RoleName
   organizationId: string | null
   assignedVesselId: string | null
@@ -225,6 +232,7 @@ export type UserWhereInput = {
   name?: Prisma.StringNullableFilter<"User"> | string | null
   isActive?: Prisma.BoolFilter<"User"> | boolean
   signatureImage?: Prisma.StringNullableFilter<"User"> | string | null
+  profileImage?: Prisma.StringNullableFilter<"User"> | string | null
   role?: Prisma.EnumRoleNameFilter<"User"> | $Enums.RoleName
   organizationId?: Prisma.StringNullableFilter<"User"> | string | null
   assignedVesselId?: Prisma.StringNullableFilter<"User"> | string | null
@@ -244,6 +252,7 @@ export type UserOrderByWithRelationInput = {
   name?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
   signatureImage?: Prisma.SortOrderInput | Prisma.SortOrder
+  profileImage?: Prisma.SortOrderInput | Prisma.SortOrder
   role?: Prisma.SortOrder
   organizationId?: Prisma.SortOrderInput | Prisma.SortOrder
   assignedVesselId?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -267,6 +276,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   name?: Prisma.StringNullableFilter<"User"> | string | null
   isActive?: Prisma.BoolFilter<"User"> | boolean
   signatureImage?: Prisma.StringNullableFilter<"User"> | string | null
+  profileImage?: Prisma.StringNullableFilter<"User"> | string | null
   role?: Prisma.EnumRoleNameFilter<"User"> | $Enums.RoleName
   organizationId?: Prisma.StringNullableFilter<"User"> | string | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
@@ -285,6 +295,7 @@ export type UserOrderByWithAggregationInput = {
   name?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
   signatureImage?: Prisma.SortOrderInput | Prisma.SortOrder
+  profileImage?: Prisma.SortOrderInput | Prisma.SortOrder
   role?: Prisma.SortOrder
   organizationId?: Prisma.SortOrderInput | Prisma.SortOrder
   assignedVesselId?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -305,6 +316,7 @@ export type UserScalarWhereWithAggregatesInput = {
   name?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   isActive?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
   signatureImage?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  profileImage?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   role?: Prisma.EnumRoleNameWithAggregatesFilter<"User"> | $Enums.RoleName
   organizationId?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   assignedVesselId?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
@@ -319,6 +331,7 @@ export type UserCreateInput = {
   name?: string | null
   isActive?: boolean
   signatureImage?: string | null
+  profileImage?: string | null
   role?: $Enums.RoleName
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -336,6 +349,7 @@ export type UserUncheckedCreateInput = {
   name?: string | null
   isActive?: boolean
   signatureImage?: string | null
+  profileImage?: string | null
   role?: $Enums.RoleName
   organizationId?: string | null
   assignedVesselId?: string | null
@@ -353,6 +367,7 @@ export type UserUpdateInput = {
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   signatureImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumRoleNameFieldUpdateOperationsInput | $Enums.RoleName
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -370,6 +385,7 @@ export type UserUncheckedUpdateInput = {
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   signatureImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumRoleNameFieldUpdateOperationsInput | $Enums.RoleName
   organizationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   assignedVesselId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -387,6 +403,7 @@ export type UserCreateManyInput = {
   name?: string | null
   isActive?: boolean
   signatureImage?: string | null
+  profileImage?: string | null
   role?: $Enums.RoleName
   organizationId?: string | null
   assignedVesselId?: string | null
@@ -401,6 +418,7 @@ export type UserUpdateManyMutationInput = {
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   signatureImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumRoleNameFieldUpdateOperationsInput | $Enums.RoleName
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -413,6 +431,7 @@ export type UserUncheckedUpdateManyInput = {
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   signatureImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumRoleNameFieldUpdateOperationsInput | $Enums.RoleName
   organizationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   assignedVesselId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -437,6 +456,7 @@ export type UserCountOrderByAggregateInput = {
   name?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   signatureImage?: Prisma.SortOrder
+  profileImage?: Prisma.SortOrder
   role?: Prisma.SortOrder
   organizationId?: Prisma.SortOrder
   assignedVesselId?: Prisma.SortOrder
@@ -451,6 +471,7 @@ export type UserMaxOrderByAggregateInput = {
   name?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   signatureImage?: Prisma.SortOrder
+  profileImage?: Prisma.SortOrder
   role?: Prisma.SortOrder
   organizationId?: Prisma.SortOrder
   assignedVesselId?: Prisma.SortOrder
@@ -465,6 +486,7 @@ export type UserMinOrderByAggregateInput = {
   name?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   signatureImage?: Prisma.SortOrder
+  profileImage?: Prisma.SortOrder
   role?: Prisma.SortOrder
   organizationId?: Prisma.SortOrder
   assignedVesselId?: Prisma.SortOrder
@@ -617,6 +639,7 @@ export type UserCreateWithoutOrganizationInput = {
   name?: string | null
   isActive?: boolean
   signatureImage?: string | null
+  profileImage?: string | null
   role?: $Enums.RoleName
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -633,6 +656,7 @@ export type UserUncheckedCreateWithoutOrganizationInput = {
   name?: string | null
   isActive?: boolean
   signatureImage?: string | null
+  profileImage?: string | null
   role?: $Enums.RoleName
   assignedVesselId?: string | null
   createdAt?: Date | string
@@ -678,6 +702,7 @@ export type UserScalarWhereInput = {
   name?: Prisma.StringNullableFilter<"User"> | string | null
   isActive?: Prisma.BoolFilter<"User"> | boolean
   signatureImage?: Prisma.StringNullableFilter<"User"> | string | null
+  profileImage?: Prisma.StringNullableFilter<"User"> | string | null
   role?: Prisma.EnumRoleNameFilter<"User"> | $Enums.RoleName
   organizationId?: Prisma.StringNullableFilter<"User"> | string | null
   assignedVesselId?: Prisma.StringNullableFilter<"User"> | string | null
@@ -692,6 +717,7 @@ export type UserCreateWithoutAssignedVesselInput = {
   name?: string | null
   isActive?: boolean
   signatureImage?: string | null
+  profileImage?: string | null
   role?: $Enums.RoleName
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -708,6 +734,7 @@ export type UserUncheckedCreateWithoutAssignedVesselInput = {
   name?: string | null
   isActive?: boolean
   signatureImage?: string | null
+  profileImage?: string | null
   role?: $Enums.RoleName
   organizationId?: string | null
   createdAt?: Date | string
@@ -740,6 +767,7 @@ export type UserUpdateWithoutAssignedVesselInput = {
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   signatureImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumRoleNameFieldUpdateOperationsInput | $Enums.RoleName
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -756,6 +784,7 @@ export type UserUncheckedUpdateWithoutAssignedVesselInput = {
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   signatureImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumRoleNameFieldUpdateOperationsInput | $Enums.RoleName
   organizationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -772,6 +801,7 @@ export type UserCreateWithoutCreatedReportsInput = {
   name?: string | null
   isActive?: boolean
   signatureImage?: string | null
+  profileImage?: string | null
   role?: $Enums.RoleName
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -788,6 +818,7 @@ export type UserUncheckedCreateWithoutCreatedReportsInput = {
   name?: string | null
   isActive?: boolean
   signatureImage?: string | null
+  profileImage?: string | null
   role?: $Enums.RoleName
   organizationId?: string | null
   assignedVesselId?: string | null
@@ -820,6 +851,7 @@ export type UserUpdateWithoutCreatedReportsInput = {
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   signatureImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumRoleNameFieldUpdateOperationsInput | $Enums.RoleName
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -836,6 +868,7 @@ export type UserUncheckedUpdateWithoutCreatedReportsInput = {
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   signatureImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumRoleNameFieldUpdateOperationsInput | $Enums.RoleName
   organizationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   assignedVesselId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -852,6 +885,7 @@ export type UserCreateWithoutSignedEntriesInput = {
   name?: string | null
   isActive?: boolean
   signatureImage?: string | null
+  profileImage?: string | null
   role?: $Enums.RoleName
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -868,6 +902,7 @@ export type UserUncheckedCreateWithoutSignedEntriesInput = {
   name?: string | null
   isActive?: boolean
   signatureImage?: string | null
+  profileImage?: string | null
   role?: $Enums.RoleName
   organizationId?: string | null
   assignedVesselId?: string | null
@@ -900,6 +935,7 @@ export type UserUpdateWithoutSignedEntriesInput = {
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   signatureImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumRoleNameFieldUpdateOperationsInput | $Enums.RoleName
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -916,6 +952,7 @@ export type UserUncheckedUpdateWithoutSignedEntriesInput = {
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   signatureImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumRoleNameFieldUpdateOperationsInput | $Enums.RoleName
   organizationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   assignedVesselId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -932,6 +969,7 @@ export type UserCreateWithoutAuditLogsInput = {
   name?: string | null
   isActive?: boolean
   signatureImage?: string | null
+  profileImage?: string | null
   role?: $Enums.RoleName
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -948,6 +986,7 @@ export type UserUncheckedCreateWithoutAuditLogsInput = {
   name?: string | null
   isActive?: boolean
   signatureImage?: string | null
+  profileImage?: string | null
   role?: $Enums.RoleName
   organizationId?: string | null
   assignedVesselId?: string | null
@@ -980,6 +1019,7 @@ export type UserUpdateWithoutAuditLogsInput = {
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   signatureImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumRoleNameFieldUpdateOperationsInput | $Enums.RoleName
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -996,6 +1036,7 @@ export type UserUncheckedUpdateWithoutAuditLogsInput = {
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   signatureImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumRoleNameFieldUpdateOperationsInput | $Enums.RoleName
   organizationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   assignedVesselId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1012,6 +1053,7 @@ export type UserCreateManyOrganizationInput = {
   name?: string | null
   isActive?: boolean
   signatureImage?: string | null
+  profileImage?: string | null
   role?: $Enums.RoleName
   assignedVesselId?: string | null
   createdAt?: Date | string
@@ -1025,6 +1067,7 @@ export type UserUpdateWithoutOrganizationInput = {
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   signatureImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumRoleNameFieldUpdateOperationsInput | $Enums.RoleName
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1041,6 +1084,7 @@ export type UserUncheckedUpdateWithoutOrganizationInput = {
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   signatureImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumRoleNameFieldUpdateOperationsInput | $Enums.RoleName
   assignedVesselId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1057,6 +1101,7 @@ export type UserUncheckedUpdateManyWithoutOrganizationInput = {
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   signatureImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumRoleNameFieldUpdateOperationsInput | $Enums.RoleName
   assignedVesselId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1119,6 +1164,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   name?: boolean
   isActive?: boolean
   signatureImage?: boolean
+  profileImage?: boolean
   role?: boolean
   organizationId?: boolean
   assignedVesselId?: boolean
@@ -1139,6 +1185,7 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   name?: boolean
   isActive?: boolean
   signatureImage?: boolean
+  profileImage?: boolean
   role?: boolean
   organizationId?: boolean
   assignedVesselId?: boolean
@@ -1155,6 +1202,7 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   name?: boolean
   isActive?: boolean
   signatureImage?: boolean
+  profileImage?: boolean
   role?: boolean
   organizationId?: boolean
   assignedVesselId?: boolean
@@ -1171,6 +1219,7 @@ export type UserSelectScalar = {
   name?: boolean
   isActive?: boolean
   signatureImage?: boolean
+  profileImage?: boolean
   role?: boolean
   organizationId?: boolean
   assignedVesselId?: boolean
@@ -1178,7 +1227,7 @@ export type UserSelectScalar = {
   updatedAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "passwordHash" | "name" | "isActive" | "signatureImage" | "role" | "organizationId" | "assignedVesselId" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "passwordHash" | "name" | "isActive" | "signatureImage" | "profileImage" | "role" | "organizationId" | "assignedVesselId" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   organization?: boolean | Prisma.User$organizationArgs<ExtArgs>
   assignedVessel?: boolean | Prisma.User$assignedVesselArgs<ExtArgs>
@@ -1212,6 +1261,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     name: string | null
     isActive: boolean
     signatureImage: string | null
+    profileImage: string | null
     role: $Enums.RoleName
     organizationId: string | null
     assignedVesselId: string | null
@@ -1651,6 +1701,7 @@ export interface UserFieldRefs {
   readonly name: Prisma.FieldRef<"User", 'String'>
   readonly isActive: Prisma.FieldRef<"User", 'Boolean'>
   readonly signatureImage: Prisma.FieldRef<"User", 'String'>
+  readonly profileImage: Prisma.FieldRef<"User", 'String'>
   readonly role: Prisma.FieldRef<"User", 'RoleName'>
   readonly organizationId: Prisma.FieldRef<"User", 'String'>
   readonly assignedVesselId: Prisma.FieldRef<"User", 'String'>

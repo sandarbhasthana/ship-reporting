@@ -107,6 +107,7 @@ exports.UserScalarFieldEnum = {
     name: 'name',
     isActive: 'isActive',
     signatureImage: 'signatureImage',
+    profileImage: 'profileImage',
     role: 'role',
     organizationId: 'organizationId',
     assignedVesselId: 'assignedVesselId',

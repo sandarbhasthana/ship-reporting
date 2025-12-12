@@ -748,6 +748,7 @@ export declare const UserScalarFieldEnum: {
     readonly name: "name";
     readonly isActive: "isActive";
     readonly signatureImage: "signatureImage";
+    readonly profileImage: "profileImage";
     readonly role: "role";
     readonly organizationId: "organizationId";
     readonly assignedVesselId: "assignedVesselId";

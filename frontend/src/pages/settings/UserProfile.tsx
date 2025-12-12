@@ -11,7 +11,12 @@ import {
   Spin,
   Avatar
 } from "antd";
-import { UploadOutlined, SaveOutlined, UserOutlined } from "@ant-design/icons";
+import {
+  UploadOutlined,
+  SaveOutlined,
+  UserOutlined,
+  CameraOutlined
+} from "@ant-design/icons";
 import { useApiUrl } from "@refinedev/core";
 import type { UploadFile, UploadProps } from "antd/es/upload/interface";
 import styles from "./settings.module.css";
@@ -22,7 +27,8 @@ interface UserData {
   id: string;
   name: string;
   email: string;
-  signatureUrl?: string;
+  signatureImage?: string;
+  profileImage?: string;
   role: string;
 }
 
@@ -32,6 +38,7 @@ export const UserProfile: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [savingProfile, setSavingProfile] = useState(false);
   const [savingPassword, setSavingPassword] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
   const [user, setUser] = useState<UserData | null>(null);
   const [signatureFileList, setSignatureFileList] = useState<UploadFile[]>([]);
   const apiUrl = useApiUrl();
@@ -54,13 +61,13 @@ export const UserProfile: React.FC = () => {
           name: data.name,
           email: data.email
         });
-        if (data.signatureUrl) {
+        if (data.signatureImage) {
           setSignatureFileList([
             {
               uid: "-1",
               name: "signature",
               status: "done",
-              url: data.signatureUrl
+              url: data.signatureImage
             }
           ]);
         }
@@ -134,6 +141,42 @@ export const UserProfile: React.FC = () => {
     }
   };
 
+  const profileImageUploadProps: UploadProps = {
+    name: "file",
+    action: `${apiUrl}/upload/profile-image`,
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("access_token")}`
+    },
+    showUploadList: false,
+    accept: "image/*",
+    beforeUpload(file) {
+      const isImage = file.type.startsWith("image/");
+      if (!isImage) {
+        message.error("You can only upload image files!");
+        return false;
+      }
+      const isLt2M = file.size / 1024 / 1024 < 2;
+      if (!isLt2M) {
+        message.error("Image must be smaller than 2MB!");
+        return false;
+      }
+      return true;
+    },
+    onChange(info) {
+      if (info.file.status === "uploading") {
+        setUploadingImage(true);
+      }
+      if (info.file.status === "done") {
+        setUploadingImage(false);
+        message.success("Profile image uploaded successfully");
+        fetchProfile();
+      } else if (info.file.status === "error") {
+        setUploadingImage(false);
+        message.error("Profile image upload failed");
+      }
+    }
+  };
+
   const signatureUploadProps: UploadProps = {
     name: "file",
     action: `${apiUrl}/upload/signature`,
@@ -165,39 +208,63 @@ export const UserProfile: React.FC = () => {
   return (
     <Space direction="vertical" size="large" className={styles.fullWidth}>
       <Card>
-        <Title level={4}>Profile Information</Title>
-        <Space align="start" size="large">
-          <Avatar size={80} icon={<UserOutlined />} src={user?.signatureUrl} />
-          <Form
-            form={profileForm}
-            layout="vertical"
-            onFinish={handleProfileSave}
-          >
-            <Form.Item
-              name="name"
-              label="Name"
-              rules={[{ required: true, message: "Please enter your name" }]}
-            >
-              <Input
-                placeholder="Enter your name"
-                className={styles.inputMedium}
-              />
-            </Form.Item>
-            <Form.Item name="email" label="Email">
-              <Input disabled className={styles.inputMedium} />
-            </Form.Item>
-            <Form.Item>
+        <Title level={4}>Profile Image</Title>
+        <Text type="secondary">
+          Upload a profile picture that will be displayed in the header.
+        </Text>
+        <div className={styles.profileImageSection}>
+          <div className={styles.avatarWrapper}>
+            <Avatar
+              size={100}
+              icon={<UserOutlined />}
+              src={user?.profileImage}
+              className={styles.profileAvatar}
+            />
+            <Upload {...profileImageUploadProps}>
               <Button
-                type="primary"
-                htmlType="submit"
-                icon={<SaveOutlined />}
-                loading={savingProfile}
-              >
-                Save Profile
-              </Button>
-            </Form.Item>
-          </Form>
-        </Space>
+                shape="circle"
+                icon={<CameraOutlined />}
+                size="small"
+                className={styles.avatarUploadButton}
+                loading={uploadingImage}
+              />
+            </Upload>
+          </div>
+          <Text type="secondary" className={styles.helpText}>
+            Click the camera icon to upload a new image. Max size: 2MB.
+          </Text>
+        </div>
+      </Card>
+
+      <Card>
+        <Title level={4}>Profile Information</Title>
+        <Form
+          form={profileForm}
+          layout="vertical"
+          onFinish={handleProfileSave}
+          className={styles.formContainerSmall}
+        >
+          <Form.Item
+            name="name"
+            label="Name"
+            rules={[{ required: true, message: "Please enter your name" }]}
+          >
+            <Input placeholder="Enter your name" />
+          </Form.Item>
+          <Form.Item name="email" label="Email">
+            <Input disabled />
+          </Form.Item>
+          <Form.Item>
+            <Button
+              type="primary"
+              htmlType="submit"
+              icon={<SaveOutlined />}
+              loading={savingProfile}
+            >
+              Save Profile
+            </Button>
+          </Form.Item>
+        </Form>
       </Card>
 
       <Card>

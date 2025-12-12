@@ -16,7 +16,7 @@ export class UploadService {
   }
 
   private ensureUploadDir() {
-    const dirs = ['logos', 'signatures'];
+    const dirs = ['logos', 'signatures', 'profile-images'];
     dirs.forEach((dir) => {
       const fullPath = path.join(this.uploadDir, dir);
       if (!fs.existsSync(fullPath)) {
@@ -27,7 +27,7 @@ export class UploadService {
 
   async uploadFile(
     file: Express.Multer.File,
-    folder: 'logos' | 'signatures',
+    folder: 'logos' | 'signatures' | 'profile-images',
   ): Promise<string> {
     if (!file) {
       throw new BadRequestException('No file provided');
