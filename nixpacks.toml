@@ -9,7 +9,7 @@ cmds = ["npm install --include=dev"]
 
 [phases.build]
 cmds = [
-    "npx prisma generate --schema=packages/prisma/prisma/schema.prisma",
+    "npx prisma generate --schema=packages/prisma/schema.prisma",
     "npm run build --workspace=backend"
 ]
 
