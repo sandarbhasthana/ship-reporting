@@ -328,66 +328,103 @@ export const InspectionForm = () => {
     }
   };
 
+  // Check if admin can edit captain columns (only captains can edit columns 1-6)
+  const canEditCaptainColumns = !isAdmin;
+
   const entryColumns = [
     {
       title: "Sr No.",
       dataIndex: "srNo",
       width: 65,
-      render: (_: unknown, record: InspectionEntry) => (
-        <Input
-          value={record.srNo}
-          onChange={(e) => updateEntry(record.key!, "srNo", e.target.value)}
-          maxLength={5}
-          className={styles.srNoInput}
-        />
-      )
+      render: (_: unknown, record: InspectionEntry) =>
+        canEditCaptainColumns ? (
+          <Input
+            value={record.srNo}
+            onChange={(e) => updateEntry(record.key!, "srNo", e.target.value)}
+            maxLength={5}
+            className={styles.srNoInput}
+          />
+        ) : (
+          <Text>{record.srNo}</Text>
+        )
     },
     {
       title: "Deficiency",
       dataIndex: "deficiency",
       render: (_: unknown, record: InspectionEntry) =>
-        renderTextCell(record, "deficiency", "Deficiency")
+        canEditCaptainColumns ? (
+          renderTextCell(record, "deficiency", "Deficiency")
+        ) : (
+          <Text className={styles.readOnlyText}>
+            {record.deficiency || "-"}
+          </Text>
+        )
     },
     {
       title: "Master Cause Analysis",
       dataIndex: "mastersCauseAnalysis",
       render: (_: unknown, record: InspectionEntry) =>
-        renderTextCell(
-          record,
-          "mastersCauseAnalysis",
-          "Master's Cause Analysis"
+        canEditCaptainColumns ? (
+          renderTextCell(
+            record,
+            "mastersCauseAnalysis",
+            "Master's Cause Analysis"
+          )
+        ) : (
+          <Text className={styles.readOnlyText}>
+            {record.mastersCauseAnalysis || "-"}
+          </Text>
         )
     },
     {
       title: "Corrective Action",
       dataIndex: "correctiveAction",
       render: (_: unknown, record: InspectionEntry) =>
-        renderTextCell(record, "correctiveAction", "Corrective Action")
+        canEditCaptainColumns ? (
+          renderTextCell(record, "correctiveAction", "Corrective Action")
+        ) : (
+          <Text className={styles.readOnlyText}>
+            {record.correctiveAction || "-"}
+          </Text>
+        )
     },
     {
       title: "Preventive Action",
       dataIndex: "preventiveAction",
       render: (_: unknown, record: InspectionEntry) =>
-        renderTextCell(record, "preventiveAction", "Preventive Action")
+        canEditCaptainColumns ? (
+          renderTextCell(record, "preventiveAction", "Preventive Action")
+        ) : (
+          <Text className={styles.readOnlyText}>
+            {record.preventiveAction || "-"}
+          </Text>
+        )
     },
     {
       title: "Date",
       dataIndex: "completionDate",
       width: 115,
-      render: (_: unknown, record: InspectionEntry) => (
-        <DatePicker
-          value={record.completionDate ? dayjs(record.completionDate) : null}
-          onChange={(date) =>
-            updateEntry(
-              record.key!,
-              "completionDate",
-              date?.toISOString() || null
-            )
-          }
-          format="DD/MM/YY"
-          className={styles.datePickerCompact}
-        />
-      )
+      render: (_: unknown, record: InspectionEntry) =>
+        canEditCaptainColumns ? (
+          <DatePicker
+            value={record.completionDate ? dayjs(record.completionDate) : null}
+            onChange={(date) =>
+              updateEntry(
+                record.key!,
+                "completionDate",
+                date?.toISOString() || null
+              )
+            }
+            format="DD/MM/YY"
+            className={styles.datePickerCompact}
+          />
+        ) : (
+          <Text>
+            {record.completionDate
+              ? dayjs(record.completionDate).format("DD/MM/YY")
+              : "-"}
+          </Text>
+        )
     }
   ];
 
@@ -479,19 +516,21 @@ export const InspectionForm = () => {
     );
   }
 
-  // Add delete column
-  entryColumns.push({
-    title: "",
-    width: 40,
-    render: (_: unknown, record: InspectionEntry) => (
-      <Popconfirm
-        title="Remove entry?"
-        onConfirm={() => removeEntry(record.key!)}
-      >
-        <Button type="text" danger icon={<DeleteOutlined />} size="small" />
-      </Popconfirm>
-    )
-  } as (typeof entryColumns)[0]);
+  // Add delete column (only for captains, not admins)
+  if (!isAdmin) {
+    entryColumns.push({
+      title: "",
+      width: 40,
+      render: (_: unknown, record: InspectionEntry) => (
+        <Popconfirm
+          title="Remove entry?"
+          onConfirm={() => removeEntry(record.key!)}
+        >
+          <Button type="text" danger icon={<DeleteOutlined />} size="small" />
+        </Popconfirm>
+      )
+    } as (typeof entryColumns)[0]);
+  }
 
   if (loading) {
     return (
@@ -534,9 +573,9 @@ export const InspectionForm = () => {
         }}
       >
         <div className={styles.formSection}>
-          <Text strong className={styles.formSectionTitle}>
+          <Title level={5} className={styles.formSectionTitle}>
             Header Information
-          </Text>
+          </Title>
           <Space wrap size="large">
             <Form.Item
               name="vesselId"
@@ -546,18 +585,21 @@ export const InspectionForm = () => {
               <Select
                 placeholder="Select vessel"
                 options={vessels.map((v) => ({ label: v.name, value: v.id }))}
-                disabled={!isAdmin && Boolean(identity?.assignedVesselId)}
+                disabled={isEdit || Boolean(identity?.assignedVesselId)}
                 className={styles.filterSelect}
               />
             </Form.Item>
             <Form.Item name="inspectedBy" label="Inspected By">
-              <Input placeholder="e.g., RIGHTSHIP" disabled={!isAdmin} />
+              <Input
+                placeholder="e.g., RIGHTSHIP"
+                disabled={isAdmin && isEdit}
+              />
             </Form.Item>
             <Form.Item name="inspectionDate" label="Inspection Date">
-              <DatePicker format="DD/MM/YYYY" disabled={!isAdmin} />
+              <DatePicker format="DD/MM/YYYY" disabled={isAdmin && isEdit} />
             </Form.Item>
             <Form.Item name="shipFileNo" label="Ship's File No">
-              <Input placeholder="e.g., 123.4.5" />
+              <Input placeholder="e.g., 123.4.5" disabled={isAdmin && isEdit} />
             </Form.Item>
             {isAdmin && (
               <>
@@ -577,17 +619,19 @@ export const InspectionForm = () => {
 
         <div className={styles.formSection}>
           <div className={styles.entriesSectionHeader}>
-            <Text strong className={styles.formSectionTitle}>
+            <Title level={5} className={styles.formSectionTitle}>
               Deficiency Entries
-            </Text>
-            <Button
-              type="primary"
-              onClick={addEntry}
-              icon={<PlusOutlined />}
-              disabled={entries.length >= 100}
-            >
-              Add Entry {entries.length >= 100 && "(Max 100)"}
-            </Button>
+            </Title>
+            {!isAdmin && (
+              <Button
+                type="primary"
+                onClick={addEntry}
+                icon={<PlusOutlined />}
+                disabled={entries.length >= 100}
+              >
+                Add Entry {entries.length >= 100 && "(Max 100)"}
+              </Button>
+            )}
           </div>
           <Table
             columns={entryColumns}

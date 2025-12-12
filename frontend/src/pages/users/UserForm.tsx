@@ -317,11 +317,8 @@ export const UserForm: React.FC = () => {
                 <Select
                   size="large"
                   options={[
-                    { value: "ADMIN", label: "Admin - Full system access" },
-                    {
-                      value: "CAPTAIN",
-                      label: "Captain - Vessel-specific access"
-                    }
+                    { value: "ADMIN", label: "Admin" },
+                    { value: "CAPTAIN", label: "Captain" }
                   ]}
                 />
               </Form.Item>

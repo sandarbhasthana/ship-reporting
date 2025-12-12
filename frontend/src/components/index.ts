@@ -6,3 +6,4 @@
 
 export { ThemeToggle } from "./ThemeToggle";
 export { Header } from "./Header";
+export { CustomEmpty } from "./CustomEmpty";

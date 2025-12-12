@@ -104,6 +104,8 @@ export const DashboardPage = () => {
       title: "Name",
       dataIndex: "name",
       key: "name",
+      sorter: (a: CaptainActivity, b: CaptainActivity) =>
+        (a.name || "").localeCompare(b.name || ""),
       render: (name: string, record: CaptainActivity) => (
         <div>
           <Text strong>{name}</Text>
@@ -116,9 +118,19 @@ export const DashboardPage = () => {
       )
     },
     {
+      title: "Vessel",
+      dataIndex: "vessel",
+      key: "vessel",
+      sorter: (a: CaptainActivity, b: CaptainActivity) =>
+        (a.vessel || "").localeCompare(b.vessel || ""),
+      render: (vessel: string | null) => vessel || "-"
+    },
+    {
       title: "Status",
       dataIndex: "isActive",
       key: "status",
+      sorter: (a: CaptainActivity, b: CaptainActivity) =>
+        Number(b.isActive) - Number(a.isActive),
       render: (isActive: boolean) => (
         <Tag color={isActive ? "green" : "default"}>
           {isActive ? "Active" : "Offline"}
@@ -128,6 +140,11 @@ export const DashboardPage = () => {
     {
       title: "Last Activity",
       key: "lastActivity",
+      sorter: (a: CaptainActivity, b: CaptainActivity) => {
+        const aAction = a.lastActivity?.action || "";
+        const bAction = b.lastActivity?.action || "";
+        return aAction.localeCompare(bAction);
+      },
       render: (_: unknown, record: CaptainActivity) => {
         if (!record.lastActivity) {
           return <Text type="secondary">No activity yet</Text>;
@@ -158,6 +175,15 @@ export const DashboardPage = () => {
     {
       title: "Date/Time",
       key: "dateTime",
+      sorter: (a: CaptainActivity, b: CaptainActivity) => {
+        const aTime = a.lastActivity?.dateTime
+          ? new Date(a.lastActivity.dateTime).getTime()
+          : 0;
+        const bTime = b.lastActivity?.dateTime
+          ? new Date(b.lastActivity.dateTime).getTime()
+          : 0;
+        return aTime - bTime;
+      },
       render: (_: unknown, record: CaptainActivity) => {
         if (!record.lastActivity) {
           return "-";

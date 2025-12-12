@@ -5,7 +5,11 @@
   padding: 0 24px;
   height: 64px;
   gap: 16px;
-  background-color: transparent;
+  background-color: #ffffff;
+}
+
+:global([data-theme="dark"]) .headerContainer {
+  background-color: #262626;
 }
 
 .userButton {

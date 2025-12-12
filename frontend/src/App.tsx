@@ -29,7 +29,7 @@ import {
   UserForm
 } from "./pages";
 import { ThemeProvider, useTheme } from "./theme";
-import { Header } from "./components";
+import { Header, CustomEmpty } from "./components";
 import styles from "./App.module.css";
 
 import "@refinedev/antd/dist/reset.css";
@@ -43,8 +43,10 @@ import "./theme/global.css";
 function AppWithTheme() {
   const { themeConfig } = useTheme();
 
+  const renderEmpty = () => <CustomEmpty />;
+
   return (
-    <ConfigProvider theme={themeConfig}>
+    <ConfigProvider theme={themeConfig} renderEmpty={renderEmpty}>
       <AntdApp>
         <Refine
           routerProvider={routerProvider}

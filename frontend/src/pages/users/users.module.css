@@ -10,7 +10,9 @@
 }
 
 .formContainer {
-  max-width: 900px;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
 }
 
 /* Modern 2-Column Form Layout */
@@ -105,13 +107,17 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
-:global(.dark) .formSection {
+:global([data-theme="dark"]) .formSection {
   background: linear-gradient(
     145deg,
     rgba(30, 30, 30, 0.9) 0%,
     rgba(38, 38, 38, 0.9) 100%
   );
   border-color: rgba(255, 255, 255, 0.08);
+}
+
+:global([data-theme="dark"]) .formSection:hover {
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.05);
 }
 
 .formSectionTitle {
@@ -133,7 +139,7 @@
   border-radius: 2px;
 }
 
-:global(.dark) .formSectionTitle {
+:global([data-theme="dark"]) .formSectionTitle {
   color: var(--text-primary-dark, #ffffff);
 }
 
