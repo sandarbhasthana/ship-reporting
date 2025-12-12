@@ -59,21 +59,42 @@ export const UserList: React.FC = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem("access_token");
+
+      if (!token) {
+        message.error("No authentication token found. Please log in again.");
+        navigate("/login");
+        return;
+      }
+
       const response = await fetch(`${apiUrl}/users`, {
         headers: { Authorization: `Bearer ${token}` }
       });
+
       if (response.ok) {
         const data = await response.json();
         setUsers(Array.isArray(data) ? data : data.data || []);
+      } else if (response.status === 401) {
+        message.error("Session expired. Please log in again.");
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("user");
+        navigate("/login");
       } else {
-        message.error("Failed to load users");
+        const errorData = await response.json().catch(() => ({}));
+        message.error(errorData.message || "Failed to load users");
       }
     } catch (error) {
-      message.error(`Failed to load users: ${error}`);
+      console.error("Error fetching users:", error);
+      if (error instanceof TypeError && error.message === "Failed to fetch") {
+        message.error(
+          "Cannot connect to server. Please check if the backend is running."
+        );
+      } else {
+        message.error(`Failed to load users: ${error}`);
+      }
     } finally {
       setLoading(false);
     }
-  }, [apiUrl]);
+  }, [apiUrl, navigate, message]);
 
   useEffect(() => {
     fetchUsers();

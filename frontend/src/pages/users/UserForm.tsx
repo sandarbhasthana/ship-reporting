@@ -9,9 +9,16 @@ import {
   Typography,
   Spin,
   message,
-  Space
+  Row,
+  Col
 } from "antd";
-import { SaveOutlined, ArrowLeftOutlined } from "@ant-design/icons";
+import {
+  SaveOutlined,
+  ArrowLeftOutlined,
+  UserOutlined,
+  MailOutlined,
+  LockOutlined
+} from "@ant-design/icons";
 import { useNavigate, useParams } from "react-router";
 import { useGetIdentity, useApiUrl } from "@refinedev/core";
 import styles from "./users.module.css";
@@ -201,59 +208,98 @@ export const UserForm: React.FC = () => {
             Basic Information
           </Title>
 
-          <Form.Item
-            name="name"
-            label="Full Name"
-            rules={[
-              { required: true, message: "Please enter the user's name" },
-              { min: 2, message: "Name must be at least 2 characters" }
-            ]}
-          >
-            <Input placeholder="Enter full name" />
-          </Form.Item>
+          <Row gutter={24}>
+            <Col xs={24} md={12}>
+              <Form.Item
+                name="name"
+                label="Full Name"
+                rules={[
+                  { required: true, message: "Please enter the user's name" },
+                  { min: 2, message: "Name must be at least 2 characters" }
+                ]}
+              >
+                <Input
+                  prefix={<UserOutlined style={{ color: "#bfbfbf" }} />}
+                  placeholder="Enter full name"
+                  size="large"
+                />
+              </Form.Item>
+            </Col>
+            <Col xs={24} md={12}>
+              <Form.Item
+                name="email"
+                label="Email Address"
+                rules={[
+                  { required: true, message: "Please enter an email address" },
+                  { type: "email", message: "Please enter a valid email" }
+                ]}
+              >
+                <Input
+                  prefix={<MailOutlined style={{ color: "#bfbfbf" }} />}
+                  placeholder="Enter email address"
+                  size="large"
+                />
+              </Form.Item>
+            </Col>
+          </Row>
 
-          <Form.Item
-            name="email"
-            label="Email Address"
-            rules={[
-              { required: true, message: "Please enter an email address" },
-              { type: "email", message: "Please enter a valid email" }
-            ]}
-          >
-            <Input placeholder="Enter email address" />
-          </Form.Item>
-
-          <Form.Item
-            name="password"
-            label={
-              isEdit ? "New Password (leave blank to keep current)" : "Password"
-            }
-            rules={
-              isEdit
-                ? [
-                    {
-                      min: 6,
-                      message: "Password must be at least 6 characters"
-                    }
-                  ]
-                : [
-                    { required: true, message: "Please enter a password" },
-                    {
-                      min: 6,
-                      message: "Password must be at least 6 characters"
-                    }
-                  ]
-            }
-          >
-            <Input.Password
-              placeholder={isEdit ? "Enter new password" : "Enter password"}
-            />
-          </Form.Item>
-          {isEdit && (
-            <Text type="secondary" className={styles.passwordHint}>
-              Only enter a password if you want to change it
-            </Text>
-          )}
+          <Row gutter={24}>
+            <Col xs={24} md={12}>
+              <Form.Item
+                name="password"
+                label={
+                  isEdit
+                    ? "New Password (leave blank to keep current)"
+                    : "Password"
+                }
+                rules={
+                  isEdit
+                    ? [
+                        {
+                          min: 6,
+                          message: "Password must be at least 6 characters"
+                        }
+                      ]
+                    : [
+                        { required: true, message: "Please enter a password" },
+                        {
+                          min: 6,
+                          message: "Password must be at least 6 characters"
+                        }
+                      ]
+                }
+                extra={
+                  isEdit ? (
+                    <Text type="secondary" className={styles.passwordHint}>
+                      Only enter a password if you want to change it
+                    </Text>
+                  ) : null
+                }
+              >
+                <Input.Password
+                  prefix={<LockOutlined style={{ color: "#bfbfbf" }} />}
+                  placeholder={isEdit ? "Enter new password" : "Enter password"}
+                  size="large"
+                />
+              </Form.Item>
+            </Col>
+            <Col xs={24} md={12}>
+              <Form.Item
+                name="isActive"
+                label="Account Status"
+                valuePropName="checked"
+              >
+                <Switch
+                  checkedChildren="Active"
+                  unCheckedChildren="Inactive"
+                  style={{
+                    backgroundColor: isActive !== false ? "#059669" : "#e11d48",
+                    marginTop: 8
+                  }}
+                />
+              </Form.Item>
+            </Col>
+          </Row>
         </div>
 
         <div className={styles.formSection}>
@@ -261,63 +307,62 @@ export const UserForm: React.FC = () => {
             Role & Assignment
           </Title>
 
-          <Form.Item
-            name="role"
-            label="Role"
-            rules={[{ required: true, message: "Please select a role" }]}
-          >
-            <Select
-              options={[
-                { value: "ADMIN", label: "Admin - Full system access" },
-                { value: "CAPTAIN", label: "Captain - Vessel-specific access" }
-              ]}
-            />
-          </Form.Item>
-
-          {selectedRole === "CAPTAIN" && (
-            <Form.Item name="assignedVesselId" label="Assigned Vessel">
-              <Select
-                placeholder="Select a vessel to assign"
-                allowClear
-                options={availableVessels.map((v) => ({
-                  value: v.id,
-                  label: v.name
-                }))}
-              />
-              <Text type="secondary" className={styles.passwordHint}>
-                A captain can only be assigned to one vessel
-              </Text>
-            </Form.Item>
-          )}
-
-          <Form.Item
-            name="isActive"
-            label="Account Status"
-            valuePropName="checked"
-          >
-            <Switch
-              checkedChildren="Active"
-              unCheckedChildren="Inactive"
-              style={{
-                backgroundColor: isActive !== false ? "#059669" : "#e11d48"
-              }}
-            />
-          </Form.Item>
+          <Row gutter={24}>
+            <Col xs={24} md={12}>
+              <Form.Item
+                name="role"
+                label="Role"
+                rules={[{ required: true, message: "Please select a role" }]}
+              >
+                <Select
+                  size="large"
+                  options={[
+                    { value: "ADMIN", label: "Admin - Full system access" },
+                    {
+                      value: "CAPTAIN",
+                      label: "Captain - Vessel-specific access"
+                    }
+                  ]}
+                />
+              </Form.Item>
+            </Col>
+            <Col xs={24} md={12}>
+              {selectedRole === "CAPTAIN" && (
+                <Form.Item
+                  name="assignedVesselId"
+                  label="Assigned Vessel"
+                  extra={
+                    <Text type="secondary" className={styles.passwordHint}>
+                      A captain can only be assigned to one vessel
+                    </Text>
+                  }
+                >
+                  <Select
+                    placeholder="Select a vessel to assign"
+                    allowClear
+                    size="large"
+                    options={availableVessels.map((v) => ({
+                      value: v.id,
+                      label: v.name
+                    }))}
+                  />
+                </Form.Item>
+              )}
+            </Col>
+          </Row>
         </div>
 
-        <Form.Item>
-          <Space>
-            <Button
-              type="primary"
-              htmlType="submit"
-              icon={<SaveOutlined />}
-              loading={saving}
-            >
-              {isEdit ? "Save Changes" : "Create User"}
-            </Button>
-            <Button onClick={() => navigate("/users")}>Cancel</Button>
-          </Space>
-        </Form.Item>
+        <div className={styles.formActions}>
+          <Button
+            type="primary"
+            htmlType="submit"
+            icon={<SaveOutlined />}
+            loading={saving}
+          >
+            {isEdit ? "Save Changes" : "Create User"}
+          </Button>
+          <Button onClick={() => navigate("/users")}>Cancel</Button>
+        </div>
       </Form>
     </Card>
   );

@@ -8,9 +8,17 @@ import {
   Typography,
   Spin,
   message,
-  Space
+  Row,
+  Col
 } from "antd";
-import { SaveOutlined, ArrowLeftOutlined } from "@ant-design/icons";
+import {
+  SaveOutlined,
+  ArrowLeftOutlined,
+  FlagOutlined,
+  IdcardOutlined,
+  PhoneOutlined,
+  FileTextOutlined
+} from "@ant-design/icons";
 import { useNavigate, useParams } from "react-router";
 import { useGetIdentity, useApiUrl } from "@refinedev/core";
 import styles from "./settings.module.css";
@@ -215,32 +223,70 @@ export const VesselForm: React.FC = () => {
             Vessel Information
           </Title>
 
-          <Form.Item
-            name="name"
-            label="Vessel Name"
-            rules={[
-              { required: true, message: "Please enter the vessel name" },
-              { min: 2, message: "Name must be at least 2 characters" }
-            ]}
-          >
-            <Input placeholder="Enter vessel name" />
-          </Form.Item>
+          <Row gutter={24}>
+            <Col xs={24} md={12}>
+              <Form.Item
+                name="name"
+                label="Vessel Name"
+                rules={[
+                  { required: true, message: "Please enter the vessel name" },
+                  { min: 2, message: "Name must be at least 2 characters" }
+                ]}
+              >
+                <Input
+                  prefix={<span className={styles.vesselIconPrefix}>🚢</span>}
+                  placeholder="Enter vessel name"
+                  size="large"
+                />
+              </Form.Item>
+            </Col>
+            <Col xs={24} md={12}>
+              <Form.Item name="imoNumber" label="IMO Number">
+                <Input
+                  prefix={<IdcardOutlined style={{ color: "#bfbfbf" }} />}
+                  placeholder="e.g., IMO1234567"
+                  maxLength={20}
+                  size="large"
+                />
+              </Form.Item>
+            </Col>
+          </Row>
 
-          <Form.Item name="imoNumber" label="IMO Number">
-            <Input placeholder="e.g., IMO1234567" maxLength={20} />
-          </Form.Item>
+          <Row gutter={24}>
+            <Col xs={24} md={12}>
+              <Form.Item name="callSign" label="Call Sign">
+                <Input
+                  prefix={<PhoneOutlined style={{ color: "#bfbfbf" }} />}
+                  placeholder="Enter call sign"
+                  maxLength={20}
+                  size="large"
+                />
+              </Form.Item>
+            </Col>
+            <Col xs={24} md={12}>
+              <Form.Item name="flag" label="Flag State">
+                <Input
+                  prefix={<FlagOutlined style={{ color: "#bfbfbf" }} />}
+                  placeholder="e.g., Singapore, Panama"
+                  maxLength={100}
+                  size="large"
+                />
+              </Form.Item>
+            </Col>
+          </Row>
 
-          <Form.Item name="callSign" label="Call Sign">
-            <Input placeholder="Enter call sign" maxLength={20} />
-          </Form.Item>
-
-          <Form.Item name="flag" label="Flag State">
-            <Input placeholder="e.g., Singapore, Panama" maxLength={100} />
-          </Form.Item>
-
-          <Form.Item name="shipFileNo" label="Ship File Number">
-            <Input placeholder="Enter ship file number" maxLength={50} />
-          </Form.Item>
+          <Row gutter={24}>
+            <Col xs={24} md={12}>
+              <Form.Item name="shipFileNo" label="Ship File Number">
+                <Input
+                  prefix={<FileTextOutlined style={{ color: "#bfbfbf" }} />}
+                  placeholder="Enter ship file number"
+                  maxLength={50}
+                  size="large"
+                />
+              </Form.Item>
+            </Col>
+          </Row>
         </div>
 
         <div className={styles.formSection}>
@@ -248,34 +294,42 @@ export const VesselForm: React.FC = () => {
             Captain Assignment
           </Title>
 
-          <Form.Item name="captainId" label="Assigned Captain">
-            <Select
-              placeholder="Select a captain to assign"
-              allowClear
-              options={captains.map((c) => ({
-                value: c.id,
-                label: c.name || c.id
-              }))}
-            />
-          </Form.Item>
-          <Text type="secondary" className={styles.hint}>
-            Only captains without a vessel assignment are shown
-          </Text>
+          <Row gutter={24}>
+            <Col xs={24} md={12}>
+              <Form.Item
+                name="captainId"
+                label="Assigned Captain"
+                extra={
+                  <Text type="secondary" className={styles.hint}>
+                    Only captains without a vessel assignment are shown
+                  </Text>
+                }
+              >
+                <Select
+                  placeholder="Select a captain to assign"
+                  allowClear
+                  size="large"
+                  options={captains.map((c) => ({
+                    value: c.id,
+                    label: c.name || c.id
+                  }))}
+                />
+              </Form.Item>
+            </Col>
+          </Row>
         </div>
 
-        <Form.Item>
-          <Space>
-            <Button
-              type="primary"
-              htmlType="submit"
-              icon={<SaveOutlined />}
-              loading={saving}
-            >
-              {isEdit ? "Save Changes" : "Create Vessel"}
-            </Button>
-            <Button onClick={() => navigate("/vessels")}>Cancel</Button>
-          </Space>
-        </Form.Item>
+        <div className={styles.formActions}>
+          <Button
+            type="primary"
+            htmlType="submit"
+            icon={<SaveOutlined />}
+            loading={saving}
+          >
+            {isEdit ? "Save Changes" : "Create Vessel"}
+          </Button>
+          <Button onClick={() => navigate("/vessels")}>Cancel</Button>
+        </div>
       </Form>
     </Card>
   );
