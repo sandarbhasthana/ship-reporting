@@ -27,6 +27,9 @@ export type AggregateOrganization = {
 export type OrganizationMinAggregateOutputType = {
   id: string | null
   name: string | null
+  email: string | null
+  phone: string | null
+  owner: string | null
   logo: string | null
   defaultFormNo: string | null
   footerText: string | null
@@ -37,6 +40,9 @@ export type OrganizationMinAggregateOutputType = {
 export type OrganizationMaxAggregateOutputType = {
   id: string | null
   name: string | null
+  email: string | null
+  phone: string | null
+  owner: string | null
   logo: string | null
   defaultFormNo: string | null
   footerText: string | null
@@ -47,6 +53,9 @@ export type OrganizationMaxAggregateOutputType = {
 export type OrganizationCountAggregateOutputType = {
   id: number
   name: number
+  email: number
+  phone: number
+  owner: number
   logo: number
   defaultFormNo: number
   footerText: number
@@ -59,6 +68,9 @@ export type OrganizationCountAggregateOutputType = {
 export type OrganizationMinAggregateInputType = {
   id?: true
   name?: true
+  email?: true
+  phone?: true
+  owner?: true
   logo?: true
   defaultFormNo?: true
   footerText?: true
@@ -69,6 +81,9 @@ export type OrganizationMinAggregateInputType = {
 export type OrganizationMaxAggregateInputType = {
   id?: true
   name?: true
+  email?: true
+  phone?: true
+  owner?: true
   logo?: true
   defaultFormNo?: true
   footerText?: true
@@ -79,6 +94,9 @@ export type OrganizationMaxAggregateInputType = {
 export type OrganizationCountAggregateInputType = {
   id?: true
   name?: true
+  email?: true
+  phone?: true
+  owner?: true
   logo?: true
   defaultFormNo?: true
   footerText?: true
@@ -162,6 +180,9 @@ export type OrganizationGroupByArgs<ExtArgs extends runtime.Types.Extensions.Int
 export type OrganizationGroupByOutputType = {
   id: string
   name: string
+  email: string | null
+  phone: string | null
+  owner: string | null
   logo: string | null
   defaultFormNo: string | null
   footerText: string | null
@@ -193,6 +214,9 @@ export type OrganizationWhereInput = {
   NOT?: Prisma.OrganizationWhereInput | Prisma.OrganizationWhereInput[]
   id?: Prisma.StringFilter<"Organization"> | string
   name?: Prisma.StringFilter<"Organization"> | string
+  email?: Prisma.StringNullableFilter<"Organization"> | string | null
+  phone?: Prisma.StringNullableFilter<"Organization"> | string | null
+  owner?: Prisma.StringNullableFilter<"Organization"> | string | null
   logo?: Prisma.StringNullableFilter<"Organization"> | string | null
   defaultFormNo?: Prisma.StringNullableFilter<"Organization"> | string | null
   footerText?: Prisma.StringNullableFilter<"Organization"> | string | null
@@ -207,6 +231,9 @@ export type OrganizationWhereInput = {
 export type OrganizationOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
+  email?: Prisma.SortOrderInput | Prisma.SortOrder
+  phone?: Prisma.SortOrderInput | Prisma.SortOrder
+  owner?: Prisma.SortOrderInput | Prisma.SortOrder
   logo?: Prisma.SortOrderInput | Prisma.SortOrder
   defaultFormNo?: Prisma.SortOrderInput | Prisma.SortOrder
   footerText?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -224,6 +251,9 @@ export type OrganizationWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.OrganizationWhereInput[]
   NOT?: Prisma.OrganizationWhereInput | Prisma.OrganizationWhereInput[]
   name?: Prisma.StringFilter<"Organization"> | string
+  email?: Prisma.StringNullableFilter<"Organization"> | string | null
+  phone?: Prisma.StringNullableFilter<"Organization"> | string | null
+  owner?: Prisma.StringNullableFilter<"Organization"> | string | null
   logo?: Prisma.StringNullableFilter<"Organization"> | string | null
   defaultFormNo?: Prisma.StringNullableFilter<"Organization"> | string | null
   footerText?: Prisma.StringNullableFilter<"Organization"> | string | null
@@ -238,6 +268,9 @@ export type OrganizationWhereUniqueInput = Prisma.AtLeast<{
 export type OrganizationOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
+  email?: Prisma.SortOrderInput | Prisma.SortOrder
+  phone?: Prisma.SortOrderInput | Prisma.SortOrder
+  owner?: Prisma.SortOrderInput | Prisma.SortOrder
   logo?: Prisma.SortOrderInput | Prisma.SortOrder
   defaultFormNo?: Prisma.SortOrderInput | Prisma.SortOrder
   footerText?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -254,6 +287,9 @@ export type OrganizationScalarWhereWithAggregatesInput = {
   NOT?: Prisma.OrganizationScalarWhereWithAggregatesInput | Prisma.OrganizationScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Organization"> | string
   name?: Prisma.StringWithAggregatesFilter<"Organization"> | string
+  email?: Prisma.StringNullableWithAggregatesFilter<"Organization"> | string | null
+  phone?: Prisma.StringNullableWithAggregatesFilter<"Organization"> | string | null
+  owner?: Prisma.StringNullableWithAggregatesFilter<"Organization"> | string | null
   logo?: Prisma.StringNullableWithAggregatesFilter<"Organization"> | string | null
   defaultFormNo?: Prisma.StringNullableWithAggregatesFilter<"Organization"> | string | null
   footerText?: Prisma.StringNullableWithAggregatesFilter<"Organization"> | string | null
@@ -264,6 +300,9 @@ export type OrganizationScalarWhereWithAggregatesInput = {
 export type OrganizationCreateInput = {
   id?: string
   name: string
+  email?: string | null
+  phone?: string | null
+  owner?: string | null
   logo?: string | null
   defaultFormNo?: string | null
   footerText?: string | null
@@ -278,6 +317,9 @@ export type OrganizationCreateInput = {
 export type OrganizationUncheckedCreateInput = {
   id?: string
   name: string
+  email?: string | null
+  phone?: string | null
+  owner?: string | null
   logo?: string | null
   defaultFormNo?: string | null
   footerText?: string | null
@@ -292,6 +334,9 @@ export type OrganizationUncheckedCreateInput = {
 export type OrganizationUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  owner?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   defaultFormNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   footerText?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -306,6 +351,9 @@ export type OrganizationUpdateInput = {
 export type OrganizationUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  owner?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   defaultFormNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   footerText?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -320,6 +368,9 @@ export type OrganizationUncheckedUpdateInput = {
 export type OrganizationCreateManyInput = {
   id?: string
   name: string
+  email?: string | null
+  phone?: string | null
+  owner?: string | null
   logo?: string | null
   defaultFormNo?: string | null
   footerText?: string | null
@@ -330,6 +381,9 @@ export type OrganizationCreateManyInput = {
 export type OrganizationUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  owner?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   defaultFormNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   footerText?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -340,6 +394,9 @@ export type OrganizationUpdateManyMutationInput = {
 export type OrganizationUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  owner?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   defaultFormNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   footerText?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -350,6 +407,9 @@ export type OrganizationUncheckedUpdateManyInput = {
 export type OrganizationCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
+  email?: Prisma.SortOrder
+  phone?: Prisma.SortOrder
+  owner?: Prisma.SortOrder
   logo?: Prisma.SortOrder
   defaultFormNo?: Prisma.SortOrder
   footerText?: Prisma.SortOrder
@@ -360,6 +420,9 @@ export type OrganizationCountOrderByAggregateInput = {
 export type OrganizationMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
+  email?: Prisma.SortOrder
+  phone?: Prisma.SortOrder
+  owner?: Prisma.SortOrder
   logo?: Prisma.SortOrder
   defaultFormNo?: Prisma.SortOrder
   footerText?: Prisma.SortOrder
@@ -370,6 +433,9 @@ export type OrganizationMaxOrderByAggregateInput = {
 export type OrganizationMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
+  email?: Prisma.SortOrder
+  phone?: Prisma.SortOrder
+  owner?: Prisma.SortOrder
   logo?: Prisma.SortOrder
   defaultFormNo?: Prisma.SortOrder
   footerText?: Prisma.SortOrder
@@ -464,6 +530,9 @@ export type OrganizationUpdateOneWithoutAuditLogsNestedInput = {
 export type OrganizationCreateWithoutUsersInput = {
   id?: string
   name: string
+  email?: string | null
+  phone?: string | null
+  owner?: string | null
   logo?: string | null
   defaultFormNo?: string | null
   footerText?: string | null
@@ -477,6 +546,9 @@ export type OrganizationCreateWithoutUsersInput = {
 export type OrganizationUncheckedCreateWithoutUsersInput = {
   id?: string
   name: string
+  email?: string | null
+  phone?: string | null
+  owner?: string | null
   logo?: string | null
   defaultFormNo?: string | null
   footerText?: string | null
@@ -506,6 +578,9 @@ export type OrganizationUpdateToOneWithWhereWithoutUsersInput = {
 export type OrganizationUpdateWithoutUsersInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  owner?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   defaultFormNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   footerText?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -519,6 +594,9 @@ export type OrganizationUpdateWithoutUsersInput = {
 export type OrganizationUncheckedUpdateWithoutUsersInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  owner?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   defaultFormNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   footerText?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -532,6 +610,9 @@ export type OrganizationUncheckedUpdateWithoutUsersInput = {
 export type OrganizationCreateWithoutVesselsInput = {
   id?: string
   name: string
+  email?: string | null
+  phone?: string | null
+  owner?: string | null
   logo?: string | null
   defaultFormNo?: string | null
   footerText?: string | null
@@ -545,6 +626,9 @@ export type OrganizationCreateWithoutVesselsInput = {
 export type OrganizationUncheckedCreateWithoutVesselsInput = {
   id?: string
   name: string
+  email?: string | null
+  phone?: string | null
+  owner?: string | null
   logo?: string | null
   defaultFormNo?: string | null
   footerText?: string | null
@@ -574,6 +658,9 @@ export type OrganizationUpdateToOneWithWhereWithoutVesselsInput = {
 export type OrganizationUpdateWithoutVesselsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  owner?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   defaultFormNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   footerText?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -587,6 +674,9 @@ export type OrganizationUpdateWithoutVesselsInput = {
 export type OrganizationUncheckedUpdateWithoutVesselsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  owner?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   defaultFormNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   footerText?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -600,6 +690,9 @@ export type OrganizationUncheckedUpdateWithoutVesselsInput = {
 export type OrganizationCreateWithoutInspectionReportsInput = {
   id?: string
   name: string
+  email?: string | null
+  phone?: string | null
+  owner?: string | null
   logo?: string | null
   defaultFormNo?: string | null
   footerText?: string | null
@@ -613,6 +706,9 @@ export type OrganizationCreateWithoutInspectionReportsInput = {
 export type OrganizationUncheckedCreateWithoutInspectionReportsInput = {
   id?: string
   name: string
+  email?: string | null
+  phone?: string | null
+  owner?: string | null
   logo?: string | null
   defaultFormNo?: string | null
   footerText?: string | null
@@ -642,6 +738,9 @@ export type OrganizationUpdateToOneWithWhereWithoutInspectionReportsInput = {
 export type OrganizationUpdateWithoutInspectionReportsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  owner?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   defaultFormNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   footerText?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -655,6 +754,9 @@ export type OrganizationUpdateWithoutInspectionReportsInput = {
 export type OrganizationUncheckedUpdateWithoutInspectionReportsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  owner?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   defaultFormNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   footerText?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -668,6 +770,9 @@ export type OrganizationUncheckedUpdateWithoutInspectionReportsInput = {
 export type OrganizationCreateWithoutAuditLogsInput = {
   id?: string
   name: string
+  email?: string | null
+  phone?: string | null
+  owner?: string | null
   logo?: string | null
   defaultFormNo?: string | null
   footerText?: string | null
@@ -681,6 +786,9 @@ export type OrganizationCreateWithoutAuditLogsInput = {
 export type OrganizationUncheckedCreateWithoutAuditLogsInput = {
   id?: string
   name: string
+  email?: string | null
+  phone?: string | null
+  owner?: string | null
   logo?: string | null
   defaultFormNo?: string | null
   footerText?: string | null
@@ -710,6 +818,9 @@ export type OrganizationUpdateToOneWithWhereWithoutAuditLogsInput = {
 export type OrganizationUpdateWithoutAuditLogsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  owner?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   defaultFormNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   footerText?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -723,6 +834,9 @@ export type OrganizationUpdateWithoutAuditLogsInput = {
 export type OrganizationUncheckedUpdateWithoutAuditLogsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  owner?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   defaultFormNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   footerText?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -794,6 +908,9 @@ export type OrganizationCountOutputTypeCountAuditLogsArgs<ExtArgs extends runtim
 export type OrganizationSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
+  email?: boolean
+  phone?: boolean
+  owner?: boolean
   logo?: boolean
   defaultFormNo?: boolean
   footerText?: boolean
@@ -809,6 +926,9 @@ export type OrganizationSelect<ExtArgs extends runtime.Types.Extensions.Internal
 export type OrganizationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
+  email?: boolean
+  phone?: boolean
+  owner?: boolean
   logo?: boolean
   defaultFormNo?: boolean
   footerText?: boolean
@@ -819,6 +939,9 @@ export type OrganizationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
 export type OrganizationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
+  email?: boolean
+  phone?: boolean
+  owner?: boolean
   logo?: boolean
   defaultFormNo?: boolean
   footerText?: boolean
@@ -829,6 +952,9 @@ export type OrganizationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
 export type OrganizationSelectScalar = {
   id?: boolean
   name?: boolean
+  email?: boolean
+  phone?: boolean
+  owner?: boolean
   logo?: boolean
   defaultFormNo?: boolean
   footerText?: boolean
@@ -836,7 +962,7 @@ export type OrganizationSelectScalar = {
   updatedAt?: boolean
 }
 
-export type OrganizationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "logo" | "defaultFormNo" | "footerText" | "createdAt" | "updatedAt", ExtArgs["result"]["organization"]>
+export type OrganizationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "email" | "phone" | "owner" | "logo" | "defaultFormNo" | "footerText" | "createdAt" | "updatedAt", ExtArgs["result"]["organization"]>
 export type OrganizationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   vessels?: boolean | Prisma.Organization$vesselsArgs<ExtArgs>
   users?: boolean | Prisma.Organization$usersArgs<ExtArgs>
@@ -858,6 +984,9 @@ export type $OrganizationPayload<ExtArgs extends runtime.Types.Extensions.Intern
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     name: string
+    email: string | null
+    phone: string | null
+    owner: string | null
     logo: string | null
     defaultFormNo: string | null
     footerText: string | null
@@ -1292,6 +1421,9 @@ export interface Prisma__OrganizationClient<T, Null = never, ExtArgs extends run
 export interface OrganizationFieldRefs {
   readonly id: Prisma.FieldRef<"Organization", 'String'>
   readonly name: Prisma.FieldRef<"Organization", 'String'>
+  readonly email: Prisma.FieldRef<"Organization", 'String'>
+  readonly phone: Prisma.FieldRef<"Organization", 'String'>
+  readonly owner: Prisma.FieldRef<"Organization", 'String'>
   readonly logo: Prisma.FieldRef<"Organization", 'String'>
   readonly defaultFormNo: Prisma.FieldRef<"Organization", 'String'>
   readonly footerText: Prisma.FieldRef<"Organization", 'String'>

@@ -26,16 +26,19 @@ enum InspectionStatus {
 // ---- Organization Settings ----
 
 model Organization {
-  id   String @id @default(cuid())
-  name String // Company name for report headers (e.g., "FAREAST SHIPMANAGEMENT HONGKONG LIMITED")
-  logo String? // URL/path to company logo
+  id    String  @id @default(cuid())
+  name  String // Company name for report headers (e.g., "FAREAST SHIPMANAGEMENT HONGKONG LIMITED")
+  email String? // Organization contact email
+  phone String? // Organization contact phone
+  owner String? // Owner/primary contact name
+  logo  String? // URL/path to company logo
 
   // Default form settings
   defaultFormNo String? // Default FORM NO for new reports
   footerText    String? // Copyright text for PDF footer
 
-  vessels Vessel[]
-  users   User[]
+  vessels           Vessel[]
+  users             User[]
   inspectionReports InspectionReport[]
   auditLogs         AuditLog[]
 

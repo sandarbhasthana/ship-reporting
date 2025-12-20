@@ -1,13 +1,18 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { Card, Col, Row, Statistic, Table, Tag, Typography } from "antd";
 import {
   FileTextOutlined,
   CheckCircleOutlined,
   ClockCircleOutlined,
   TeamOutlined,
-  WarningOutlined
+  WarningOutlined,
+  BankOutlined,
+  RocketOutlined,
+  UserOutlined
 } from "@ant-design/icons";
 import { useGetIdentity, useApiUrl, useGo } from "@refinedev/core";
+import { Line } from "@ant-design/charts";
+import { useTheme } from "../../theme";
 import styles from "./dashboard.module.css";
 
 const { Title, Text } = Typography;
@@ -18,6 +23,7 @@ interface UserIdentity {
   name?: string;
   role?: string;
   assignedVesselId?: string;
+  organizationName?: string;
 }
 
 interface CaptainActivity {
@@ -52,16 +58,37 @@ interface RecentDocument {
   totalCount: number;
 }
 
+interface AnalyticsData {
+  summary: {
+    totalOrganizations: number;
+    totalUsers: number;
+    totalVessels: number;
+    totalInspections: number;
+  };
+  userDistribution: { name: string; value: number }[];
+  vesselDistribution: { name: string; value: number }[];
+  inspectionDistribution: { name: string; value: number }[];
+  organizationGrowth: { month: string; count: number }[];
+  topOrganizations: {
+    name: string;
+    users: number;
+    vessels: number;
+    inspections: number;
+  }[];
+}
+
 export const DashboardPage = () => {
   const apiUrl = useApiUrl();
   const go = useGo();
   const { data: identity } = useGetIdentity<UserIdentity>();
   const isAdmin = identity?.role === "ADMIN";
+  const isSuperAdmin = identity?.role === "SUPER_ADMIN";
 
   const [captains, setCaptains] = useState<CaptainActivity[]>([]);
   const [loading, setLoading] = useState(false);
   const [recentDocuments, setRecentDocuments] = useState<RecentDocument[]>([]);
   const [documentsLoading, setDocumentsLoading] = useState(false);
+  const [analytics, setAnalytics] = useState<AnalyticsData | null>(null);
   const [stats, setStats] = useState<DashboardStats>({
     totalInspections: 0,
     completed: 0,
@@ -217,6 +244,44 @@ export const DashboardPage = () => {
     };
   }, [isAdmin, apiUrl]);
 
+  // Fetch platform analytics for SUPER_ADMIN
+  useEffect(() => {
+    if (!isSuperAdmin) return;
+
+    let cancelled = false;
+
+    const fetchAnalytics = async () => {
+      try {
+        setLoading(true);
+        const token = localStorage.getItem("access_token");
+        const headers = { Authorization: `Bearer ${token}` };
+
+        const response = await fetch(`${apiUrl}/organization/analytics`, {
+          headers
+        });
+        const data = await response.json();
+
+        if (cancelled) return;
+
+        if (data && data.summary) {
+          setAnalytics(data);
+        }
+      } catch (error) {
+        console.error("Error fetching analytics:", error);
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchAnalytics();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [isSuperAdmin, apiUrl]);
+
   const formatAction = (action: string) => {
     const actionMap: Record<string, string> = {
       CREATE: "Created",
@@ -364,6 +429,303 @@ export const DashboardPage = () => {
     }
   ];
 
+  // Generate distinct colors for n items using HSL color space
+  const generateColors = useCallback((count: number) => {
+    const colors: string[] = [];
+    const saturation = 70;
+    const lightness = 55;
+    for (let i = 0; i < count; i++) {
+      const hue = (i * 360) / count;
+      colors.push(`hsl(${hue}, ${saturation}%, ${lightness}%)`);
+    }
+    return colors;
+  }, []);
+
+  // Theme-aware chart configuration
+  const { isDark } = useTheme();
+  const chartTheme = useMemo(
+    () => ({
+      theme: isDark ? "classicDark" : "classic",
+      textColor: isDark ? "#e0e0e0" : "#333333",
+      labelColor: isDark ? "#b0b0b0" : "#555555"
+    }),
+    [isDark]
+  );
+
+  // SUPER_ADMIN Dashboard with Analytics
+  if (isSuperAdmin) {
+    return (
+      <div className={styles.pageContainer}>
+        <Title level={2}>Platform Administration</Title>
+        <Text type="secondary">
+          Welcome back, {identity?.name || identity?.email}
+        </Text>
+
+        {/* Platform Statistics */}
+        <Row gutter={[16, 16]} className={styles.statsRow}>
+          <Col xs={24} sm={12} lg={6}>
+            <Card className={styles.cardPrimary} hoverable>
+              <Statistic
+                title="Organizations"
+                value={analytics?.summary.totalOrganizations || 0}
+                prefix={<BankOutlined className={styles.iconPrimary} />}
+              />
+            </Card>
+          </Col>
+          <Col xs={24} sm={12} lg={6}>
+            <Card className={styles.cardSecondary} hoverable>
+              <Statistic
+                title="Total Users"
+                value={analytics?.summary.totalUsers || 0}
+                prefix={<UserOutlined className={styles.iconSecondary} />}
+              />
+            </Card>
+          </Col>
+          <Col xs={24} sm={12} lg={6}>
+            <Card className={styles.cardBlue} hoverable>
+              <Statistic
+                title="Total Vessels"
+                value={analytics?.summary.totalVessels || 0}
+                prefix={<RocketOutlined className={styles.iconBlue} />}
+              />
+            </Card>
+          </Col>
+          <Col xs={24} sm={12} lg={6}>
+            <Card className={styles.cardInspection} hoverable>
+              <Statistic
+                title="Total Inspections"
+                value={analytics?.summary.totalInspections || 0}
+                prefix={<FileTextOutlined className={styles.iconInspection} />}
+              />
+            </Card>
+          </Col>
+        </Row>
+
+        {/* Charts Row 1: Growth & Top Organizations */}
+        <Row gutter={[16, 16]}>
+          <Col xs={24} lg={12}>
+            <Card
+              title="Organization Growth"
+              className={styles.chartCard}
+              loading={loading}
+            >
+              <div className={styles.chartContainer}>
+                {analytics?.organizationGrowth &&
+                analytics.organizationGrowth.length > 0 ? (
+                  <Line
+                    data={analytics.organizationGrowth}
+                    xField="month"
+                    yField="count"
+                    smooth
+                    theme={chartTheme.theme}
+                    color="#a05aff"
+                    point={{
+                      size: 6,
+                      shape: "circle",
+                      style: { fill: "#a05aff", stroke: "#fff", lineWidth: 2 }
+                    }}
+                    lineStyle={{ lineWidth: 3 }}
+                    axis={{
+                      y: {
+                        title: "Total Organizations",
+                        labelFill: chartTheme.labelColor,
+                        titleFill: chartTheme.textColor,
+                        grid: true,
+                        gridStroke: isDark ? "#444" : "#d9d9d9",
+                        gridLineDash: [4, 4]
+                      },
+                      x: {
+                        title: "Month",
+                        labelFill: chartTheme.labelColor,
+                        titleFill: chartTheme.textColor,
+                        grid: true,
+                        gridStroke: isDark ? "#444" : "#d9d9d9",
+                        gridLineDash: [4, 4]
+                      }
+                    }}
+                  />
+                ) : (
+                  <div className={styles.chartEmpty}>
+                    No growth data available yet
+                  </div>
+                )}
+              </div>
+            </Card>
+          </Col>
+          <Col xs={24} lg={12}>
+            <Card
+              title="Top Organizations by Activity"
+              className={styles.chartCard}
+              loading={loading}
+            >
+              <div className={styles.chartContainer}>
+                {analytics?.topOrganizations &&
+                analytics.topOrganizations.length > 0 ? (
+                  <Line
+                    data={analytics.topOrganizations}
+                    xField="name"
+                    yField="inspections"
+                    smooth
+                    theme={chartTheme.theme}
+                    color="#1bcfb4"
+                    point={{
+                      size: 6,
+                      shape: "circle",
+                      style: { fill: "#1bcfb4", stroke: "#fff", lineWidth: 2 }
+                    }}
+                    lineStyle={{ lineWidth: 3 }}
+                    axis={{
+                      y: {
+                        title: "Inspections",
+                        labelFill: chartTheme.labelColor,
+                        titleFill: chartTheme.textColor,
+                        grid: true,
+                        gridStroke: isDark ? "#444" : "#d9d9d9",
+                        gridLineDash: [4, 4]
+                      },
+                      x: {
+                        title: "Organization",
+                        labelFill: chartTheme.labelColor,
+                        titleFill: chartTheme.textColor,
+                        grid: true,
+                        gridStroke: isDark ? "#444" : "#d9d9d9",
+                        gridLineDash: [4, 4]
+                      }
+                    }}
+                  />
+                ) : (
+                  <div className={styles.chartEmpty}>
+                    No inspection data available yet
+                  </div>
+                )}
+              </div>
+            </Card>
+          </Col>
+        </Row>
+
+        {/* Row 2: Users & Vessels Distribution Tables */}
+        <Row gutter={[16, 16]}>
+          <Col xs={24} lg={12}>
+            <Card
+              title="Users by Organization"
+              className={styles.chartCard}
+              loading={loading}
+            >
+              <div className={styles.tableContainer}>
+                {analytics?.userDistribution &&
+                analytics.userDistribution.length > 0 ? (
+                  <Table
+                    dataSource={analytics.userDistribution.map((item, idx) => ({
+                      ...item,
+                      key: item.name,
+                      color: generateColors(analytics.userDistribution.length)[
+                        idx
+                      ]
+                    }))}
+                    columns={[
+                      {
+                        title: "Organization",
+                        dataIndex: "name",
+                        key: "name",
+                        render: (
+                          name: string,
+                          record: { color: string; name: string }
+                        ) => (
+                          <span>
+                            <span
+                              className={styles.colorDot}
+                              style={{ backgroundColor: record.color }}
+                            />
+                            {name}
+                          </span>
+                        )
+                      },
+                      {
+                        title: "Users",
+                        dataIndex: "value",
+                        key: "value",
+                        width: 100,
+                        align: "center" as const,
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        sorter: (a: any, b: any) => b.value - a.value,
+                        defaultSortOrder: "ascend" as const
+                      }
+                    ]}
+                    pagination={{ pageSize: 5, size: "small" }}
+                    size="small"
+                  />
+                ) : (
+                  <div className={styles.chartEmpty}>
+                    No user data available yet
+                  </div>
+                )}
+              </div>
+            </Card>
+          </Col>
+          <Col xs={24} lg={12}>
+            <Card
+              title="Vessels by Organization"
+              className={styles.chartCard}
+              loading={loading}
+            >
+              <div className={styles.tableContainer}>
+                {analytics?.vesselDistribution &&
+                analytics.vesselDistribution.length > 0 ? (
+                  <Table
+                    dataSource={analytics.vesselDistribution.map(
+                      (item, idx) => ({
+                        ...item,
+                        key: item.name,
+                        color: generateColors(
+                          analytics.vesselDistribution.length
+                        )[idx]
+                      })
+                    )}
+                    columns={[
+                      {
+                        title: "Organization",
+                        dataIndex: "name",
+                        key: "name",
+                        render: (
+                          name: string,
+                          record: { color: string; name: string }
+                        ) => (
+                          <span>
+                            <span
+                              className={styles.colorDot}
+                              style={{ backgroundColor: record.color }}
+                            />
+                            {name}
+                          </span>
+                        )
+                      },
+                      {
+                        title: "Vessels",
+                        dataIndex: "value",
+                        key: "value",
+                        width: 100,
+                        align: "center" as const,
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        sorter: (a: any, b: any) => b.value - a.value,
+                        defaultSortOrder: "ascend" as const
+                      }
+                    ]}
+                    pagination={{ pageSize: 5, size: "small" }}
+                    size="small"
+                  />
+                ) : (
+                  <div className={styles.chartEmpty}>
+                    No vessel data available yet
+                  </div>
+                )}
+              </div>
+            </Card>
+          </Col>
+        </Row>
+      </div>
+    );
+  }
+
   return (
     <div className={styles.pageContainer}>
       <Title level={2}>
@@ -372,6 +734,11 @@ export const DashboardPage = () => {
           {identity?.name || identity?.email}!
         </Text>
       </Title>
+      {identity?.organizationName && (
+        <Text type="secondary">
+          <BankOutlined /> {identity.organizationName}
+        </Text>
+      )}
 
       {/* Statistics Cards */}
       <Row gutter={[16, 16]} className={styles.statsRow}>

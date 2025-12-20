@@ -734,6 +734,9 @@ export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof
 export declare const OrganizationScalarFieldEnum: {
     readonly id: "id";
     readonly name: "name";
+    readonly email: "email";
+    readonly phone: "phone";
+    readonly owner: "owner";
     readonly logo: "logo";
     readonly defaultFormNo: "defaultFormNo";
     readonly footerText: "footerText";

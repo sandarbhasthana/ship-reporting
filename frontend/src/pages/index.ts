@@ -8,3 +8,4 @@ export {
 } from "./settings";
 export { InspectionList, InspectionForm, InspectionView } from "./inspections";
 export { UserList, UserForm } from "./users";
+export { OrganizationList, OrganizationForm } from "./organizations";

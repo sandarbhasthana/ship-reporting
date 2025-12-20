@@ -11,7 +11,8 @@ import {
   RocketOutlined,
   FileTextOutlined,
   UserOutlined,
-  SettingOutlined
+  SettingOutlined,
+  BankOutlined
 } from "@ant-design/icons";
 
 import { authProvider, dataProvider, accessControlProvider } from "./providers";
@@ -26,7 +27,9 @@ import {
   InspectionForm,
   InspectionView,
   UserList,
-  UserForm
+  UserForm,
+  OrganizationList,
+  OrganizationForm
 } from "./pages";
 import { ThemeProvider, useTheme } from "./theme";
 import { Header, CustomEmpty } from "./components";
@@ -59,6 +62,13 @@ function AppWithTheme() {
               name: "dashboard",
               list: "/",
               meta: { label: "Dashboard", icon: <DashboardOutlined /> }
+            },
+            {
+              name: "organizations",
+              list: "/organizations",
+              create: "/organizations/create",
+              edit: "/organizations/edit/:id",
+              meta: { label: "Organizations", icon: <BankOutlined /> }
             },
             {
               name: "vessels",
@@ -119,6 +129,16 @@ function AppWithTheme() {
               }
             >
               <Route index element={<DashboardPage />} />
+              {/* Organization routes (Super Admin only) */}
+              <Route path="/organizations" element={<OrganizationList />} />
+              <Route
+                path="/organizations/create"
+                element={<OrganizationForm />}
+              />
+              <Route
+                path="/organizations/edit/:id"
+                element={<OrganizationForm />}
+              />
               {/* Vessel routes */}
               <Route path="/vessels" element={<VesselSettings />} />
               <Route path="/vessels/create" element={<VesselForm />} />

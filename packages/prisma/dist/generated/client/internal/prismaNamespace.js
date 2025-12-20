@@ -122,6 +122,9 @@ exports.TransactionIsolationLevel = runtime.makeStrictEnum({
 exports.OrganizationScalarFieldEnum = {
     id: 'id',
     name: 'name',
+    email: 'email',
+    phone: 'phone',
+    owner: 'owner',
     logo: 'logo',
     defaultFormNo: 'defaultFormNo',
     footerText: 'footerText',

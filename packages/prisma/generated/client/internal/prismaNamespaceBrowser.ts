@@ -78,6 +78,9 @@ export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof
 export const OrganizationScalarFieldEnum = {
   id: 'id',
   name: 'name',
+  email: 'email',
+  phone: 'phone',
+  owner: 'owner',
   logo: 'logo',
   defaultFormNo: 'defaultFormNo',
   footerText: 'footerText',

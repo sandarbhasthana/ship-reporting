@@ -2,8 +2,6 @@ import { useCallback, useEffect, useState } from "react";
 import {
   Card,
   Form,
-  Input,
-  Select,
   Button,
   Switch,
   Typography,
@@ -21,6 +19,11 @@ import {
 } from "@ant-design/icons";
 import { useNavigate, useParams } from "react-router";
 import { useGetIdentity, useApiUrl } from "@refinedev/core";
+import {
+  FloatingInput,
+  FloatingPassword,
+  FloatingSelect
+} from "../../components";
 import styles from "./users.module.css";
 
 const { Title, Text } = Typography;
@@ -212,15 +215,15 @@ export const UserForm: React.FC = () => {
             <Col xs={24} md={12}>
               <Form.Item
                 name="name"
-                label="Full Name"
                 rules={[
                   { required: true, message: "Please enter the user's name" },
                   { min: 2, message: "Name must be at least 2 characters" }
                 ]}
               >
-                <Input
+                <FloatingInput
+                  label="Full Name"
+                  required
                   prefix={<UserOutlined style={{ color: "#bfbfbf" }} />}
-                  placeholder="Enter full name"
                   size="large"
                 />
               </Form.Item>
@@ -228,15 +231,15 @@ export const UserForm: React.FC = () => {
             <Col xs={24} md={12}>
               <Form.Item
                 name="email"
-                label="Email Address"
                 rules={[
                   { required: true, message: "Please enter an email address" },
                   { type: "email", message: "Please enter a valid email" }
                 ]}
               >
-                <Input
+                <FloatingInput
+                  label="Email Address"
+                  required
                   prefix={<MailOutlined style={{ color: "#bfbfbf" }} />}
-                  placeholder="Enter email address"
                   size="large"
                 />
               </Form.Item>
@@ -247,11 +250,6 @@ export const UserForm: React.FC = () => {
             <Col xs={24} md={12}>
               <Form.Item
                 name="password"
-                label={
-                  isEdit
-                    ? "New Password (leave blank to keep current)"
-                    : "Password"
-                }
                 rules={
                   isEdit
                     ? [
@@ -276,9 +274,10 @@ export const UserForm: React.FC = () => {
                   ) : null
                 }
               >
-                <Input.Password
+                <FloatingPassword
+                  label={isEdit ? "New Password (optional)" : "Password"}
+                  required={!isEdit}
                   prefix={<LockOutlined style={{ color: "#bfbfbf" }} />}
-                  placeholder={isEdit ? "Enter new password" : "Enter password"}
                   size="large"
                 />
               </Form.Item>
@@ -311,10 +310,11 @@ export const UserForm: React.FC = () => {
             <Col xs={24} md={12}>
               <Form.Item
                 name="role"
-                label="Role"
                 rules={[{ required: true, message: "Please select a role" }]}
               >
-                <Select
+                <FloatingSelect
+                  label="Role"
+                  required
                   size="large"
                   options={[
                     { value: "ADMIN", label: "Admin" },
@@ -327,15 +327,14 @@ export const UserForm: React.FC = () => {
               {selectedRole === "CAPTAIN" && (
                 <Form.Item
                   name="assignedVesselId"
-                  label="Assigned Vessel"
                   extra={
                     <Text type="secondary" className={styles.passwordHint}>
                       A captain can only be assigned to one vessel
                     </Text>
                   }
                 >
-                  <Select
-                    placeholder="Select a vessel to assign"
+                  <FloatingSelect
+                    label="Assigned Vessel"
                     allowClear
                     size="large"
                     options={availableVessels.map((v) => ({

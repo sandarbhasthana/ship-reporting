@@ -1,0 +1,129 @@
+/* Floating Label Container */
+.floatingLabelContainer {
+  position: relative;
+  width: 100%;
+}
+
+/* The floating label */
+.floatingLabel {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 14px;
+  color: var(--text-secondary, rgba(255, 255, 255, 0.45));
+  pointer-events: none;
+  transition: all 0.2s ease-out;
+  background: transparent;
+  padding: 0;
+  z-index: 1;
+  line-height: 1;
+}
+
+/* Adjust for inputs with prefix icons */
+.hasPrefix .floatingLabel {
+  left: 40px;
+}
+
+/* Required indicator */
+.floatingLabel.required::after {
+  content: " *";
+  color: #ff4d4f;
+}
+
+/* Floating state - label moves to top-left */
+.floating .floatingLabel {
+  top: 0;
+  left: 12px;
+  transform: translateY(-50%);
+  font-size: 11px;
+  color: var(--color-primary, #a05aff);
+  padding: 0 4px;
+  font-weight: 500;
+  /* Use CSS variable for card/container background */
+  background: var(--card-bg, #ffffff);
+}
+
+/* Dark mode background */
+:global([data-theme="dark"]) .floating .floatingLabel {
+  background: var(--card-bg, #1f1f1f);
+}
+
+/* Override for inputs with prefix when floating - still top-left */
+.floating.hasPrefix .floatingLabel {
+  left: 12px;
+}
+
+/* Make sure ant-design inputs have proper sizing for floating labels */
+.floatingLabelContainer :global(.ant-input),
+.floatingLabelContainer :global(.ant-input-password),
+.floatingLabelContainer :global(.ant-input-affix-wrapper),
+.floatingLabelContainer :global(.ant-select-selector),
+.floatingLabelContainer :global(.ant-picker),
+.floatingLabelContainer :global(.ant-input-number) {
+  height: 48px;
+  font-size: 14px;
+}
+
+/* Input with prefix - align icon and text */
+.floatingLabelContainer :global(.ant-input-affix-wrapper) {
+  display: flex;
+  align-items: center;
+  padding: 0 11px;
+}
+
+.floatingLabelContainer :global(.ant-input-affix-wrapper .ant-input-prefix) {
+  margin-inline-end: 8px;
+  display: flex;
+  align-items: center;
+}
+
+.floatingLabelContainer :global(.ant-input-affix-wrapper .ant-input) {
+  height: auto;
+  padding: 0;
+}
+
+/* TextArea specific */
+.floatingLabelContainer :global(.ant-input-textarea) textarea {
+  padding-top: 16px;
+  min-height: 80px;
+}
+
+/* Select specific */
+.floatingLabelContainer :global(.ant-select-selector) {
+  display: flex;
+  align-items: center;
+}
+
+.floatingLabelContainer :global(.ant-select-selection-search-input) {
+  height: 100% !important;
+}
+
+/* InputNumber specific */
+.floatingLabelContainer :global(.ant-input-number-input) {
+  height: 46px;
+}
+
+/* DatePicker specific */
+.floatingLabelContainer :global(.ant-picker-input > input) {
+  font-size: 14px;
+}
+
+/* Focus state styling */
+.floatingLabelContainer :global(.ant-input:focus),
+.floatingLabelContainer :global(.ant-input-focused),
+.floatingLabelContainer :global(.ant-input-affix-wrapper-focused),
+.floatingLabelContainer :global(.ant-select-focused .ant-select-selector),
+.floatingLabelContainer :global(.ant-picker-focused) {
+  border-color: var(--primary-color, #a05aff) !important;
+  box-shadow: 0 0 0 2px rgba(160, 90, 255, 0.1) !important;
+}
+
+/* Hover state */
+.floatingLabelContainer :global(.ant-input:hover),
+.floatingLabelContainer :global(.ant-input-affix-wrapper:hover),
+.floatingLabelContainer
+  :global(.ant-select:not(.ant-select-disabled):hover .ant-select-selector),
+.floatingLabelContainer :global(.ant-picker:hover) {
+  border-color: var(--primary-color, #a05aff);
+}

@@ -36,6 +36,13 @@ export class OrganizationController {
     return this.organizationService.findAll();
   }
 
+  @Get('analytics')
+  @Roles(RoleName.SUPER_ADMIN)
+  @ApiOperation({ summary: 'Get platform analytics (Super Admin only)' })
+  getAnalytics() {
+    return this.organizationService.getAnalytics();
+  }
+
   @Get('my')
   @ApiOperation({ summary: 'Get current user organization' })
   async getMy(@CurrentUser('organizationId') organizationId: string) {

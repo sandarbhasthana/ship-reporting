@@ -12,7 +12,9 @@ import {
   message,
   Spin,
   Popconfirm,
-  Modal
+  Modal,
+  Row,
+  Col
 } from "antd";
 import {
   PlusOutlined,
@@ -26,6 +28,11 @@ import {
 import { useGetIdentity, useApiUrl } from "@refinedev/core";
 import { useParams, useNavigate, Link } from "react-router";
 import dayjs from "dayjs";
+import {
+  FloatingInput,
+  FloatingSelect,
+  FloatingDatePicker
+} from "../../components";
 import styles from "./inspections.module.css";
 
 const { Title, Text } = Typography;
@@ -574,53 +581,65 @@ export const InspectionForm = () => {
           <Title level={5} className={styles.formSectionTitle}>
             Header Information
           </Title>
-          <Space wrap size="large">
-            <Form.Item
-              name="vesselId"
-              label="Vessel"
-              rules={[{ required: true, message: "Please select a vessel" }]}
-            >
-              <Select
-                placeholder="Select vessel"
-                options={vessels.map((v) => ({ label: v.name, value: v.id }))}
-                disabled={isEdit || Boolean(identity?.assignedVesselId)}
-                className={styles.filterSelect}
-              />
-            </Form.Item>
-            <Form.Item name="inspectedBy" label="Inspection Type">
-              <Select
-                placeholder="Select type"
-                allowClear
-                className={styles.filterSelect}
-                options={[
-                  { label: "PSC", value: "PSC" },
-                  { label: "SIRE", value: "SIRE" },
-                  { label: "FLAG", value: "FLAG" },
-                  { label: "TERMINAL", value: "TERMINAL" },
-                  { label: "RIGHTSHIP", value: "RIGHTSHIP" }
-                ]}
-              />
-            </Form.Item>
-            <Form.Item name="inspectionDate" label="Inspection Date">
-              <DatePicker format="DD/MM/YYYY" />
-            </Form.Item>
-            <Form.Item name="shipFileNo" label="Ship's File No">
-              <Input placeholder="e.g., 123.4.5" />
-            </Form.Item>
-            {isAdmin && (
-              <>
-                <Form.Item name="officeFileNo" label="Office File No">
-                  <Input placeholder="e.g., 180.2.10" />
+          <Row gutter={24}>
+            <Col xs={24} sm={12} md={6}>
+              <Form.Item
+                name="vesselId"
+                rules={[{ required: true, message: "Please select a vessel" }]}
+              >
+                <FloatingSelect
+                  label="Vessel"
+                  required
+                  options={vessels.map((v) => ({ label: v.name, value: v.id }))}
+                  disabled={isEdit || Boolean(identity?.assignedVesselId)}
+                />
+              </Form.Item>
+            </Col>
+            <Col xs={24} sm={12} md={6}>
+              <Form.Item name="inspectedBy">
+                <FloatingSelect
+                  label="Inspection Type"
+                  allowClear
+                  options={[
+                    { label: "PSC", value: "PSC" },
+                    { label: "SIRE", value: "SIRE" },
+                    { label: "FLAG", value: "FLAG" },
+                    { label: "TERMINAL", value: "TERMINAL" },
+                    { label: "RIGHTSHIP", value: "RIGHTSHIP" }
+                  ]}
+                />
+              </Form.Item>
+            </Col>
+            <Col xs={24} sm={12} md={6}>
+              <Form.Item name="inspectionDate">
+                <FloatingDatePicker label="Inspection Date" />
+              </Form.Item>
+            </Col>
+            <Col xs={24} sm={12} md={6}>
+              <Form.Item name="shipFileNo">
+                <FloatingInput label="Ship's File No" />
+              </Form.Item>
+            </Col>
+          </Row>
+          {isAdmin && (
+            <Row gutter={24}>
+              <Col xs={24} sm={12} md={8}>
+                <Form.Item name="officeFileNo">
+                  <FloatingInput label="Office File No" />
                 </Form.Item>
-                <Form.Item name="revisionNo" label="Revision No">
-                  <Input placeholder="e.g., 1" />
+              </Col>
+              <Col xs={24} sm={12} md={8}>
+                <Form.Item name="revisionNo">
+                  <FloatingInput label="Revision No" />
                 </Form.Item>
-                <Form.Item name="formNo" label="Form No">
-                  <Input placeholder="e.g., 1.11" />
+              </Col>
+              <Col xs={24} sm={12} md={8}>
+                <Form.Item name="formNo">
+                  <FloatingInput label="Form No" />
                 </Form.Item>
-              </>
-            )}
-          </Space>
+              </Col>
+            </Row>
+          )}
         </div>
 
         <div className={styles.formSection}>

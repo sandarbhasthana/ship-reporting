@@ -38,10 +38,17 @@ async function main() {
   // Create organization
   const organization = await prisma.organization.upsert({
     where: { id: "seed-org-001" },
-    update: {},
+    update: {
+      email: "contact@demoshipping.com",
+      phone: "+1 555 123 4567",
+      owner: "John Maritime"
+    },
     create: {
       id: "seed-org-001",
-      name: "Demo Shipping Company"
+      name: "Demo Shipping Company",
+      email: "contact@demoshipping.com",
+      phone: "+1 555 123 4567",
+      owner: "John Maritime"
     }
   });
 
@@ -96,10 +103,28 @@ async function main() {
 
   console.log("✅ Captain user created:", captainUser.email);
 
+  // Create SUPER_ADMIN user (no organization - platform-level admin)
+  const superAdminPassword = await bcrypt.hash("superadmin123", 10);
+
+  const superAdminUser = await prisma.user.upsert({
+    where: { email: "superadmin@shipreporting.com" },
+    update: {},
+    create: {
+      email: "superadmin@shipreporting.com",
+      passwordHash: superAdminPassword,
+      name: "Platform Super Admin",
+      role: RoleName.SUPER_ADMIN,
+      organizationId: null // SUPER_ADMIN has no organization
+    }
+  });
+
+  console.log("✅ Super Admin user created:", superAdminUser.email);
+
   console.log("\n🎉 Seeding complete!");
   console.log("\n📋 Test credentials:");
-  console.log("   Admin:   admin@demoshipping.com / admin123");
-  console.log("   Captain: captain@demoshipping.com / captain123");
+  console.log("   Super Admin: superadmin@shipreporting.com / superadmin123");
+  console.log("   Admin:       admin@demoshipping.com / admin123");
+  console.log("   Captain:     captain@demoshipping.com / captain123");
 }
 
 main()

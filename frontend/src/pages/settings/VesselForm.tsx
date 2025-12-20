@@ -1,16 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import {
-  Card,
-  Form,
-  Input,
-  Select,
-  Button,
-  Typography,
-  Spin,
-  message,
-  Row,
-  Col
-} from "antd";
+import { Card, Form, Button, Typography, Spin, message, Row, Col } from "antd";
 import {
   SaveOutlined,
   ArrowLeftOutlined,
@@ -21,6 +10,7 @@ import {
 } from "@ant-design/icons";
 import { useNavigate, useParams } from "react-router";
 import { useGetIdentity, useApiUrl } from "@refinedev/core";
+import { FloatingInput, FloatingSelect } from "../../components";
 import styles from "./settings.module.css";
 
 const { Title, Text } = Typography;
@@ -227,24 +217,24 @@ export const VesselForm: React.FC = () => {
             <Col xs={24} md={12}>
               <Form.Item
                 name="name"
-                label="Vessel Name"
                 rules={[
                   { required: true, message: "Please enter the vessel name" },
                   { min: 2, message: "Name must be at least 2 characters" }
                 ]}
               >
-                <Input
+                <FloatingInput
+                  label="Vessel Name"
+                  required
                   prefix={<span className={styles.vesselIconPrefix}>🚢</span>}
-                  placeholder="Enter vessel name"
                   size="large"
                 />
               </Form.Item>
             </Col>
             <Col xs={24} md={12}>
-              <Form.Item name="imoNumber" label="IMO Number">
-                <Input
+              <Form.Item name="imoNumber">
+                <FloatingInput
+                  label="IMO Number"
                   prefix={<IdcardOutlined style={{ color: "#bfbfbf" }} />}
-                  placeholder="e.g., IMO1234567"
                   maxLength={20}
                   size="large"
                 />
@@ -254,20 +244,20 @@ export const VesselForm: React.FC = () => {
 
           <Row gutter={24}>
             <Col xs={24} md={12}>
-              <Form.Item name="callSign" label="Call Sign">
-                <Input
+              <Form.Item name="callSign">
+                <FloatingInput
+                  label="Call Sign"
                   prefix={<PhoneOutlined style={{ color: "#bfbfbf" }} />}
-                  placeholder="Enter call sign"
                   maxLength={20}
                   size="large"
                 />
               </Form.Item>
             </Col>
             <Col xs={24} md={12}>
-              <Form.Item name="flag" label="Flag State">
-                <Input
+              <Form.Item name="flag">
+                <FloatingInput
+                  label="Flag State"
                   prefix={<FlagOutlined style={{ color: "#bfbfbf" }} />}
-                  placeholder="e.g., Singapore, Panama"
                   maxLength={100}
                   size="large"
                 />
@@ -277,10 +267,10 @@ export const VesselForm: React.FC = () => {
 
           <Row gutter={24}>
             <Col xs={24} md={12}>
-              <Form.Item name="shipFileNo" label="Ship File Number">
-                <Input
+              <Form.Item name="shipFileNo">
+                <FloatingInput
+                  label="Ship File Number"
                   prefix={<FileTextOutlined style={{ color: "#bfbfbf" }} />}
-                  placeholder="Enter ship file number"
                   maxLength={50}
                   size="large"
                 />
@@ -298,15 +288,14 @@ export const VesselForm: React.FC = () => {
             <Col xs={24} md={12}>
               <Form.Item
                 name="captainId"
-                label="Assigned Captain"
                 extra={
                   <Text type="secondary" className={styles.hint}>
                     Only captains without a vessel assignment are shown
                   </Text>
                 }
               >
-                <Select
-                  placeholder="Select a captain to assign"
+                <FloatingSelect
+                  label="Assigned Captain"
                   allowClear
                   size="large"
                   options={captains.map((c) => ({

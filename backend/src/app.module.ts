@@ -12,6 +12,7 @@ import { UsersModule } from './users/users.module';
 import { VesselsModule } from './vessels/vessels.module';
 import { InspectionsModule } from './inspections/inspections.module';
 import { AuditModule } from './audit/audit.module';
+import { EmailModule } from './email/email.module';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 
 @Module({
@@ -39,6 +40,7 @@ import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
       },
     ]),
     PrismaModule,
+    EmailModule,
     AuthModule,
     OrganizationModule,
     UploadModule,
