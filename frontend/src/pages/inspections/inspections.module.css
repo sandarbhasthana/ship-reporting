@@ -180,14 +180,15 @@
   align-items: flex-start;
   justify-content: space-between;
   cursor: pointer;
-  padding: 6px;
+  padding: 8px;
   border: 1px solid var(--input-border);
   border-radius: 4px;
-  min-height: 50px;
+  height: 76px;
   background: var(--input-bg);
   transition:
     border-color 0.2s,
     box-shadow 0.2s;
+  overflow: hidden;
 }
 
 .textCellContainer:hover {
@@ -198,9 +199,15 @@
 .textCellContent {
   flex: 1;
   font-size: 13px;
-  line-height: 1.5;
+  line-height: 1.4;
   word-break: break-word;
   overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  max-height: 58px;
 }
 
 .textCellIcon {
@@ -231,6 +238,7 @@
 /* Compact table styles */
 .entriesTableCompact {
   width: 100%;
+  table-layout: fixed;
 }
 
 .entriesTableCompact :global(.ant-table-thead > tr > th) {
@@ -242,13 +250,28 @@
 
 .entriesTableCompact :global(.ant-table-tbody > tr > td) {
   padding: 6px;
-  vertical-align: top;
+  vertical-align: middle;
+  height: 88px;
+}
+
+/* Ensure all rows have consistent height */
+.entriesTableCompact :global(.ant-table-tbody > tr) {
+  height: 88px;
 }
 
 .srNoInput {
-  width: 55px;
+  width: 45px;
   text-align: center;
-  padding: 4px 6px;
+  padding: 4px 2px;
+  height: 32px;
+}
+
+.datePickerCompact {
+  width: 90px;
+}
+
+.datePickerCompact :global(.ant-picker-input > input) {
+  font-size: 12px;
 }
 
 /* Read-only text for admin view of captain columns */
@@ -269,14 +292,6 @@
   color: var(--text-primary, #ffffff);
 }
 
-.datePickerCompact {
-  width: 100%;
-}
-
-.datePickerCompact :global(.ant-picker-input > input) {
-  font-size: 12px;
-}
-
 .statusSelect {
   width: 100%;
   font-size: 12px;
@@ -286,22 +301,27 @@
 .remarksCell {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
+  height: 76px;
+  justify-content: center;
 }
 
 .remarksRow {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
 }
 
 .remarksLabel {
-  font-size: 11px;
-  min-width: 38px;
+  font-size: 10px;
+  min-width: 34px;
 }
 
 .remarksValue {
   font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .remarksSelect {
@@ -309,16 +329,76 @@
   font-size: 11px;
 }
 
+.remarksSelect :global(.ant-select-selector) {
+  height: 22px !important;
+  min-height: 22px !important;
+  border-radius: 6px !important;
+  padding: 0 8px !important;
+}
+
 .remarksSelect :global(.ant-select-selection-item) {
   font-size: 11px;
+  line-height: 20px !important;
+}
+
+.remarksSelect :global(.ant-select-arrow) {
+  font-size: 10px;
 }
 
 .remarksDatePicker {
   flex: 1;
 }
 
+.remarksDatePicker:global(.ant-picker) {
+  height: 22px !important;
+  padding: 0 8px !important;
+  border-radius: 6px !important;
+}
+
 .remarksDatePicker :global(.ant-picker-input > input) {
   font-size: 11px;
+}
+
+.remarksDatePicker :global(.ant-picker-suffix) {
+  font-size: 12px;
+}
+
+/* Status option colors */
+.statusOpen {
+  color: #cf1322;
+}
+
+.statusOpen :global(.ant-select-selector) {
+  background-color: #fff1f0 !important;
+  border-color: #ffa39e !important;
+}
+
+.statusActionNeeded {
+  color: #d48806;
+}
+
+.statusActionNeeded :global(.ant-select-selector) {
+  background-color: #fffbe6 !important;
+  border-color: #ffe58f !important;
+}
+
+.statusClosed {
+  color: #389e0d;
+}
+
+.statusClosed :global(.ant-select-selector) {
+  background-color: #f6ffed !important;
+  border-color: #b7eb8f !important;
+}
+
+/* Status dropdown styles */
+.statusDropdown :global(.ant-select-item-option-selected),
+.statusDropdown :global(.ant-select-item-option-active) {
+  background-color: #f5f5f5 !important;
+}
+
+.statusDropdown :global(.ant-select-item-option-selected)::after {
+  display: none;
 }
 
 /* Remarks view cell (read-only) */
@@ -337,4 +417,48 @@
 .remarksViewLabel {
   font-size: 11px;
   min-width: 38px;
+}
+
+/* User role badges */
+.userBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 0 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+  border: 1px solid;
+  height: 22px;
+  flex: 1;
+  box-sizing: border-box;
+}
+
+.badgeIcon {
+  font-size: 10px;
+  flex-shrink: 0;
+}
+
+.adminBadge {
+  background-color: #f9f0ff;
+  border-color: #d3adf7;
+  color: #722ed1;
+}
+
+.captainBadge {
+  background-color: #e6f7ff;
+  border-color: #91d5ff;
+  color: #1890ff;
+}
+
+/* Delete button hover style */
+.deleteButton {
+  transition: all 0.2s ease;
+}
+
+.deleteButton:hover {
+  background-color: #ff4d4f !important;
+  color: #fff !important;
 }

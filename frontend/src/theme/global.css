@@ -184,3 +184,22 @@ pre {
 .ant-dropdown .ant-dropdown-menu .ant-dropdown-menu-item-divider {
   margin: 4px 0;
 }
+
+/* ========================================
+ * Global Table Header Styling
+ * Uses app theme variables for consistent look
+ * ======================================== */
+.ant-table-thead > tr > th {
+  background: var(--color-primary-light) !important;
+  border-bottom: 2px solid var(--color-primary) !important;
+  font-weight: 600;
+  color: var(--color-primary-dark);
+}
+
+.ant-table-thead > tr > th::before {
+  display: none !important;
+}
+
+[data-theme="dark"] .ant-table-thead > tr > th {
+  color: var(--color-primary);
+}

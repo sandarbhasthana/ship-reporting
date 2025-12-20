@@ -19,7 +19,9 @@ import {
   DeleteOutlined,
   SaveOutlined,
   ArrowLeftOutlined,
-  EditOutlined
+  EditOutlined,
+  UserOutlined,
+  CrownOutlined
 } from "@ant-design/icons";
 import { useGetIdentity, useApiUrl } from "@refinedev/core";
 import { useParams, useNavigate, Link } from "react-router";
@@ -53,6 +55,7 @@ interface InspectionEntry {
   status: string;
   officeSignUserId?: string | null;
   officeSignUserName?: string | null;
+  officeSignUserRole?: string | null;
   officeSignDate?: string | null;
 }
 
@@ -328,103 +331,75 @@ export const InspectionForm = () => {
     }
   };
 
-  // Check if admin can edit captain columns (only captains can edit columns 1-6)
-  const canEditCaptainColumns = !isAdmin;
+  // Both admins and captains can edit all ship staff columns
+  // Admins can additionally edit company analysis and remarks
+  // Calculate text column width based on role (equal distribution)
+  const textColumnWidth = isAdmin ? "13%" : "20%";
 
   const entryColumns = [
     {
       title: "Sr No.",
       dataIndex: "srNo",
-      width: 65,
-      render: (_: unknown, record: InspectionEntry) =>
-        canEditCaptainColumns ? (
-          <Input
-            value={record.srNo}
-            onChange={(e) => updateEntry(record.key!, "srNo", e.target.value)}
-            maxLength={5}
-            className={styles.srNoInput}
-          />
-        ) : (
-          <Text>{record.srNo}</Text>
-        )
+      width: 55,
+      render: (_: unknown, record: InspectionEntry) => (
+        <Input
+          value={record.srNo}
+          onChange={(e) => updateEntry(record.key!, "srNo", e.target.value)}
+          maxLength={5}
+          className={styles.srNoInput}
+        />
+      )
     },
     {
       title: "Deficiency",
       dataIndex: "deficiency",
+      width: textColumnWidth,
       render: (_: unknown, record: InspectionEntry) =>
-        canEditCaptainColumns ? (
-          renderTextCell(record, "deficiency", "Deficiency")
-        ) : (
-          <Text className={styles.readOnlyText}>
-            {record.deficiency || "-"}
-          </Text>
-        )
+        renderTextCell(record, "deficiency", "Deficiency")
     },
     {
       title: "Master Cause Analysis",
       dataIndex: "mastersCauseAnalysis",
+      width: textColumnWidth,
       render: (_: unknown, record: InspectionEntry) =>
-        canEditCaptainColumns ? (
-          renderTextCell(
-            record,
-            "mastersCauseAnalysis",
-            "Master's Cause Analysis"
-          )
-        ) : (
-          <Text className={styles.readOnlyText}>
-            {record.mastersCauseAnalysis || "-"}
-          </Text>
+        renderTextCell(
+          record,
+          "mastersCauseAnalysis",
+          "Master's Cause Analysis"
         )
     },
     {
       title: "Corrective Action",
       dataIndex: "correctiveAction",
+      width: textColumnWidth,
       render: (_: unknown, record: InspectionEntry) =>
-        canEditCaptainColumns ? (
-          renderTextCell(record, "correctiveAction", "Corrective Action")
-        ) : (
-          <Text className={styles.readOnlyText}>
-            {record.correctiveAction || "-"}
-          </Text>
-        )
+        renderTextCell(record, "correctiveAction", "Corrective Action")
     },
     {
       title: "Preventive Action",
       dataIndex: "preventiveAction",
+      width: textColumnWidth,
       render: (_: unknown, record: InspectionEntry) =>
-        canEditCaptainColumns ? (
-          renderTextCell(record, "preventiveAction", "Preventive Action")
-        ) : (
-          <Text className={styles.readOnlyText}>
-            {record.preventiveAction || "-"}
-          </Text>
-        )
+        renderTextCell(record, "preventiveAction", "Preventive Action")
     },
     {
       title: "Date",
       dataIndex: "completionDate",
-      width: 115,
-      render: (_: unknown, record: InspectionEntry) =>
-        canEditCaptainColumns ? (
-          <DatePicker
-            value={record.completionDate ? dayjs(record.completionDate) : null}
-            onChange={(date) =>
-              updateEntry(
-                record.key!,
-                "completionDate",
-                date?.toISOString() || null
-              )
-            }
-            format="DD/MM/YY"
-            className={styles.datePickerCompact}
-          />
-        ) : (
-          <Text>
-            {record.completionDate
-              ? dayjs(record.completionDate).format("DD/MM/YY")
-              : "-"}
-          </Text>
-        )
+      width: 100,
+      render: (_: unknown, record: InspectionEntry) => (
+        <DatePicker
+          value={record.completionDate ? dayjs(record.completionDate) : null}
+          onChange={(date) =>
+            updateEntry(
+              record.key!,
+              "completionDate",
+              date?.toISOString() || null
+            )
+          }
+          format="DD/MM/YY"
+          className={styles.datePickerCompact}
+        />
+      )
     }
   ];
 
@@ -434,13 +409,14 @@ export const InspectionForm = () => {
       {
         title: "Company Analysis",
         dataIndex: "companyAnalysis",
+        width: textColumnWidth,
         render: (_: unknown, record: InspectionEntry) =>
           renderTextCell(record, "companyAnalysis", "Company Analysis")
       },
       {
         title: "Remarks",
         dataIndex: "remarks",
-        width: 200,
+        width: 210,
         render: (_: unknown, record: InspectionEntry) => (
           <div className={styles.remarksCell}>
             <div className={styles.remarksRow}>
@@ -451,44 +427,62 @@ export const InspectionForm = () => {
                 value={record.status}
                 onChange={(val) => {
                   // Auto-populate sign when status changes from OPEN
-                  console.log("Status change:", {
-                    val,
-                    currentStatus: record.status,
-                    officeSignUserId: record.officeSignUserId,
-                    identityId: identity?.id,
-                    identityName: identity?.name
-                  });
                   if (val !== "OPEN" && !record.officeSignUserId) {
-                    console.log(
-                      "Auto-populating sign with:",
-                      identity?.id,
-                      identity?.name
-                    );
                     updateEntryMultiple(record.key!, {
                       status: val,
                       officeSignUserId: identity?.id || null,
-                      officeSignUserName: identity?.name || null
+                      officeSignUserName: identity?.name || null,
+                      officeSignUserRole: identity?.role || null
                     });
                   } else {
                     updateEntry(record.key!, "status", val);
                   }
                 }}
-                options={[
-                  { label: "Open", value: "OPEN" },
-                  { label: "Action Needed", value: "FURTHER_ACTION_NEEDED" },
-                  { label: "Closed", value: "CLOSED_SATISFACTORILY" }
-                ]}
                 size="small"
-                className={styles.remarksSelect}
-              />
+                popupClassName={styles.statusDropdown}
+                className={`${styles.remarksSelect} ${
+                  record.status === "OPEN"
+                    ? styles.statusOpen
+                    : record.status === "FURTHER_ACTION_NEEDED"
+                      ? styles.statusActionNeeded
+                      : styles.statusClosed
+                }`}
+              >
+                <Select.Option value="OPEN">
+                  <span className={styles.statusOpen}>Open</span>
+                </Select.Option>
+                <Select.Option value="FURTHER_ACTION_NEEDED">
+                  <span className={styles.statusActionNeeded}>
+                    Action Needed
+                  </span>
+                </Select.Option>
+                <Select.Option value="CLOSED_SATISFACTORILY">
+                  <span className={styles.statusClosed}>Closed</span>
+                </Select.Option>
+              </Select>
             </div>
             <div className={styles.remarksRow}>
               <Text type="secondary" className={styles.remarksLabel}>
                 Sign:
               </Text>
-              <Text className={styles.remarksValue}>
-                {record.officeSignUserName || "-"}
-              </Text>
+              {record.officeSignUserName ? (
+                <span
+                  className={`${styles.userBadge} ${
+                    record.officeSignUserRole === "ADMIN"
+                      ? styles.adminBadge
+                      : styles.captainBadge
+                  }`}
+                >
+                  {record.officeSignUserRole === "ADMIN" ? (
+                    <CrownOutlined className={styles.badgeIcon} />
+                  ) : (
+                    <UserOutlined className={styles.badgeIcon} />
+                  )}
+                  {record.officeSignUserName}
+                </span>
+              ) : (
+                <span className={styles.remarksValue}>-</span>
+              )}
             </div>
             <div className={styles.remarksRow}>
               <Text type="secondary" className={styles.remarksLabel}>
@@ -516,21 +510,25 @@ export const InspectionForm = () => {
     );
   }
 
-  // Add delete column (only for captains, not admins)
-  if (!isAdmin) {
-    entryColumns.push({
-      title: "",
-      width: 40,
-      render: (_: unknown, record: InspectionEntry) => (
-        <Popconfirm
-          title="Remove entry?"
-          onConfirm={() => removeEntry(record.key!)}
-        >
-          <Button type="text" danger icon={<DeleteOutlined />} size="small" />
-        </Popconfirm>
-      )
-    } as (typeof entryColumns)[0]);
-  }
+  // Add delete column for both admins and captains
+  entryColumns.push({
+    title: "",
+    width: 40,
+    render: (_: unknown, record: InspectionEntry) => (
+      <Popconfirm
+        title="Remove entry?"
+        onConfirm={() => removeEntry(record.key!)}
+      >
+        <Button
+          type="text"
+          danger
+          icon={<DeleteOutlined />}
+          size="small"
+          className={styles.deleteButton}
+        />
+      </Popconfirm>
+    )
+  } as (typeof entryColumns)[0]);
 
   if (loading) {
     return (
@@ -589,17 +587,25 @@ export const InspectionForm = () => {
                 className={styles.filterSelect}
               />
             </Form.Item>
-            <Form.Item name="inspectedBy" label="Inspected By">
-              <Input
-                placeholder="e.g., RIGHTSHIP"
-                disabled={isAdmin && isEdit}
+            <Form.Item name="inspectedBy" label="Inspection Type">
+              <Select
+                placeholder="Select type"
+                allowClear
+                className={styles.filterSelect}
+                options={[
+                  { label: "PSC", value: "PSC" },
+                  { label: "SIRE", value: "SIRE" },
+                  { label: "FLAG", value: "FLAG" },
+                  { label: "TERMINAL", value: "TERMINAL" },
+                  { label: "RIGHTSHIP", value: "RIGHTSHIP" }
+                ]}
               />
             </Form.Item>
             <Form.Item name="inspectionDate" label="Inspection Date">
-              <DatePicker format="DD/MM/YYYY" disabled={isAdmin && isEdit} />
+              <DatePicker format="DD/MM/YYYY" />
             </Form.Item>
             <Form.Item name="shipFileNo" label="Ship's File No">
-              <Input placeholder="e.g., 123.4.5" disabled={isAdmin && isEdit} />
+              <Input placeholder="e.g., 123.4.5" />
             </Form.Item>
             {isAdmin && (
               <>
@@ -622,16 +628,14 @@ export const InspectionForm = () => {
             <Title level={5} className={styles.formSectionTitle}>
               Deficiency Entries
             </Title>
-            {!isAdmin && (
-              <Button
-                type="primary"
-                onClick={addEntry}
-                icon={<PlusOutlined />}
-                disabled={entries.length >= 100}
-              >
-                Add Entry {entries.length >= 100 && "(Max 100)"}
-              </Button>
-            )}
+            <Button
+              type="primary"
+              onClick={addEntry}
+              icon={<PlusOutlined />}
+              disabled={entries.length >= 100}
+            >
+              Add Entry {entries.length >= 100 && "(Max 100)"}
+            </Button>
           </div>
           <Table
             columns={entryColumns}

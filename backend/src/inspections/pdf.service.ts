@@ -326,18 +326,18 @@ export class PdfService {
     const startX = doc.page.margins.left;
     let startY = doc.y;
 
-    // Column definitions (percentages of total width)
+    // Column definitions (percentages of total width) - adjusted for better proportions
     const columns: ColumnDefinition[] = [
       { header: 'SR NO', width: 0.04, key: 'srNo' },
-      { header: 'DEFICIENCY', width: 0.15, key: 'deficiency' },
+      { header: 'DEFICIENCY', width: 0.14, key: 'deficiency' },
       {
-        header: "MASTER'S - CAUSE ANALYSIS",
+        header: "MASTER'S - CAUSE\nANALYSIS",
         width: 0.12,
         key: 'mastersCauseAnalysis',
       },
       { header: 'CORRECTIVE ACTION', width: 0.12, key: 'correctiveAction' },
       { header: 'PREVENTIVE ACTION', width: 0.12, key: 'preventiveAction' },
-      { header: 'COMPL DATE', width: 0.07, key: 'completionDate' },
+      { header: 'COMPL DATE', width: 0.08, key: 'completionDate' },
       { header: 'COMPANY ANALYSIS', width: 0.15, key: 'companyAnalysis' },
       { header: 'REMARKS*', width: 0.23, key: 'remarks' },
     ];
@@ -346,7 +346,7 @@ export class PdfService {
     const groupHeaderHeight = 18;
     const headerHeight = 35;
     const fontSize = 7;
-    const padding = 3;
+    const padding = 4;
 
     // ========== GROUP HEADERS (SHIP STAFF / OFFICE) ==========
     // Calculate widths for group headers
@@ -388,10 +388,14 @@ export class PdfService {
       x += colWidth;
     });
 
-    // Then draw header text - vertically centered
+    // Then draw header text - vertically centered with clipping
     x = startX;
     columns.forEach((col) => {
       const colWidth = pageWidth * col.width;
+
+      // Save state and clip to cell bounds
+      doc.save();
+      doc.rect(x + 1, startY + 1, colWidth - 2, headerHeight - 2).clip();
 
       // Calculate vertical center for header text
       const headerTextHeight = doc.heightOfString(col.header, {
@@ -403,6 +407,8 @@ export class PdfService {
         width: colWidth - padding * 2,
         align: 'center',
       });
+
+      doc.restore();
       x += colWidth;
     });
 
@@ -461,10 +467,14 @@ export class PdfService {
           x += colWidth;
         });
 
-        // Then header text - vertically centered
+        // Then header text - vertically centered with clipping
         x = startX;
         columns.forEach((col) => {
           const colWidth = pageWidth * col.width;
+
+          // Save state and clip to cell bounds
+          doc.save();
+          doc.rect(x + 1, startY + 1, colWidth - 2, headerHeight - 2).clip();
 
           const headerTextHeight = doc.heightOfString(col.header, {
             width: colWidth - padding * 2,
@@ -475,6 +485,8 @@ export class PdfService {
             width: colWidth - padding * 2,
             align: 'center',
           });
+
+          doc.restore();
           x += colWidth;
         });
 
@@ -490,7 +502,7 @@ export class PdfService {
         x += colWidth;
       });
 
-      // Then draw all cell content (vertically centered)
+      // Then draw all cell content (vertically centered) with clipping
       x = startX;
       doc.font(this.fontRegular).fontSize(fontSize);
       columns.forEach((col) => {
@@ -514,15 +526,28 @@ export class PdfService {
         }
 
         if (value) {
-          // Calculate vertical center position for text
+          // Save state and clip to cell bounds
+          doc.save();
+          doc
+            .rect(x + 1, startY + 1, colWidth - 2, currentRowHeight - 2)
+            .clip();
+
+          // Calculate vertical position for text
           const textHeight = doc.heightOfString(value, {
             width: colWidth - padding * 2,
           });
-          const verticalOffset = (currentRowHeight - textHeight) / 2;
+          const verticalOffset = Math.max(
+            padding,
+            (currentRowHeight - textHeight) / 2,
+          );
 
           doc.text(value, x + padding, startY + verticalOffset, {
             width: colWidth - padding * 2,
+            lineGap: 1,
           });
+
+          // Restore state (removes clipping)
+          doc.restore();
         }
         x += colWidth;
       });

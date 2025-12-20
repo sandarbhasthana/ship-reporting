@@ -208,7 +208,7 @@ export const InspectionList = () => {
         (a.vessel?.name || "").localeCompare(b.vessel?.name || "")
     },
     {
-      title: "Inspected By",
+      title: "Inspection Type",
       dataIndex: "inspectedBy",
       key: "inspectedBy"
     },

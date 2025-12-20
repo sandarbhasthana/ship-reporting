@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Card, Col, Row, Statistic, Table, Tag, Typography } from "antd";
 import {
   FileTextOutlined,
   CheckCircleOutlined,
   ClockCircleOutlined,
-  TeamOutlined
+  TeamOutlined,
+  WarningOutlined
 } from "@ant-design/icons";
 import { useGetIdentity, useApiUrl, useGo } from "@refinedev/core";
 import styles from "./dashboard.module.css";
@@ -16,6 +17,7 @@ interface UserIdentity {
   email: string;
   name?: string;
   role?: string;
+  assignedVesselId?: string;
 }
 
 interface CaptainActivity {
@@ -32,6 +34,24 @@ interface CaptainActivity {
   } | null;
 }
 
+interface DashboardStats {
+  totalInspections: number;
+  completed: number;
+  pending: number;
+  activeVessels: number;
+  openDeficiencies: number;
+}
+
+interface RecentDocument {
+  id: string;
+  title: string;
+  vesselName: string;
+  updatedAt: string;
+  status: string;
+  openCount: number;
+  totalCount: number;
+}
+
 export const DashboardPage = () => {
   const apiUrl = useApiUrl();
   const go = useGo();
@@ -40,6 +60,121 @@ export const DashboardPage = () => {
 
   const [captains, setCaptains] = useState<CaptainActivity[]>([]);
   const [loading, setLoading] = useState(false);
+  const [recentDocuments, setRecentDocuments] = useState<RecentDocument[]>([]);
+  const [documentsLoading, setDocumentsLoading] = useState(false);
+  const [stats, setStats] = useState<DashboardStats>({
+    totalInspections: 0,
+    completed: 0,
+    pending: 0,
+    activeVessels: 0,
+    openDeficiencies: 0
+  });
+
+  // Fetch dashboard stats (inspections and vessels)
+  const fetchDashboardStats = useCallback(async () => {
+    try {
+      const token = localStorage.getItem("access_token");
+      const headers = { Authorization: `Bearer ${token}` };
+
+      // Fetch inspections
+      setDocumentsLoading(true);
+      const inspectionsRes = await fetch(`${apiUrl}/inspections`, { headers });
+      const inspections = await inspectionsRes.json();
+
+      if (Array.isArray(inspections)) {
+        // Count entries by status across all inspections
+        let openDeficiencies = 0;
+        let completedEntries = 0;
+        let pendingEntries = 0;
+
+        // Build recent documents list for captains
+        const recentDocs: RecentDocument[] = inspections
+          .map(
+            (inspection: {
+              id: string;
+              title: string;
+              vessel?: { name: string };
+              updatedAt: string;
+              entries?: { status: string }[];
+            }) => {
+              let openCount = 0;
+              const totalCount = inspection.entries?.length || 0;
+
+              if (inspection.entries) {
+                inspection.entries.forEach((entry: { status: string }) => {
+                  if (entry.status === "CLOSED_SATISFACTORILY") {
+                    completedEntries++;
+                  } else {
+                    pendingEntries++;
+                    if (
+                      entry.status === "OPEN" ||
+                      entry.status === "FURTHER_ACTION_NEEDED"
+                    ) {
+                      openDeficiencies++;
+                      openCount++;
+                    }
+                  }
+                });
+              }
+
+              // Determine overall status
+              let status = "Complete";
+              if (openCount > 0) {
+                status = "In Progress";
+              } else if (totalCount === 0) {
+                status = "New";
+              }
+
+              return {
+                id: inspection.id,
+                title: inspection.title,
+                vesselName: inspection.vessel?.name || "Unknown",
+                updatedAt: inspection.updatedAt,
+                status,
+                openCount,
+                totalCount
+              };
+            }
+          )
+          .sort(
+            (a: RecentDocument, b: RecentDocument) =>
+              new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+          )
+          .slice(0, 10); // Show only 10 most recent
+
+        setRecentDocuments(recentDocs);
+
+        // For admin, fetch vessels count
+        let activeVessels = 0;
+        if (isAdmin) {
+          const vesselsRes = await fetch(`${apiUrl}/vessels`, { headers });
+          const vessels = await vesselsRes.json();
+          if (Array.isArray(vessels)) {
+            activeVessels = vessels.length;
+          }
+        }
+
+        setStats({
+          totalInspections: inspections.length,
+          completed: completedEntries,
+          pending: pendingEntries,
+          activeVessels,
+          openDeficiencies
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching dashboard stats:", error);
+    } finally {
+      setDocumentsLoading(false);
+    }
+  }, [apiUrl, isAdmin]);
+
+  // Fetch stats on mount and when identity changes
+  useEffect(() => {
+    if (identity) {
+      fetchDashboardStats();
+    }
+  }, [identity, fetchDashboardStats]);
 
   // Fetch captain activity for admin
   useEffect(() => {
@@ -49,25 +184,18 @@ export const DashboardPage = () => {
 
     const fetchCaptainActivity = async () => {
       try {
-        console.log(
-          "Fetching captain activity from:",
-          `${apiUrl}/users/captain-activity`
-        );
         const response = await fetch(`${apiUrl}/users/captain-activity`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`
           }
         });
-        console.log("Response status:", response.status);
         const data = await response.json();
-        console.log("Captain activity data:", data);
 
         if (cancelled) return;
 
         if (Array.isArray(data)) {
           setCaptains(data);
         } else {
-          console.log("Data is not an array, setting empty");
           setCaptains([]);
         }
       } catch (error) {
@@ -193,6 +321,49 @@ export const DashboardPage = () => {
     }
   ];
 
+  // Recent documents columns for captains
+  const recentDocColumns = [
+    {
+      title: "Title",
+      dataIndex: "title",
+      key: "title",
+      render: (title: string) => <Text strong>{title}</Text>
+    },
+    {
+      title: "Vessel",
+      dataIndex: "vesselName",
+      key: "vesselName"
+    },
+    {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      render: (status: string) => {
+        const colorMap: Record<string, string> = {
+          "In Progress": "orange",
+          Complete: "green",
+          New: "blue"
+        };
+        return <Tag color={colorMap[status] || "default"}>{status}</Tag>;
+      }
+    },
+    {
+      title: "Open Items",
+      key: "openItems",
+      render: (_: unknown, record: RecentDocument) => (
+        <span>
+          {record.openCount} / {record.totalCount}
+        </span>
+      )
+    },
+    {
+      title: "Last Updated",
+      dataIndex: "updatedAt",
+      key: "updatedAt",
+      render: (date: string) => new Date(date).toLocaleString()
+    }
+  ];
+
   return (
     <div className={styles.pageContainer}>
       <Title level={2}>
@@ -208,7 +379,7 @@ export const DashboardPage = () => {
           <Card className={styles.cardPrimary} hoverable>
             <Statistic
               title="Total Inspections"
-              value={0}
+              value={stats.totalInspections}
               prefix={<FileTextOutlined className={styles.iconPrimary} />}
             />
           </Card>
@@ -217,7 +388,7 @@ export const DashboardPage = () => {
           <Card className={styles.cardSecondary} hoverable>
             <Statistic
               title="Completed"
-              value={0}
+              value={stats.completed}
               prefix={<CheckCircleOutlined className={styles.iconSecondary} />}
             />
           </Card>
@@ -226,21 +397,53 @@ export const DashboardPage = () => {
           <Card className={styles.cardCoral} hoverable>
             <Statistic
               title="Pending"
-              value={0}
+              value={stats.pending}
               prefix={<ClockCircleOutlined className={styles.iconCoral} />}
             />
           </Card>
         </Col>
         <Col xs={24} sm={12} lg={6}>
-          <Card className={styles.cardBlue} hoverable>
-            <Statistic
-              title="Active Vessels"
-              value={0}
-              prefix={<TeamOutlined className={styles.iconBlue} />}
-            />
-          </Card>
+          {isAdmin ? (
+            <Card className={styles.cardBlue} hoverable>
+              <Statistic
+                title="Active Vessels"
+                value={stats.activeVessels}
+                prefix={<TeamOutlined className={styles.iconBlue} />}
+              />
+            </Card>
+          ) : (
+            <Card className={styles.cardWarning} hoverable>
+              <Statistic
+                title="Open Deficiencies"
+                value={stats.openDeficiencies}
+                prefix={<WarningOutlined className={styles.iconWarning} />}
+              />
+            </Card>
+          )}
         </Col>
       </Row>
+
+      {/* Captain Only: Recent Documents Table */}
+      {!isAdmin && (
+        <Card title="Recent Documents" className={styles.usersCard}>
+          <Table
+            dataSource={recentDocuments}
+            columns={recentDocColumns}
+            rowKey="id"
+            loading={documentsLoading}
+            pagination={{ pageSize: 5 }}
+            size="middle"
+            onRow={(record) => ({
+              onClick: () =>
+                go({
+                  to: `/inspections/edit/${record.id}`,
+                  type: "push"
+                }),
+              style: { cursor: "pointer" }
+            })}
+          />
+        </Card>
+      )}
 
       {/* Admin Only: Captain Activity Table */}
       {isAdmin && (

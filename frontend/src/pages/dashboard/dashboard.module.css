@@ -83,37 +83,38 @@
   ) !important;
 }
 
+/* Magenta card for Pending */
 .cardCoral {
-  border-left: 4px solid var(--color-accent-coral) !important;
+  border-left: 4px solid #c41d7f !important;
   background: linear-gradient(
     135deg,
-    rgba(254, 148, 150, 0.18) 0%,
-    rgba(254, 148, 150, 0.05) 100%
+    rgba(196, 29, 127, 0.18) 0%,
+    rgba(196, 29, 127, 0.05) 100%
   ) !important;
 }
 
 .cardCoral:hover {
-  box-shadow: 0 4px 12px rgba(254, 148, 150, 0.25);
+  box-shadow: 0 4px 12px rgba(196, 29, 127, 0.25);
   background: linear-gradient(
     135deg,
-    rgba(254, 148, 150, 0.25) 0%,
-    rgba(254, 148, 150, 0.08) 100%
+    rgba(196, 29, 127, 0.25) 0%,
+    rgba(196, 29, 127, 0.08) 100%
   ) !important;
 }
 
 :global([data-theme="dark"]) .cardCoral {
   background: linear-gradient(
     135deg,
-    rgba(254, 148, 150, 0.25) 0%,
-    rgba(254, 148, 150, 0.08) 100%
+    rgba(196, 29, 127, 0.25) 0%,
+    rgba(196, 29, 127, 0.08) 100%
   ) !important;
 }
 
 :global([data-theme="dark"]) .cardCoral:hover {
   background: linear-gradient(
     135deg,
-    rgba(254, 148, 150, 0.35) 0%,
-    rgba(254, 148, 150, 0.12) 100%
+    rgba(196, 29, 127, 0.35) 0%,
+    rgba(196, 29, 127, 0.12) 100%
   ) !important;
 }
 
@@ -173,6 +174,41 @@
   color: var(--color-primary-hover);
 }
 
+/* Orange card for Open Deficiencies */
+.cardWarning {
+  border-left: 4px solid #fa8c16 !important;
+  background: linear-gradient(
+    135deg,
+    rgba(250, 140, 22, 0.18) 0%,
+    rgba(250, 140, 22, 0.05) 100%
+  ) !important;
+}
+
+.cardWarning:hover {
+  box-shadow: 0 4px 12px rgba(250, 140, 22, 0.25);
+  background: linear-gradient(
+    135deg,
+    rgba(250, 140, 22, 0.25) 0%,
+    rgba(250, 140, 22, 0.08) 100%
+  ) !important;
+}
+
+:global([data-theme="dark"]) .cardWarning {
+  background: linear-gradient(
+    135deg,
+    rgba(250, 140, 22, 0.25) 0%,
+    rgba(250, 140, 22, 0.08) 100%
+  ) !important;
+}
+
+:global([data-theme="dark"]) .cardWarning:hover {
+  background: linear-gradient(
+    135deg,
+    rgba(250, 140, 22, 0.35) 0%,
+    rgba(250, 140, 22, 0.12) 100%
+  ) !important;
+}
+
 /* Icon styles */
 .iconPrimary {
   color: var(--color-primary);
@@ -185,11 +221,16 @@
 }
 
 .iconCoral {
-  color: var(--color-accent-coral);
+  color: #c41d7f;
   font-size: 24px;
 }
 
 .iconBlue {
   color: var(--color-accent-blue);
+  font-size: 24px;
+}
+
+.iconWarning {
+  color: #fa8c16;
   font-size: 24px;
 }

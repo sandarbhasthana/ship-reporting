@@ -94,7 +94,15 @@ export class InspectionsController {
   @Get(':id/pdf')
   @Header('Content-Type', 'application/pdf')
   @ApiOperation({ summary: 'Download inspection report as PDF' })
-  async downloadPdf(@Param('id') id: string, @Res() res: Response) {
+  async downloadPdf(
+    @Param('id') id: string,
+    @CurrentUser('role') userRole: RoleName,
+    @CurrentUser('assignedVesselId') assignedVesselId: string | null,
+    @Res() res: Response,
+  ) {
+    // Validate access first (same logic as findOne)
+    await this.inspectionsService.findOne(id, userRole, assignedVesselId);
+
     const pdfBuffer = await this.pdfService.generateInspectionPdf(id);
 
     res.set({
