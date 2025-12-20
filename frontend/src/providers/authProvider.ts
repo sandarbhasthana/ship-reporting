@@ -32,7 +32,7 @@ export const authProvider: AuthProvider = {
     } catch (error) {
       return {
         success: false,
-        error: { name: "LoginError", message: "Network error" }
+        error: { name: "LoginError", message: `Network error: ${error}` }
       };
     }
   },
@@ -69,7 +69,10 @@ export const authProvider: AuthProvider = {
         name: parsed.name || parsed.email,
         email: parsed.email,
         avatar: parsed.avatar,
-        role: parsed.role
+        role: parsed.role,
+        organizationId: parsed.organizationId,
+        organizationName: parsed.organization?.name,
+        assignedVesselId: parsed.assignedVesselId
       };
     }
     return null;

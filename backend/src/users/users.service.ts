@@ -4,7 +4,7 @@ import {
   ConflictException,
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
-import { Prisma } from '@ship-reporting/prisma';
+import { Prisma, RoleName } from '@ship-reporting/prisma';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto, UpdateUserDto } from './dto';
 
@@ -12,7 +12,7 @@ import { CreateUserDto, UpdateUserDto } from './dto';
 export class UsersService {
   constructor(private prisma: PrismaService) {}
 
-  async create(createUserDto: CreateUserDto) {
+  async create(createUserDto: CreateUserDto & { organizationId: string }) {
     const { password, ...rest } = createUserDto;
 
     // Check if email already exists
@@ -44,7 +44,8 @@ export class UsersService {
     return result;
   }
 
-  async findAll(organizationId?: string) {
+  async findAll(organizationId: string | null) {
+    // SUPER_ADMIN without org header can see all users
     const where = organizationId ? { organizationId } : {};
 
     const users = await this.prisma.user.findMany({
@@ -60,7 +61,7 @@ export class UsersService {
     return users.map(({ passwordHash, ...user }) => user);
   }
 
-  async findOne(id: string) {
+  async findOne(id: string, organizationId?: string | null) {
     const user = await this.prisma.user.findUnique({
       where: { id },
       include: {
@@ -73,13 +74,23 @@ export class UsersService {
       throw new NotFoundException(`User with ID ${id} not found`);
     }
 
+    // Check organization access (skip for SUPER_ADMIN without org context)
+    // Also skip for users viewing their own profile
+    if (organizationId && user.organizationId !== organizationId) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { passwordHash, ...result } = user;
     return result;
   }
 
-  async update(id: string, updateUserDto: UpdateUserDto) {
-    await this.findOne(id);
+  async update(
+    id: string,
+    updateUserDto: UpdateUserDto,
+    organizationId?: string | null,
+  ) {
+    await this.findOne(id, organizationId);
 
     const { password, ...rest } = updateUserDto;
 
@@ -105,8 +116,8 @@ export class UsersService {
     return result;
   }
 
-  async remove(id: string) {
-    await this.findOne(id);
+  async remove(id: string, organizationId?: string | null) {
+    await this.findOne(id, organizationId);
 
     // Soft delete by setting isActive to false
     return this.prisma.user.update({
@@ -115,8 +126,8 @@ export class UsersService {
     });
   }
 
-  async hardDelete(id: string) {
-    await this.findOne(id);
+  async hardDelete(id: string, organizationId?: string | null) {
+    await this.findOne(id, organizationId);
     return this.prisma.user.delete({ where: { id } });
   }
 
@@ -124,10 +135,18 @@ export class UsersService {
    * Get captain activity for dashboard
    * Returns captains with their last activity from audit logs
    */
-  async getCaptainActivity() {
-    // Get all captains
+  async getCaptainActivity(organizationId: string | null) {
+    // Build where clause with organization filter
+    const where: Prisma.UserWhereInput = {
+      role: RoleName.CAPTAIN,
+    };
+    if (organizationId) {
+      where.organizationId = organizationId;
+    }
+
+    // Get all captains (filtered by organization)
     const captains = await this.prisma.user.findMany({
-      where: { role: 'CAPTAIN' },
+      where,
       select: {
         id: true,
         name: true,

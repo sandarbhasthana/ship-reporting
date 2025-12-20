@@ -127,6 +127,7 @@ exports.VesselScalarFieldEnum = {
 };
 exports.InspectionReportScalarFieldEnum = {
     id: 'id',
+    organizationId: 'organizationId',
     vesselId: 'vesselId',
     title: 'title',
     shipFileNo: 'shipFileNo',
@@ -159,6 +160,7 @@ exports.InspectionEntryScalarFieldEnum = {
 exports.AuditLogScalarFieldEnum = {
     id: 'id',
     userId: 'userId',
+    organizationId: 'organizationId',
     entityType: 'entityType',
     entityId: 'entityId',
     action: 'action',

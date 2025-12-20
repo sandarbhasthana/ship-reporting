@@ -1,8 +1,15 @@
 import type { AccessControlProvider } from "@refinedev/core";
 
+type RoleName = "SUPER_ADMIN" | "ADMIN" | "CAPTAIN";
+
 /**
  * Access Control Provider for Refine
  * Handles role-based access control for resources
+ *
+ * Role hierarchy:
+ * - SUPER_ADMIN: Platform admin, can manage all organizations
+ * - ADMIN: Organization admin, can manage their organization only
+ * - CAPTAIN: Vessel user, can manage their vessel data only
  */
 export const accessControlProvider: AccessControlProvider = {
   can: async ({ resource }) => {
@@ -13,9 +20,22 @@ export const accessControlProvider: AccessControlProvider = {
     }
 
     const user = JSON.parse(userStr);
-    const role = user.role;
+    const role = user.role as RoleName;
 
-    // Users resource is admin-only
+    // SUPER_ADMIN can access everything
+    if (role === "SUPER_ADMIN") {
+      return { can: true };
+    }
+
+    // Organizations resource is SUPER_ADMIN only
+    if (resource === "organizations") {
+      return {
+        can: false,
+        reason: "Only super admins can manage organizations"
+      };
+    }
+
+    // Users resource is admin-only (ADMIN and SUPER_ADMIN)
     if (resource === "users") {
       if (role === "ADMIN") {
         return { can: true };
@@ -23,7 +43,7 @@ export const accessControlProvider: AccessControlProvider = {
       return { can: false, reason: "Only admins can access user management" };
     }
 
-    // Settings resource is admin-only
+    // Settings resource is admin-only (ADMIN and SUPER_ADMIN)
     if (resource === "settings") {
       if (role === "ADMIN") {
         return { can: true };

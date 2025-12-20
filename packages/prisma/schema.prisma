@@ -12,8 +12,9 @@ datasource db {
 // ---- Enums ----
 
 enum RoleName {
-  ADMIN   // Office user - can do everything
-  CAPTAIN // Vessel user - 1 per vessel, can create/edit ship staff fields
+  SUPER_ADMIN // Platform admin - can manage all organizations
+  ADMIN       // Organization admin - manages their org only
+  CAPTAIN     // Vessel user - 1 per vessel, can create/edit ship staff fields
 }
 
 enum InspectionStatus {
@@ -35,6 +36,8 @@ model Organization {
 
   vessels Vessel[]
   users   User[]
+  inspectionReports InspectionReport[]
+  auditLogs         AuditLog[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -43,15 +46,15 @@ model Organization {
 // ---- Core Models ----
 
 model User {
-  id             String  @id @default(cuid())
-  email          String  @unique
+  id             String     @id @default(cuid())
+  email          String     @unique
   passwordHash   String
   name           String?
-  isActive       Boolean @default(true)
+  isActive       Boolean    @default(true)
   signatureImage String? // URL/path to digital signature image
   profileImage   String? // URL/path to profile image
 
-  role   RoleName @default(CAPTAIN)
+  role           RoleName   @default(CAPTAIN)
 
   // Organization relationship
   organizationId String?
@@ -96,6 +99,10 @@ model Vessel {
 model InspectionReport {
   id String @id @default(cuid())
 
+  // Organization relationship (for multi-tenancy filtering)
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+
   // Vessel relationship (auto-populated from Captain's vessel)
   vesselId String
   vessel   Vessel @relation(fields: [vesselId], references: [id])
@@ -122,6 +129,8 @@ model InspectionReport {
 
   createdAt DateTime @default(now()) // Used for DATE in header
   updatedAt DateTime @updatedAt
+
+  @@index([organizationId])
 }
 
 // One row in the deficiency table (up to 100 per report)
@@ -161,6 +170,10 @@ model AuditLog {
   userId String?
   user   User?   @relation(fields: [userId], references: [id])
 
+  // Organization relationship (for multi-tenancy filtering)
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+
   entityType String // e.g. "InspectionEntry"
   entityId   String // ID of the entity that changed
 
@@ -177,4 +190,5 @@ model AuditLog {
 
   @@index([entityType, entityId])
   @@index([userId])
+  @@index([organizationId])
 }

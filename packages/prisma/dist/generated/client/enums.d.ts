@@ -1,4 +1,5 @@
 export declare const RoleName: {
+    readonly SUPER_ADMIN: "SUPER_ADMIN";
     readonly ADMIN: "ADMIN";
     readonly CAPTAIN: "CAPTAIN";
 };

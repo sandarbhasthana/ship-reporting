@@ -10,6 +10,7 @@
 */
 
 export const RoleName = {
+  SUPER_ADMIN: 'SUPER_ADMIN',
   ADMIN: 'ADMIN',
   CAPTAIN: 'CAPTAIN'
 } as const

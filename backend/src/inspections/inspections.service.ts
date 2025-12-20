@@ -20,6 +20,7 @@ export class InspectionsService {
     userId: string,
     userRole: RoleName,
     assignedVesselId: string | null,
+    organizationId: string,
   ) {
     // Determine vessel ID
     let vesselId = createInspectionDto.vesselId;
@@ -38,11 +39,22 @@ export class InspectionsService {
       throw new ForbiddenException('Vessel ID is required');
     }
 
-    // Get vessel's default shipFileNo if not provided
+    // Get vessel and verify it belongs to the user's organization
     const vessel = await this.prisma.vessel.findUnique({
       where: { id: vesselId },
       select: { shipFileNo: true, organizationId: true },
     });
+
+    if (!vessel) {
+      throw new NotFoundException('Vessel not found');
+    }
+
+    // Verify vessel belongs to user's organization
+    if (vessel.organizationId !== organizationId) {
+      throw new ForbiddenException(
+        'Vessel does not belong to your organization',
+      );
+    }
 
     // Get organization's default formNo if not provided
     let formNo = createInspectionDto.formNo;
@@ -56,7 +68,7 @@ export class InspectionsService {
 
     // Prepare entries data
     const entriesData = createInspectionDto.entries?.map((entry) => {
-      const signUserId = entry.officeSignUserId as string | undefined;
+      const signUserId = entry.officeSignUserId;
       return {
         srNo: entry.srNo,
         deficiency: entry.deficiency,
@@ -78,6 +90,7 @@ export class InspectionsService {
     const report = await this.prisma.inspectionReport.create({
       data: {
         vesselId,
+        organizationId, // Add organization to report
         createdById: userId,
         title: createInspectionDto.title ?? 'THIRD PARTY DEFICIENCY SUMMARY',
         shipFileNo: createInspectionDto.shipFileNo ?? vessel?.shipFileNo,
@@ -93,6 +106,7 @@ export class InspectionsService {
       },
       include: {
         vessel: true,
+        organization: true,
         createdBy: {
           select: { id: true, name: true, email: true },
         },
@@ -100,30 +114,43 @@ export class InspectionsService {
       },
     });
 
-    // Log audit
+    // Log audit with organization context
     await this.auditService.log(
       'InspectionReport',
       report.id,
       'CREATE',
       null,
       report,
-      { userId },
+      { userId, organizationId },
     );
 
     return report;
   }
 
-  async findAll(userRole: RoleName, assignedVesselId: string | null) {
+  async findAll(
+    organizationId: string | null,
+    userRole: RoleName,
+    assignedVesselId: string | null,
+  ) {
+    // Build where clause with organization filter
+    const where: { organizationId?: string; vesselId?: string } = {};
+
+    // SUPER_ADMIN without org header can see all
+    // Other users are filtered by their organization
+    if (organizationId) {
+      where.organizationId = organizationId;
+    }
+
     // Captains can only see reports for their vessel
-    const where =
-      userRole === RoleName.CAPTAIN && assignedVesselId
-        ? { vesselId: assignedVesselId }
-        : {};
+    if (userRole === RoleName.CAPTAIN && assignedVesselId) {
+      where.vesselId = assignedVesselId;
+    }
 
     return this.prisma.inspectionReport.findMany({
       where,
       include: {
         vessel: true,
+        organization: true,
         createdBy: {
           select: { id: true, name: true, email: true },
         },
@@ -135,6 +162,7 @@ export class InspectionsService {
 
   async findOne(
     id: string,
+    organizationId: string | null,
     userRole: RoleName,
     assignedVesselId: string | null,
   ) {
@@ -142,6 +170,7 @@ export class InspectionsService {
       where: { id },
       include: {
         vessel: true,
+        organization: true,
         createdBy: {
           select: { id: true, name: true, email: true },
         },
@@ -160,6 +189,11 @@ export class InspectionsService {
       throw new NotFoundException('Inspection report not found');
     }
 
+    // Check organization access (skip for SUPER_ADMIN without org context)
+    if (organizationId && report.organizationId !== organizationId) {
+      throw new NotFoundException('Inspection report not found');
+    }
+
     // Captains can only see their vessel's reports
     if (userRole === RoleName.CAPTAIN && report.vesselId !== assignedVesselId) {
       throw new ForbiddenException('You do not have access to this report');
@@ -172,11 +206,17 @@ export class InspectionsService {
     id: string,
     updateInspectionDto: UpdateInspectionDto,
     userId: string,
+    organizationId: string | null,
     userRole: RoleName,
     assignedVesselId: string | null,
   ) {
     // First verify access and get before state
-    const before = await this.findOne(id, userRole, assignedVesselId);
+    const before = await this.findOne(
+      id,
+      organizationId,
+      userRole,
+      assignedVesselId,
+    );
 
     // Destructure entries and vesselId from the rest of the DTO
     // vesselId should not be updated after creation
@@ -197,7 +237,7 @@ export class InspectionsService {
 
       await this.prisma.inspectionEntry.createMany({
         data: entries.map((entry) => {
-          const signUserId = entry.officeSignUserId as string | undefined;
+          const signUserId = entry.officeSignUserId;
           return {
             reportId: id,
             srNo: entry.srNo ?? '',
@@ -227,6 +267,7 @@ export class InspectionsService {
       },
       include: {
         vessel: true,
+        organization: true,
         createdBy: {
           select: { id: true, name: true, email: true },
         },
@@ -234,25 +275,30 @@ export class InspectionsService {
       },
     });
 
-    // Log audit
+    // Log audit with organization context
     await this.auditService.log(
       'InspectionReport',
       id,
       'UPDATE',
       before,
       after,
-      { userId },
+      { userId, organizationId: organizationId || undefined },
     );
 
     return after;
   }
 
-  async remove(id: string) {
+  async remove(id: string, organizationId: string | null) {
     const report = await this.prisma.inspectionReport.findUnique({
       where: { id },
     });
 
     if (!report) {
+      throw new NotFoundException('Inspection report not found');
+    }
+
+    // Check organization access (skip for SUPER_ADMIN without org context)
+    if (organizationId && report.organizationId !== organizationId) {
       throw new NotFoundException('Inspection report not found');
     }
 

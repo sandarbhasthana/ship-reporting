@@ -123,6 +123,7 @@ export type VesselScalarFieldEnum = (typeof VesselScalarFieldEnum)[keyof typeof 
 
 export const InspectionReportScalarFieldEnum = {
   id: 'id',
+  organizationId: 'organizationId',
   vesselId: 'vesselId',
   title: 'title',
   shipFileNo: 'shipFileNo',
@@ -163,6 +164,7 @@ export type InspectionEntryScalarFieldEnum = (typeof InspectionEntryScalarFieldE
 export const AuditLogScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
+  organizationId: 'organizationId',
   entityType: 'entityType',
   entityId: 'entityId',
   action: 'action',

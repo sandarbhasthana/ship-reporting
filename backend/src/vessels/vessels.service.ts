@@ -2,6 +2,7 @@ import {
   Injectable,
   NotFoundException,
   ConflictException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateVesselDto, UpdateVesselDto } from './dto';
@@ -10,7 +11,7 @@ import { CreateVesselDto, UpdateVesselDto } from './dto';
 export class VesselsService {
   constructor(private prisma: PrismaService) {}
 
-  async create(createVesselDto: CreateVesselDto) {
+  async create(createVesselDto: CreateVesselDto & { organizationId: string }) {
     // Check if IMO number already exists (if provided)
     if (createVesselDto.imoNumber) {
       const existing = await this.prisma.vessel.findUnique({
@@ -38,7 +39,11 @@ export class VesselsService {
     });
   }
 
-  async findAll(organizationId?: string, userId?: string, userRole?: string) {
+  async findAll(
+    organizationId: string | null,
+    userId?: string,
+    userRole?: string,
+  ) {
     // If user is a CAPTAIN, only show their assigned vessel
     if (userRole === 'CAPTAIN' && userId) {
       // First get the user's assigned vessel ID
@@ -73,7 +78,8 @@ export class VesselsService {
       });
     }
 
-    // For ADMIN or other roles, show all vessels (optionally filtered by org)
+    // For ADMIN or SUPER_ADMIN, filter by organization context
+    // SUPER_ADMIN without org header can see all vessels
     const where = organizationId ? { organizationId } : {};
 
     return this.prisma.vessel.findMany({
@@ -97,7 +103,7 @@ export class VesselsService {
     });
   }
 
-  async findOne(id: string) {
+  async findOne(id: string, organizationId?: string | null) {
     const vessel = await this.prisma.vessel.findUnique({
       where: { id },
       include: {
@@ -121,11 +127,20 @@ export class VesselsService {
       throw new NotFoundException(`Vessel with ID ${id} not found`);
     }
 
+    // Check organization access (skip for SUPER_ADMIN without org context)
+    if (organizationId && vessel.organizationId !== organizationId) {
+      throw new NotFoundException(`Vessel with ID ${id} not found`);
+    }
+
     return vessel;
   }
 
-  async update(id: string, updateVesselDto: UpdateVesselDto) {
-    await this.findOne(id);
+  async update(
+    id: string,
+    updateVesselDto: UpdateVesselDto,
+    organizationId?: string | null,
+  ) {
+    await this.findOne(id, organizationId);
 
     // Check IMO uniqueness if being updated
     if (updateVesselDto.imoNumber) {
@@ -158,14 +173,35 @@ export class VesselsService {
     });
   }
 
-  async remove(id: string) {
-    await this.findOne(id);
+  async remove(id: string, organizationId?: string | null) {
+    await this.findOne(id, organizationId);
     return this.prisma.vessel.delete({ where: { id } });
   }
 
   // Assign a captain to a vessel
-  async assignCaptain(vesselId: string, userId: string) {
-    await this.findOne(vesselId);
+  async assignCaptain(
+    vesselId: string,
+    userId: string,
+    organizationId?: string | null,
+  ) {
+    // Verify vessel exists and belongs to the organization (throws if not found)
+    await this.findOne(vesselId, organizationId);
+
+    // Verify the user belongs to the same organization
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { organizationId: true },
+    });
+
+    if (!user) {
+      throw new NotFoundException(`User with ID ${userId} not found`);
+    }
+
+    if (organizationId && user.organizationId !== organizationId) {
+      throw new ForbiddenException(
+        'Cannot assign captain from a different organization',
+      );
+    }
 
     return this.prisma.user.update({
       where: { id: userId },
@@ -174,8 +210,8 @@ export class VesselsService {
   }
 
   // Remove captain from vessel
-  async removeCaptain(vesselId: string) {
-    const vessel = await this.findOne(vesselId);
+  async removeCaptain(vesselId: string, organizationId?: string | null) {
+    const vessel = await this.findOne(vesselId, organizationId);
 
     if (vessel.captain) {
       return this.prisma.user.update({

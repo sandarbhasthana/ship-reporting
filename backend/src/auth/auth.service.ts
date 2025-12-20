@@ -44,9 +44,12 @@ export class AuthService {
       sub: user.id,
       email: user.email,
       role: user.role,
+      organizationId: user.organizationId,
+      assignedVesselId: user.assignedVesselId,
     };
 
-    const { passwordHash, ...userWithoutPassword } = user;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { passwordHash: _hash, ...userWithoutPassword } = user;
 
     return {
       access_token: this.jwtService.sign(payload),
@@ -87,12 +90,15 @@ export class AuthService {
       },
     });
 
-    const { passwordHash: _, ...userWithoutPassword } = user;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { passwordHash: _pw, ...userWithoutPassword } = user;
 
     const payload = {
       sub: user.id,
       email: user.email,
       role: user.role,
+      organizationId: user.organizationId,
+      assignedVesselId: user.assignedVesselId,
     };
 
     return {
@@ -114,7 +120,8 @@ export class AuthService {
       throw new UnauthorizedException('User not found');
     }
 
-    const { passwordHash, ...userWithoutPassword } = user;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { passwordHash: _pwd, ...userWithoutPassword } = user;
     return userWithoutPassword;
   }
 

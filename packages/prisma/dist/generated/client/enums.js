@@ -11,6 +11,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.InspectionStatus = exports.RoleName = void 0;
 exports.RoleName = {
+    SUPER_ADMIN: 'SUPER_ADMIN',
     ADMIN: 'ADMIN',
     CAPTAIN: 'CAPTAIN'
 };

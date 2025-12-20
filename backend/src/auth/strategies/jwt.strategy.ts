@@ -8,6 +8,8 @@ export interface JwtPayload {
   sub: string;
   email: string;
   role: string;
+  organizationId: string | null;
+  assignedVesselId: string | null;
 }
 
 @Injectable()
@@ -37,7 +39,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     }
 
     // Return user without password hash
-    const { passwordHash, ...result } = user;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { passwordHash: _pw, ...result } = user;
     return result;
   }
 }

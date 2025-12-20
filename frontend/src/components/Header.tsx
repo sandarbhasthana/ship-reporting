@@ -3,12 +3,13 @@
  * Includes branding and theme toggle
  */
 
-import { Typography, Button, Dropdown, Avatar } from "antd";
+import { Typography, Button, Dropdown, Avatar, Tag, Space } from "antd";
 import { useGetIdentity, useLogout, useApiUrl } from "@refinedev/core";
 import {
   UserOutlined,
   LogoutOutlined,
-  SettingOutlined
+  SettingOutlined,
+  BankOutlined
 } from "@ant-design/icons";
 import { useNavigate } from "react-router";
 import { useEffect, useState } from "react";
@@ -23,6 +24,8 @@ interface UserIdentity {
   name?: string;
   role?: string;
   profileImageUrl?: string;
+  organizationId?: string;
+  organizationName?: string;
 }
 
 export function Header() {
@@ -79,19 +82,28 @@ export function Header() {
       <ThemeToggle />
 
       {user && (
-        <Dropdown menu={{ items: menuItems }} placement="bottomRight">
-          <Button type="text" className={styles.userButton}>
-            <Avatar
-              size="small"
-              icon={<UserOutlined />}
-              src={profileImageUrl}
-              className={styles.userAvatar}
-            />
-            <Text className={styles.userName} ellipsis>
-              {user.name || user.email}
-            </Text>
-          </Button>
-        </Dropdown>
+        <Space size="middle">
+          {/* Organization Badge */}
+          {user.organizationName && (
+            <Tag icon={<BankOutlined />} color="blue">
+              {user.organizationName}
+            </Tag>
+          )}
+
+          <Dropdown menu={{ items: menuItems }} placement="bottomRight">
+            <Button type="text" className={styles.userButton}>
+              <Avatar
+                size="small"
+                icon={<UserOutlined />}
+                src={profileImageUrl}
+                className={styles.userAvatar}
+              />
+              <Text className={styles.userName} ellipsis>
+                {user.name || user.email}
+              </Text>
+            </Button>
+          </Dropdown>
+        </Space>
       )}
     </div>
   );

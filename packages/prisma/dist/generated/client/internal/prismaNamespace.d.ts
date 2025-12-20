@@ -770,6 +770,7 @@ export declare const VesselScalarFieldEnum: {
 export type VesselScalarFieldEnum = (typeof VesselScalarFieldEnum)[keyof typeof VesselScalarFieldEnum];
 export declare const InspectionReportScalarFieldEnum: {
     readonly id: "id";
+    readonly organizationId: "organizationId";
     readonly vesselId: "vesselId";
     readonly title: "title";
     readonly shipFileNo: "shipFileNo";
@@ -804,6 +805,7 @@ export type InspectionEntryScalarFieldEnum = (typeof InspectionEntryScalarFieldE
 export declare const AuditLogScalarFieldEnum: {
     readonly id: "id";
     readonly userId: "userId";
+    readonly organizationId: "organizationId";
     readonly entityType: "entityType";
     readonly entityId: "entityId";
     readonly action: "action";

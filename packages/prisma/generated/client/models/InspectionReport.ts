@@ -26,6 +26,7 @@ export type AggregateInspectionReport = {
 
 export type InspectionReportMinAggregateOutputType = {
   id: string | null
+  organizationId: string | null
   vesselId: string | null
   title: string | null
   shipFileNo: string | null
@@ -42,6 +43,7 @@ export type InspectionReportMinAggregateOutputType = {
 
 export type InspectionReportMaxAggregateOutputType = {
   id: string | null
+  organizationId: string | null
   vesselId: string | null
   title: string | null
   shipFileNo: string | null
@@ -58,6 +60,7 @@ export type InspectionReportMaxAggregateOutputType = {
 
 export type InspectionReportCountAggregateOutputType = {
   id: number
+  organizationId: number
   vesselId: number
   title: number
   shipFileNo: number
@@ -76,6 +79,7 @@ export type InspectionReportCountAggregateOutputType = {
 
 export type InspectionReportMinAggregateInputType = {
   id?: true
+  organizationId?: true
   vesselId?: true
   title?: true
   shipFileNo?: true
@@ -92,6 +96,7 @@ export type InspectionReportMinAggregateInputType = {
 
 export type InspectionReportMaxAggregateInputType = {
   id?: true
+  organizationId?: true
   vesselId?: true
   title?: true
   shipFileNo?: true
@@ -108,6 +113,7 @@ export type InspectionReportMaxAggregateInputType = {
 
 export type InspectionReportCountAggregateInputType = {
   id?: true
+  organizationId?: true
   vesselId?: true
   title?: true
   shipFileNo?: true
@@ -197,6 +203,7 @@ export type InspectionReportGroupByArgs<ExtArgs extends runtime.Types.Extensions
 
 export type InspectionReportGroupByOutputType = {
   id: string
+  organizationId: string
   vesselId: string
   title: string
   shipFileNo: string | null
@@ -234,6 +241,7 @@ export type InspectionReportWhereInput = {
   OR?: Prisma.InspectionReportWhereInput[]
   NOT?: Prisma.InspectionReportWhereInput | Prisma.InspectionReportWhereInput[]
   id?: Prisma.StringFilter<"InspectionReport"> | string
+  organizationId?: Prisma.StringFilter<"InspectionReport"> | string
   vesselId?: Prisma.StringFilter<"InspectionReport"> | string
   title?: Prisma.StringFilter<"InspectionReport"> | string
   shipFileNo?: Prisma.StringNullableFilter<"InspectionReport"> | string | null
@@ -246,6 +254,7 @@ export type InspectionReportWhereInput = {
   createdById?: Prisma.StringFilter<"InspectionReport"> | string
   createdAt?: Prisma.DateTimeFilter<"InspectionReport"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"InspectionReport"> | Date | string
+  organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
   vessel?: Prisma.XOR<Prisma.VesselScalarRelationFilter, Prisma.VesselWhereInput>
   createdBy?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   entries?: Prisma.InspectionEntryListRelationFilter
@@ -253,6 +262,7 @@ export type InspectionReportWhereInput = {
 
 export type InspectionReportOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  organizationId?: Prisma.SortOrder
   vesselId?: Prisma.SortOrder
   title?: Prisma.SortOrder
   shipFileNo?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -265,6 +275,7 @@ export type InspectionReportOrderByWithRelationInput = {
   createdById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  organization?: Prisma.OrganizationOrderByWithRelationInput
   vessel?: Prisma.VesselOrderByWithRelationInput
   createdBy?: Prisma.UserOrderByWithRelationInput
   entries?: Prisma.InspectionEntryOrderByRelationAggregateInput
@@ -275,6 +286,7 @@ export type InspectionReportWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.InspectionReportWhereInput | Prisma.InspectionReportWhereInput[]
   OR?: Prisma.InspectionReportWhereInput[]
   NOT?: Prisma.InspectionReportWhereInput | Prisma.InspectionReportWhereInput[]
+  organizationId?: Prisma.StringFilter<"InspectionReport"> | string
   vesselId?: Prisma.StringFilter<"InspectionReport"> | string
   title?: Prisma.StringFilter<"InspectionReport"> | string
   shipFileNo?: Prisma.StringNullableFilter<"InspectionReport"> | string | null
@@ -287,6 +299,7 @@ export type InspectionReportWhereUniqueInput = Prisma.AtLeast<{
   createdById?: Prisma.StringFilter<"InspectionReport"> | string
   createdAt?: Prisma.DateTimeFilter<"InspectionReport"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"InspectionReport"> | Date | string
+  organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
   vessel?: Prisma.XOR<Prisma.VesselScalarRelationFilter, Prisma.VesselWhereInput>
   createdBy?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   entries?: Prisma.InspectionEntryListRelationFilter
@@ -294,6 +307,7 @@ export type InspectionReportWhereUniqueInput = Prisma.AtLeast<{
 
 export type InspectionReportOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  organizationId?: Prisma.SortOrder
   vesselId?: Prisma.SortOrder
   title?: Prisma.SortOrder
   shipFileNo?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -316,6 +330,7 @@ export type InspectionReportScalarWhereWithAggregatesInput = {
   OR?: Prisma.InspectionReportScalarWhereWithAggregatesInput[]
   NOT?: Prisma.InspectionReportScalarWhereWithAggregatesInput | Prisma.InspectionReportScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"InspectionReport"> | string
+  organizationId?: Prisma.StringWithAggregatesFilter<"InspectionReport"> | string
   vesselId?: Prisma.StringWithAggregatesFilter<"InspectionReport"> | string
   title?: Prisma.StringWithAggregatesFilter<"InspectionReport"> | string
   shipFileNo?: Prisma.StringNullableWithAggregatesFilter<"InspectionReport"> | string | null
@@ -342,6 +357,7 @@ export type InspectionReportCreateInput = {
   inspectionDate?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  organization: Prisma.OrganizationCreateNestedOneWithoutInspectionReportsInput
   vessel: Prisma.VesselCreateNestedOneWithoutInspectionsInput
   createdBy: Prisma.UserCreateNestedOneWithoutCreatedReportsInput
   entries?: Prisma.InspectionEntryCreateNestedManyWithoutReportInput
@@ -349,6 +365,7 @@ export type InspectionReportCreateInput = {
 
 export type InspectionReportUncheckedCreateInput = {
   id?: string
+  organizationId: string
   vesselId: string
   title?: string
   shipFileNo?: string | null
@@ -376,6 +393,7 @@ export type InspectionReportUpdateInput = {
   inspectionDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutInspectionReportsNestedInput
   vessel?: Prisma.VesselUpdateOneRequiredWithoutInspectionsNestedInput
   createdBy?: Prisma.UserUpdateOneRequiredWithoutCreatedReportsNestedInput
   entries?: Prisma.InspectionEntryUpdateManyWithoutReportNestedInput
@@ -383,6 +401,7 @@ export type InspectionReportUpdateInput = {
 
 export type InspectionReportUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   vesselId?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   shipFileNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -400,6 +419,7 @@ export type InspectionReportUncheckedUpdateInput = {
 
 export type InspectionReportCreateManyInput = {
   id?: string
+  organizationId: string
   vesselId: string
   title?: string
   shipFileNo?: string | null
@@ -430,6 +450,7 @@ export type InspectionReportUpdateManyMutationInput = {
 
 export type InspectionReportUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   vesselId?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   shipFileNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -456,6 +477,7 @@ export type InspectionReportOrderByRelationAggregateInput = {
 
 export type InspectionReportCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  organizationId?: Prisma.SortOrder
   vesselId?: Prisma.SortOrder
   title?: Prisma.SortOrder
   shipFileNo?: Prisma.SortOrder
@@ -472,6 +494,7 @@ export type InspectionReportCountOrderByAggregateInput = {
 
 export type InspectionReportMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  organizationId?: Prisma.SortOrder
   vesselId?: Prisma.SortOrder
   title?: Prisma.SortOrder
   shipFileNo?: Prisma.SortOrder
@@ -488,6 +511,7 @@ export type InspectionReportMaxOrderByAggregateInput = {
 
 export type InspectionReportMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  organizationId?: Prisma.SortOrder
   vesselId?: Prisma.SortOrder
   title?: Prisma.SortOrder
   shipFileNo?: Prisma.SortOrder
@@ -505,6 +529,48 @@ export type InspectionReportMinOrderByAggregateInput = {
 export type InspectionReportScalarRelationFilter = {
   is?: Prisma.InspectionReportWhereInput
   isNot?: Prisma.InspectionReportWhereInput
+}
+
+export type InspectionReportCreateNestedManyWithoutOrganizationInput = {
+  create?: Prisma.XOR<Prisma.InspectionReportCreateWithoutOrganizationInput, Prisma.InspectionReportUncheckedCreateWithoutOrganizationInput> | Prisma.InspectionReportCreateWithoutOrganizationInput[] | Prisma.InspectionReportUncheckedCreateWithoutOrganizationInput[]
+  connectOrCreate?: Prisma.InspectionReportCreateOrConnectWithoutOrganizationInput | Prisma.InspectionReportCreateOrConnectWithoutOrganizationInput[]
+  createMany?: Prisma.InspectionReportCreateManyOrganizationInputEnvelope
+  connect?: Prisma.InspectionReportWhereUniqueInput | Prisma.InspectionReportWhereUniqueInput[]
+}
+
+export type InspectionReportUncheckedCreateNestedManyWithoutOrganizationInput = {
+  create?: Prisma.XOR<Prisma.InspectionReportCreateWithoutOrganizationInput, Prisma.InspectionReportUncheckedCreateWithoutOrganizationInput> | Prisma.InspectionReportCreateWithoutOrganizationInput[] | Prisma.InspectionReportUncheckedCreateWithoutOrganizationInput[]
+  connectOrCreate?: Prisma.InspectionReportCreateOrConnectWithoutOrganizationInput | Prisma.InspectionReportCreateOrConnectWithoutOrganizationInput[]
+  createMany?: Prisma.InspectionReportCreateManyOrganizationInputEnvelope
+  connect?: Prisma.InspectionReportWhereUniqueInput | Prisma.InspectionReportWhereUniqueInput[]
+}
+
+export type InspectionReportUpdateManyWithoutOrganizationNestedInput = {
+  create?: Prisma.XOR<Prisma.InspectionReportCreateWithoutOrganizationInput, Prisma.InspectionReportUncheckedCreateWithoutOrganizationInput> | Prisma.InspectionReportCreateWithoutOrganizationInput[] | Prisma.InspectionReportUncheckedCreateWithoutOrganizationInput[]
+  connectOrCreate?: Prisma.InspectionReportCreateOrConnectWithoutOrganizationInput | Prisma.InspectionReportCreateOrConnectWithoutOrganizationInput[]
+  upsert?: Prisma.InspectionReportUpsertWithWhereUniqueWithoutOrganizationInput | Prisma.InspectionReportUpsertWithWhereUniqueWithoutOrganizationInput[]
+  createMany?: Prisma.InspectionReportCreateManyOrganizationInputEnvelope
+  set?: Prisma.InspectionReportWhereUniqueInput | Prisma.InspectionReportWhereUniqueInput[]
+  disconnect?: Prisma.InspectionReportWhereUniqueInput | Prisma.InspectionReportWhereUniqueInput[]
+  delete?: Prisma.InspectionReportWhereUniqueInput | Prisma.InspectionReportWhereUniqueInput[]
+  connect?: Prisma.InspectionReportWhereUniqueInput | Prisma.InspectionReportWhereUniqueInput[]
+  update?: Prisma.InspectionReportUpdateWithWhereUniqueWithoutOrganizationInput | Prisma.InspectionReportUpdateWithWhereUniqueWithoutOrganizationInput[]
+  updateMany?: Prisma.InspectionReportUpdateManyWithWhereWithoutOrganizationInput | Prisma.InspectionReportUpdateManyWithWhereWithoutOrganizationInput[]
+  deleteMany?: Prisma.InspectionReportScalarWhereInput | Prisma.InspectionReportScalarWhereInput[]
+}
+
+export type InspectionReportUncheckedUpdateManyWithoutOrganizationNestedInput = {
+  create?: Prisma.XOR<Prisma.InspectionReportCreateWithoutOrganizationInput, Prisma.InspectionReportUncheckedCreateWithoutOrganizationInput> | Prisma.InspectionReportCreateWithoutOrganizationInput[] | Prisma.InspectionReportUncheckedCreateWithoutOrganizationInput[]
+  connectOrCreate?: Prisma.InspectionReportCreateOrConnectWithoutOrganizationInput | Prisma.InspectionReportCreateOrConnectWithoutOrganizationInput[]
+  upsert?: Prisma.InspectionReportUpsertWithWhereUniqueWithoutOrganizationInput | Prisma.InspectionReportUpsertWithWhereUniqueWithoutOrganizationInput[]
+  createMany?: Prisma.InspectionReportCreateManyOrganizationInputEnvelope
+  set?: Prisma.InspectionReportWhereUniqueInput | Prisma.InspectionReportWhereUniqueInput[]
+  disconnect?: Prisma.InspectionReportWhereUniqueInput | Prisma.InspectionReportWhereUniqueInput[]
+  delete?: Prisma.InspectionReportWhereUniqueInput | Prisma.InspectionReportWhereUniqueInput[]
+  connect?: Prisma.InspectionReportWhereUniqueInput | Prisma.InspectionReportWhereUniqueInput[]
+  update?: Prisma.InspectionReportUpdateWithWhereUniqueWithoutOrganizationInput | Prisma.InspectionReportUpdateWithWhereUniqueWithoutOrganizationInput[]
+  updateMany?: Prisma.InspectionReportUpdateManyWithWhereWithoutOrganizationInput | Prisma.InspectionReportUpdateManyWithWhereWithoutOrganizationInput[]
+  deleteMany?: Prisma.InspectionReportScalarWhereInput | Prisma.InspectionReportScalarWhereInput[]
 }
 
 export type InspectionReportCreateNestedManyWithoutCreatedByInput = {
@@ -609,7 +675,7 @@ export type InspectionReportUpdateOneRequiredWithoutEntriesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.InspectionReportUpdateToOneWithWhereWithoutEntriesInput, Prisma.InspectionReportUpdateWithoutEntriesInput>, Prisma.InspectionReportUncheckedUpdateWithoutEntriesInput>
 }
 
-export type InspectionReportCreateWithoutCreatedByInput = {
+export type InspectionReportCreateWithoutOrganizationInput = {
   id?: string
   title?: string
   shipFileNo?: string | null
@@ -622,11 +688,93 @@ export type InspectionReportCreateWithoutCreatedByInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   vessel: Prisma.VesselCreateNestedOneWithoutInspectionsInput
+  createdBy: Prisma.UserCreateNestedOneWithoutCreatedReportsInput
+  entries?: Prisma.InspectionEntryCreateNestedManyWithoutReportInput
+}
+
+export type InspectionReportUncheckedCreateWithoutOrganizationInput = {
+  id?: string
+  vesselId: string
+  title?: string
+  shipFileNo?: string | null
+  officeFileNo?: string | null
+  revisionNo?: string | null
+  formNo?: string | null
+  applicableFomSections?: string | null
+  inspectedBy?: string | null
+  inspectionDate?: Date | string | null
+  createdById: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  entries?: Prisma.InspectionEntryUncheckedCreateNestedManyWithoutReportInput
+}
+
+export type InspectionReportCreateOrConnectWithoutOrganizationInput = {
+  where: Prisma.InspectionReportWhereUniqueInput
+  create: Prisma.XOR<Prisma.InspectionReportCreateWithoutOrganizationInput, Prisma.InspectionReportUncheckedCreateWithoutOrganizationInput>
+}
+
+export type InspectionReportCreateManyOrganizationInputEnvelope = {
+  data: Prisma.InspectionReportCreateManyOrganizationInput | Prisma.InspectionReportCreateManyOrganizationInput[]
+  skipDuplicates?: boolean
+}
+
+export type InspectionReportUpsertWithWhereUniqueWithoutOrganizationInput = {
+  where: Prisma.InspectionReportWhereUniqueInput
+  update: Prisma.XOR<Prisma.InspectionReportUpdateWithoutOrganizationInput, Prisma.InspectionReportUncheckedUpdateWithoutOrganizationInput>
+  create: Prisma.XOR<Prisma.InspectionReportCreateWithoutOrganizationInput, Prisma.InspectionReportUncheckedCreateWithoutOrganizationInput>
+}
+
+export type InspectionReportUpdateWithWhereUniqueWithoutOrganizationInput = {
+  where: Prisma.InspectionReportWhereUniqueInput
+  data: Prisma.XOR<Prisma.InspectionReportUpdateWithoutOrganizationInput, Prisma.InspectionReportUncheckedUpdateWithoutOrganizationInput>
+}
+
+export type InspectionReportUpdateManyWithWhereWithoutOrganizationInput = {
+  where: Prisma.InspectionReportScalarWhereInput
+  data: Prisma.XOR<Prisma.InspectionReportUpdateManyMutationInput, Prisma.InspectionReportUncheckedUpdateManyWithoutOrganizationInput>
+}
+
+export type InspectionReportScalarWhereInput = {
+  AND?: Prisma.InspectionReportScalarWhereInput | Prisma.InspectionReportScalarWhereInput[]
+  OR?: Prisma.InspectionReportScalarWhereInput[]
+  NOT?: Prisma.InspectionReportScalarWhereInput | Prisma.InspectionReportScalarWhereInput[]
+  id?: Prisma.StringFilter<"InspectionReport"> | string
+  organizationId?: Prisma.StringFilter<"InspectionReport"> | string
+  vesselId?: Prisma.StringFilter<"InspectionReport"> | string
+  title?: Prisma.StringFilter<"InspectionReport"> | string
+  shipFileNo?: Prisma.StringNullableFilter<"InspectionReport"> | string | null
+  officeFileNo?: Prisma.StringNullableFilter<"InspectionReport"> | string | null
+  revisionNo?: Prisma.StringNullableFilter<"InspectionReport"> | string | null
+  formNo?: Prisma.StringNullableFilter<"InspectionReport"> | string | null
+  applicableFomSections?: Prisma.StringNullableFilter<"InspectionReport"> | string | null
+  inspectedBy?: Prisma.StringNullableFilter<"InspectionReport"> | string | null
+  inspectionDate?: Prisma.DateTimeNullableFilter<"InspectionReport"> | Date | string | null
+  createdById?: Prisma.StringFilter<"InspectionReport"> | string
+  createdAt?: Prisma.DateTimeFilter<"InspectionReport"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"InspectionReport"> | Date | string
+}
+
+export type InspectionReportCreateWithoutCreatedByInput = {
+  id?: string
+  title?: string
+  shipFileNo?: string | null
+  officeFileNo?: string | null
+  revisionNo?: string | null
+  formNo?: string | null
+  applicableFomSections?: string | null
+  inspectedBy?: string | null
+  inspectionDate?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organization: Prisma.OrganizationCreateNestedOneWithoutInspectionReportsInput
+  vessel: Prisma.VesselCreateNestedOneWithoutInspectionsInput
   entries?: Prisma.InspectionEntryCreateNestedManyWithoutReportInput
 }
 
 export type InspectionReportUncheckedCreateWithoutCreatedByInput = {
   id?: string
+  organizationId: string
   vesselId: string
   title?: string
   shipFileNo?: string | null
@@ -667,25 +815,6 @@ export type InspectionReportUpdateManyWithWhereWithoutCreatedByInput = {
   data: Prisma.XOR<Prisma.InspectionReportUpdateManyMutationInput, Prisma.InspectionReportUncheckedUpdateManyWithoutCreatedByInput>
 }
 
-export type InspectionReportScalarWhereInput = {
-  AND?: Prisma.InspectionReportScalarWhereInput | Prisma.InspectionReportScalarWhereInput[]
-  OR?: Prisma.InspectionReportScalarWhereInput[]
-  NOT?: Prisma.InspectionReportScalarWhereInput | Prisma.InspectionReportScalarWhereInput[]
-  id?: Prisma.StringFilter<"InspectionReport"> | string
-  vesselId?: Prisma.StringFilter<"InspectionReport"> | string
-  title?: Prisma.StringFilter<"InspectionReport"> | string
-  shipFileNo?: Prisma.StringNullableFilter<"InspectionReport"> | string | null
-  officeFileNo?: Prisma.StringNullableFilter<"InspectionReport"> | string | null
-  revisionNo?: Prisma.StringNullableFilter<"InspectionReport"> | string | null
-  formNo?: Prisma.StringNullableFilter<"InspectionReport"> | string | null
-  applicableFomSections?: Prisma.StringNullableFilter<"InspectionReport"> | string | null
-  inspectedBy?: Prisma.StringNullableFilter<"InspectionReport"> | string | null
-  inspectionDate?: Prisma.DateTimeNullableFilter<"InspectionReport"> | Date | string | null
-  createdById?: Prisma.StringFilter<"InspectionReport"> | string
-  createdAt?: Prisma.DateTimeFilter<"InspectionReport"> | Date | string
-  updatedAt?: Prisma.DateTimeFilter<"InspectionReport"> | Date | string
-}
-
 export type InspectionReportCreateWithoutVesselInput = {
   id?: string
   title?: string
@@ -698,12 +827,14 @@ export type InspectionReportCreateWithoutVesselInput = {
   inspectionDate?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  organization: Prisma.OrganizationCreateNestedOneWithoutInspectionReportsInput
   createdBy: Prisma.UserCreateNestedOneWithoutCreatedReportsInput
   entries?: Prisma.InspectionEntryCreateNestedManyWithoutReportInput
 }
 
 export type InspectionReportUncheckedCreateWithoutVesselInput = {
   id?: string
+  organizationId: string
   title?: string
   shipFileNo?: string | null
   officeFileNo?: string | null
@@ -756,12 +887,14 @@ export type InspectionReportCreateWithoutEntriesInput = {
   inspectionDate?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  organization: Prisma.OrganizationCreateNestedOneWithoutInspectionReportsInput
   vessel: Prisma.VesselCreateNestedOneWithoutInspectionsInput
   createdBy: Prisma.UserCreateNestedOneWithoutCreatedReportsInput
 }
 
 export type InspectionReportUncheckedCreateWithoutEntriesInput = {
   id?: string
+  organizationId: string
   vesselId: string
   title?: string
   shipFileNo?: string | null
@@ -804,11 +937,79 @@ export type InspectionReportUpdateWithoutEntriesInput = {
   inspectionDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutInspectionReportsNestedInput
   vessel?: Prisma.VesselUpdateOneRequiredWithoutInspectionsNestedInput
   createdBy?: Prisma.UserUpdateOneRequiredWithoutCreatedReportsNestedInput
 }
 
 export type InspectionReportUncheckedUpdateWithoutEntriesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  vesselId?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  shipFileNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  officeFileNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  revisionNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  formNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  applicableFomSections?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inspectedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inspectionDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type InspectionReportCreateManyOrganizationInput = {
+  id?: string
+  vesselId: string
+  title?: string
+  shipFileNo?: string | null
+  officeFileNo?: string | null
+  revisionNo?: string | null
+  formNo?: string | null
+  applicableFomSections?: string | null
+  inspectedBy?: string | null
+  inspectionDate?: Date | string | null
+  createdById: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type InspectionReportUpdateWithoutOrganizationInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  shipFileNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  officeFileNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  revisionNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  formNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  applicableFomSections?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inspectedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inspectionDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  vessel?: Prisma.VesselUpdateOneRequiredWithoutInspectionsNestedInput
+  createdBy?: Prisma.UserUpdateOneRequiredWithoutCreatedReportsNestedInput
+  entries?: Prisma.InspectionEntryUpdateManyWithoutReportNestedInput
+}
+
+export type InspectionReportUncheckedUpdateWithoutOrganizationInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  vesselId?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  shipFileNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  officeFileNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  revisionNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  formNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  applicableFomSections?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inspectedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inspectionDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  entries?: Prisma.InspectionEntryUncheckedUpdateManyWithoutReportNestedInput
+}
+
+export type InspectionReportUncheckedUpdateManyWithoutOrganizationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   vesselId?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
@@ -826,6 +1027,7 @@ export type InspectionReportUncheckedUpdateWithoutEntriesInput = {
 
 export type InspectionReportCreateManyCreatedByInput = {
   id?: string
+  organizationId: string
   vesselId: string
   title?: string
   shipFileNo?: string | null
@@ -851,12 +1053,14 @@ export type InspectionReportUpdateWithoutCreatedByInput = {
   inspectionDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutInspectionReportsNestedInput
   vessel?: Prisma.VesselUpdateOneRequiredWithoutInspectionsNestedInput
   entries?: Prisma.InspectionEntryUpdateManyWithoutReportNestedInput
 }
 
 export type InspectionReportUncheckedUpdateWithoutCreatedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   vesselId?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   shipFileNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -873,6 +1077,7 @@ export type InspectionReportUncheckedUpdateWithoutCreatedByInput = {
 
 export type InspectionReportUncheckedUpdateManyWithoutCreatedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   vesselId?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   shipFileNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -888,6 +1093,7 @@ export type InspectionReportUncheckedUpdateManyWithoutCreatedByInput = {
 
 export type InspectionReportCreateManyVesselInput = {
   id?: string
+  organizationId: string
   title?: string
   shipFileNo?: string | null
   officeFileNo?: string | null
@@ -913,12 +1119,14 @@ export type InspectionReportUpdateWithoutVesselInput = {
   inspectionDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutInspectionReportsNestedInput
   createdBy?: Prisma.UserUpdateOneRequiredWithoutCreatedReportsNestedInput
   entries?: Prisma.InspectionEntryUpdateManyWithoutReportNestedInput
 }
 
 export type InspectionReportUncheckedUpdateWithoutVesselInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   shipFileNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   officeFileNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -935,6 +1143,7 @@ export type InspectionReportUncheckedUpdateWithoutVesselInput = {
 
 export type InspectionReportUncheckedUpdateManyWithoutVesselInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   shipFileNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   officeFileNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -981,6 +1190,7 @@ export type InspectionReportCountOutputTypeCountEntriesArgs<ExtArgs extends runt
 
 export type InspectionReportSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  organizationId?: boolean
   vesselId?: boolean
   title?: boolean
   shipFileNo?: boolean
@@ -993,6 +1203,7 @@ export type InspectionReportSelect<ExtArgs extends runtime.Types.Extensions.Inte
   createdById?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   vessel?: boolean | Prisma.VesselDefaultArgs<ExtArgs>
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   entries?: boolean | Prisma.InspectionReport$entriesArgs<ExtArgs>
@@ -1001,6 +1212,7 @@ export type InspectionReportSelect<ExtArgs extends runtime.Types.Extensions.Inte
 
 export type InspectionReportSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  organizationId?: boolean
   vesselId?: boolean
   title?: boolean
   shipFileNo?: boolean
@@ -1013,12 +1225,14 @@ export type InspectionReportSelectCreateManyAndReturn<ExtArgs extends runtime.Ty
   createdById?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   vessel?: boolean | Prisma.VesselDefaultArgs<ExtArgs>
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["inspectionReport"]>
 
 export type InspectionReportSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  organizationId?: boolean
   vesselId?: boolean
   title?: boolean
   shipFileNo?: boolean
@@ -1031,12 +1245,14 @@ export type InspectionReportSelectUpdateManyAndReturn<ExtArgs extends runtime.Ty
   createdById?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   vessel?: boolean | Prisma.VesselDefaultArgs<ExtArgs>
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["inspectionReport"]>
 
 export type InspectionReportSelectScalar = {
   id?: boolean
+  organizationId?: boolean
   vesselId?: boolean
   title?: boolean
   shipFileNo?: boolean
@@ -1051,18 +1267,21 @@ export type InspectionReportSelectScalar = {
   updatedAt?: boolean
 }
 
-export type InspectionReportOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "vesselId" | "title" | "shipFileNo" | "officeFileNo" | "revisionNo" | "formNo" | "applicableFomSections" | "inspectedBy" | "inspectionDate" | "createdById" | "createdAt" | "updatedAt", ExtArgs["result"]["inspectionReport"]>
+export type InspectionReportOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "organizationId" | "vesselId" | "title" | "shipFileNo" | "officeFileNo" | "revisionNo" | "formNo" | "applicableFomSections" | "inspectedBy" | "inspectionDate" | "createdById" | "createdAt" | "updatedAt", ExtArgs["result"]["inspectionReport"]>
 export type InspectionReportInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   vessel?: boolean | Prisma.VesselDefaultArgs<ExtArgs>
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   entries?: boolean | Prisma.InspectionReport$entriesArgs<ExtArgs>
   _count?: boolean | Prisma.InspectionReportCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type InspectionReportIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   vessel?: boolean | Prisma.VesselDefaultArgs<ExtArgs>
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
 export type InspectionReportIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   vessel?: boolean | Prisma.VesselDefaultArgs<ExtArgs>
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
@@ -1070,12 +1289,14 @@ export type InspectionReportIncludeUpdateManyAndReturn<ExtArgs extends runtime.T
 export type $InspectionReportPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "InspectionReport"
   objects: {
+    organization: Prisma.$OrganizationPayload<ExtArgs>
     vessel: Prisma.$VesselPayload<ExtArgs>
     createdBy: Prisma.$UserPayload<ExtArgs>
     entries: Prisma.$InspectionEntryPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
+    organizationId: string
     vesselId: string
     title: string
     shipFileNo: string | null
@@ -1482,6 +1703,7 @@ readonly fields: InspectionReportFieldRefs;
  */
 export interface Prisma__InspectionReportClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  organization<T extends Prisma.OrganizationDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.OrganizationDefaultArgs<ExtArgs>>): Prisma.Prisma__OrganizationClient<runtime.Types.Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   vessel<T extends Prisma.VesselDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.VesselDefaultArgs<ExtArgs>>): Prisma.Prisma__VesselClient<runtime.Types.Result.GetResult<Prisma.$VesselPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   createdBy<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   entries<T extends Prisma.InspectionReport$entriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.InspectionReport$entriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InspectionEntryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -1515,6 +1737,7 @@ export interface Prisma__InspectionReportClient<T, Null = never, ExtArgs extends
  */
 export interface InspectionReportFieldRefs {
   readonly id: Prisma.FieldRef<"InspectionReport", 'String'>
+  readonly organizationId: Prisma.FieldRef<"InspectionReport", 'String'>
   readonly vesselId: Prisma.FieldRef<"InspectionReport", 'String'>
   readonly title: Prisma.FieldRef<"InspectionReport", 'String'>
   readonly shipFileNo: Prisma.FieldRef<"InspectionReport", 'String'>
