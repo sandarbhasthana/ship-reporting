@@ -134,6 +134,9 @@ export class PdfService {
       throw new NotFoundException('Inspection report not found');
     }
 
+    // Pre-load signature images for all unique signers
+    const signatureCache = await this.loadSignatureImages(report.entries);
+
     return new Promise((resolve, reject) => {
       const chunks: Buffer[] = [];
       const doc = new PDFDocument({
@@ -150,16 +153,79 @@ export class PdfService {
       doc.on('end', () => resolve(Buffer.concat(chunks)));
       doc.on('error', reject);
 
-      // Generate PDF content
-      this.generatePdfContent(doc, report);
+      // Generate PDF content with signature cache
+      this.generatePdfContent(doc, report, signatureCache);
 
       doc.end();
     });
   }
 
+  /**
+   * Load signature images for all unique signers in the entries
+   * Returns a map of userId -> Buffer (image data)
+   */
+  private async loadSignatureImages(
+    entries: InspectionEntryWithRelations[],
+  ): Promise<Map<string, Buffer>> {
+    const signatureCache = new Map<string, Buffer>();
+
+    // Get unique signers with signature images
+    const signersWithSignatures = entries
+      .filter((entry) => entry.officeSignUser?.signatureImage)
+      .map((entry) => ({
+        userId: entry.officeSignUser!.id,
+        signaturePath: entry.officeSignUser!.signatureImage!,
+      }));
+
+    // Deduplicate by userId
+    const uniqueSigners = Array.from(
+      new Map(signersWithSignatures.map((s) => [s.userId, s])).values(),
+    );
+
+    // Load each signature image
+    for (const signer of uniqueSigners) {
+      try {
+        const imageBuffer = await this.loadImageFromPath(signer.signaturePath);
+        if (imageBuffer) {
+          signatureCache.set(signer.userId, imageBuffer);
+        }
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error ? error.message : 'Unknown error';
+        this.logger.warn(
+          `Failed to load signature for user ${signer.userId}: ${errorMessage}`,
+        );
+      }
+    }
+
+    return signatureCache;
+  }
+
+  /**
+   * Load an image from either S3 or local filesystem
+   */
+  private async loadImageFromPath(imagePath: string): Promise<Buffer | null> {
+    if (!imagePath) return null;
+
+    // S3 path
+    if (imagePath.startsWith('s3://')) {
+      const s3Key = imagePath.replace('s3://', '');
+      return this.s3Service.downloadFile(s3Key);
+    }
+
+    // Local path
+    const localPath = this.resolveLocalLogoPath(imagePath);
+    if (localPath && fs.existsSync(localPath)) {
+      return fs.readFileSync(localPath);
+    }
+
+    return null;
+  }
+
   private generatePdfContent(
     doc: PDFKit.PDFDocument,
     report: InspectionReportWithRelations,
+    signatureCache: Map<string, Buffer>,
   ): void {
     const pageWidth =
       doc.page.width - doc.page.margins.left - doc.page.margins.right;
@@ -167,8 +233,8 @@ export class PdfService {
     // Draw header
     this.drawHeader(doc, report, pageWidth);
 
-    // Draw table
-    this.drawTable(doc, report, pageWidth);
+    // Draw table with signature images
+    this.drawTable(doc, report, pageWidth, signatureCache);
 
     // Draw footer on all pages
     this.drawFooter(doc, report);
@@ -355,7 +421,7 @@ export class PdfService {
 
     startY += 25;
 
-    // ========== VESSEL / INSPECTED BY / DATE ROW ==========
+    // ========== VESSEL / INSPECTION TYPE / DATE ROW ==========
     doc.fontSize(9).font(this.fontBold);
     const thirdWidth = pageWidth / 3;
 
@@ -364,17 +430,34 @@ export class PdfService {
       .font(this.fontRegular)
       .text(report.vessel?.name || '-', { underline: true });
 
-    doc
-      .font(this.fontBold)
-      .text('INSPECTED BY: ', startX + thirdWidth, startY, { continued: true });
-    doc
-      .font(this.fontRegular)
-      .text(report.inspectedBy || '-', { underline: true });
+    // Inspection Type - center aligned
+    const inspectionTypeLabel = 'INSPECTION TYPE: ';
+    const inspectionTypeValue = report.inspectedBy || '-';
+    doc.font(this.fontBold);
+    const labelWidth = doc.widthOfString(inspectionTypeLabel);
+    doc.font(this.fontRegular);
+    const valueWidth = doc.widthOfString(inspectionTypeValue);
+    const totalInspectionWidth = labelWidth + valueWidth;
+    const inspectionTypeX =
+      startX + thirdWidth + (thirdWidth - totalInspectionWidth) / 2;
 
-    doc
-      .font(this.fontBold)
-      .text('DATE: ', startX + thirdWidth * 2, startY, { continued: true });
-    doc.font(this.fontRegular).text(inspectionDate, { underline: true });
+    doc.font(this.fontBold).text(inspectionTypeLabel, inspectionTypeX, startY, {
+      continued: true,
+    });
+    doc.font(this.fontRegular).text(inspectionTypeValue, { underline: true });
+
+    // Date - right aligned
+    const dateLabel = 'DATE: ';
+    const dateValue = inspectionDate;
+    doc.font(this.fontBold);
+    const dateLabelWidth = doc.widthOfString(dateLabel);
+    doc.font(this.fontRegular);
+    const dateValueWidth = doc.widthOfString(dateValue);
+    const totalDateWidth = dateLabelWidth + dateValueWidth;
+    const dateX = startX + pageWidth - totalDateWidth;
+
+    doc.font(this.fontBold).text(dateLabel, dateX, startY, { continued: true });
+    doc.font(this.fontRegular).text(dateValue, { underline: true });
 
     doc.y = startY + 25;
   }
@@ -383,6 +466,7 @@ export class PdfService {
     doc: PDFKit.PDFDocument,
     report: InspectionReportWithRelations,
     pageWidth: number,
+    signatureCache: Map<string, Buffer>,
   ): void {
     const entries = report.entries;
     const startX = doc.page.margins.left;
@@ -477,9 +561,72 @@ export class PdfService {
     startY += headerHeight;
     doc.font(this.fontRegular).fontSize(fontSize);
 
+    // Helper function to draw headers on a new page
+    const drawHeadersOnNewPage = (): number => {
+      let y = doc.page.margins.top;
+
+      // Redraw group headers on new page
+      doc.fontSize(8).font(this.fontBold);
+
+      // SHIP STAFF header
+      doc.rect(startX, y, shipStaffWidth, groupHeaderHeight).stroke();
+      doc.text('SHIP STAFF', startX, y + 4, {
+        width: shipStaffWidth,
+        align: 'center',
+      });
+
+      // OFFICE header
+      doc
+        .rect(startX + shipStaffWidth, y, officeWidth, groupHeaderHeight)
+        .stroke();
+      doc.text('OFFICE', startX + shipStaffWidth, y + 4, {
+        width: officeWidth,
+        align: 'center',
+      });
+
+      y += groupHeaderHeight;
+
+      // Redraw column headers on new page - first borders
+      doc.fontSize(fontSize).font(this.fontBold);
+      let headerX = startX;
+
+      columns.forEach((col) => {
+        const colWidth = pageWidth * col.width;
+        doc.rect(headerX, y, colWidth, headerHeight).stroke();
+        headerX += colWidth;
+      });
+
+      // Then header text - vertically centered with clipping
+      headerX = startX;
+      columns.forEach((col) => {
+        const colWidth = pageWidth * col.width;
+
+        doc.save();
+        doc.rect(headerX + 1, y + 1, colWidth - 2, headerHeight - 2).clip();
+
+        const headerTextHeight = doc.heightOfString(col.header, {
+          width: colWidth - padding * 2,
+        });
+        const headerVerticalOffset = (headerHeight - headerTextHeight) / 2;
+
+        doc.text(col.header, headerX + padding, y + headerVerticalOffset, {
+          width: colWidth - padding * 2,
+          align: 'center',
+        });
+
+        doc.restore();
+        headerX += colWidth;
+      });
+
+      y += headerHeight;
+      doc.font(this.fontRegular).fontSize(fontSize);
+
+      return y;
+    };
+
     // Draw data rows
     entries.forEach((entry) => {
-      // Calculate row height based on content
+      // Calculate exact row height based on content
       const contentHeight = this.calculateRowHeight(
         doc,
         entry,
@@ -487,139 +634,451 @@ export class PdfService {
         pageWidth,
         fontSize,
         padding,
+        signatureCache,
       );
       const currentRowHeight = Math.max(rowHeight, contentHeight);
 
-      // Check if we need a new page
-      if (
-        startY + currentRowHeight >
-        doc.page.height - doc.page.margins.bottom - 30
-      ) {
+      const pageBottom = doc.page.height - doc.page.margins.bottom - 30;
+      const availableHeight = pageBottom - startY;
+      const minUsableSpace = rowHeight * 2; // At least space for 2 normal rows
+
+      // If there's very little space left, move to new page first
+      if (availableHeight < minUsableSpace) {
         doc.addPage();
-        startY = doc.page.margins.top;
-
-        // Redraw group headers on new page
-        doc.fontSize(8).font(this.fontBold);
-
-        // SHIP STAFF header
-        doc.rect(startX, startY, shipStaffWidth, groupHeaderHeight).stroke();
-        doc.text('SHIP STAFF', startX, startY + 4, {
-          width: shipStaffWidth,
-          align: 'center',
-        });
-
-        // OFFICE header
-        doc
-          .rect(startX + shipStaffWidth, startY, officeWidth, groupHeaderHeight)
-          .stroke();
-        doc.text('OFFICE', startX + shipStaffWidth, startY + 4, {
-          width: officeWidth,
-          align: 'center',
-        });
-
-        startY += groupHeaderHeight;
-
-        // Redraw column headers on new page - first borders
-        doc.fontSize(fontSize).font(this.fontBold);
-        x = startX;
-
-        columns.forEach((col) => {
-          const colWidth = pageWidth * col.width;
-          doc.rect(x, startY, colWidth, headerHeight).stroke();
-          x += colWidth;
-        });
-
-        // Then header text - vertically centered with clipping
-        x = startX;
-        columns.forEach((col) => {
-          const colWidth = pageWidth * col.width;
-
-          // Save state and clip to cell bounds
-          doc.save();
-          doc.rect(x + 1, startY + 1, colWidth - 2, headerHeight - 2).clip();
-
-          const headerTextHeight = doc.heightOfString(col.header, {
-            width: colWidth - padding * 2,
-          });
-          const headerVerticalOffset = (headerHeight - headerTextHeight) / 2;
-
-          doc.text(col.header, x + padding, startY + headerVerticalOffset, {
-            width: colWidth - padding * 2,
-            align: 'center',
-          });
-
-          doc.restore();
-          x += colWidth;
-        });
-
-        startY += headerHeight;
-        doc.font(this.fontRegular).fontSize(fontSize);
+        startY = drawHeadersOnNewPage();
       }
 
-      // Draw row - first draw all cell borders
-      x = startX;
-      columns.forEach((col) => {
-        const colWidth = pageWidth * col.width;
-        doc.rect(x, startY, colWidth, currentRowHeight).stroke();
-        x += colWidth;
-      });
+      // Recalculate available height after potential page change
+      const newAvailableHeight = pageBottom - startY;
 
-      // Then draw all cell content (vertically centered) with clipping
-      x = startX;
-      doc.font(this.fontRegular).fontSize(fontSize);
-      columns.forEach((col) => {
-        const colWidth = pageWidth * col.width;
-
-        let value = '';
-        if (col.key === 'completionDate') {
-          value = entry.completionDate
-            ? new Date(entry.completionDate).toLocaleDateString()
-            : '';
-        } else if (col.key === 'remarks') {
-          // Combine status, sign, and date
-          const status = this.formatStatus(entry.status);
-          const sign = entry.officeSignUser?.name || '';
-          const date = entry.officeSignDate
-            ? new Date(entry.officeSignDate).toLocaleDateString()
-            : '';
-          value = [status, sign, date].filter(Boolean).join('\n');
-        } else {
-          value = this.getEntryValue(entry, col.key);
-        }
-
-        if (value) {
-          // Save state and clip to cell bounds
-          doc.save();
-          doc
-            .rect(x + 1, startY + 1, colWidth - 2, currentRowHeight - 2)
-            .clip();
-
-          // Calculate vertical position for text
-          const textHeight = doc.heightOfString(value, {
-            width: colWidth - padding * 2,
-          });
-          const verticalOffset = Math.max(
-            padding,
-            (currentRowHeight - textHeight) / 2,
-          );
-
-          doc.text(value, x + padding, startY + verticalOffset, {
-            width: colWidth - padding * 2,
-            lineGap: 1,
-          });
-
-          // Restore state (removes clipping)
-          doc.restore();
-        }
-        x += colWidth;
-      });
-
-      startY += currentRowHeight;
+      // If row fits on current page, draw normally
+      if (currentRowHeight <= newAvailableHeight) {
+        this.drawEntryRow(
+          doc,
+          entry,
+          columns,
+          startX,
+          startY,
+          pageWidth,
+          currentRowHeight,
+          padding,
+          fontSize,
+          signatureCache,
+        );
+        startY += currentRowHeight;
+      } else {
+        // Row is too tall - split across pages
+        startY = this.drawEntryRowSplit(
+          doc,
+          entry,
+          columns,
+          startX,
+          startY,
+          pageWidth,
+          padding,
+          fontSize,
+          signatureCache,
+          drawHeadersOnNewPage,
+        );
+      }
     });
 
     // If no entries, show empty message
     if (entries.length === 0) {
       doc.text('No entries found.', startX, startY + 10);
+    }
+  }
+
+  /**
+   * Draw a single entry row (all cells)
+   */
+  private drawEntryRow(
+    doc: PDFKit.PDFDocument,
+    entry: InspectionEntryWithRelations,
+    columns: ColumnDefinition[],
+    startX: number,
+    startY: number,
+    pageWidth: number,
+    rowHeight: number,
+    padding: number,
+    fontSize: number,
+    signatureCache: Map<string, Buffer>,
+  ): void {
+    // Draw row borders first
+    let x = startX;
+    columns.forEach((col) => {
+      const colWidth = pageWidth * col.width;
+      doc.rect(x, startY, colWidth, rowHeight).stroke();
+      x += colWidth;
+    });
+
+    // Draw cell content
+    x = startX;
+    doc.font(this.fontRegular).fontSize(fontSize);
+    columns.forEach((col) => {
+      const colWidth = pageWidth * col.width;
+
+      if (col.key === 'remarks') {
+        this.drawRemarksCell(
+          doc,
+          entry,
+          x,
+          startY,
+          colWidth,
+          rowHeight,
+          padding,
+          fontSize,
+          signatureCache,
+        );
+        x += colWidth;
+        return;
+      }
+
+      let value = '';
+      if (col.key === 'completionDate') {
+        value = entry.completionDate
+          ? new Date(entry.completionDate).toLocaleDateString()
+          : '';
+      } else {
+        value = this.getEntryValue(entry, col.key);
+      }
+
+      if (value) {
+        const textHeight = doc.heightOfString(value, {
+          width: colWidth - padding * 2,
+          lineGap: 1,
+        });
+
+        // Only center vertically for short content (SR NO, dates)
+        // For long content like Company Analysis, start from top
+        const shouldCenter = col.key === 'srNo' || col.key === 'completionDate';
+        const verticalOffset = shouldCenter
+          ? Math.max(padding, (rowHeight - textHeight) / 2)
+          : padding;
+
+        doc.text(value, x + padding, startY + verticalOffset, {
+          width: colWidth - padding * 2,
+          lineGap: 1,
+          align: shouldCenter ? 'center' : 'left',
+        });
+      }
+      x += colWidth;
+    });
+  }
+
+  /**
+   * Draw an entry row that splits across multiple pages
+   */
+  private drawEntryRowSplit(
+    doc: PDFKit.PDFDocument,
+    entry: InspectionEntryWithRelations,
+    columns: ColumnDefinition[],
+    startX: number,
+    startY: number,
+    pageWidth: number,
+    padding: number,
+    fontSize: number,
+    signatureCache: Map<string, Buffer>,
+    drawHeadersOnNewPage: () => number,
+  ): number {
+    const pageBottom = doc.page.height - doc.page.margins.bottom - 30;
+
+    // Get the text content for each column
+    const cellContents: Map<string, string> = new Map();
+    columns.forEach((col) => {
+      if (col.key === 'completionDate') {
+        cellContents.set(
+          col.key,
+          entry.completionDate
+            ? new Date(entry.completionDate).toLocaleDateString()
+            : '',
+        );
+      } else if (col.key !== 'remarks') {
+        cellContents.set(col.key, this.getEntryValue(entry, col.key));
+      }
+    });
+
+    // Calculate height needed for each column
+    doc.font(this.fontRegular).fontSize(fontSize);
+    const columnHeights: Map<string, number> = new Map();
+    let maxHeight = 0;
+
+    columns.forEach((col) => {
+      const colWidth = pageWidth * col.width;
+      const textWidth = colWidth - padding * 2;
+
+      if (col.key === 'remarks') {
+        // Remarks column has fixed height for signature
+        columnHeights.set(col.key, 60);
+      } else {
+        const value = cellContents.get(col.key) || '';
+        if (value) {
+          const height = doc.heightOfString(value, {
+            width: textWidth,
+            lineGap: 1,
+          });
+          columnHeights.set(col.key, height + padding * 2);
+        } else {
+          columnHeights.set(col.key, 20);
+        }
+      }
+      maxHeight = Math.max(maxHeight, columnHeights.get(col.key) || 0);
+    });
+
+    // Calculate line height for snapping to line boundaries
+    // Line height = font size + lineGap
+    const lineHeight = fontSize + 1; // fontSize + lineGap of 1
+
+    // Track rendering position
+    let currentY = startY;
+    let renderedHeight = 0;
+    let isFirstSegment = true;
+
+    while (renderedHeight < maxHeight) {
+      const availableHeight = pageBottom - currentY;
+      const remainingHeight = maxHeight - renderedHeight;
+
+      // Calculate segment height, snapping to line boundaries
+      let segmentHeight: number;
+      if (remainingHeight <= availableHeight) {
+        // All remaining content fits - use exact remaining height
+        segmentHeight = remainingHeight;
+      } else {
+        // Need to split - snap to complete lines
+        // Available content area = availableHeight - padding (top)
+        const contentArea = availableHeight - padding;
+        // Number of complete lines that fit
+        const completeLines = Math.floor(contentArea / lineHeight);
+        // Segment height = complete lines + padding
+        segmentHeight = completeLines * lineHeight + padding;
+        // Ensure minimum height
+        if (segmentHeight < lineHeight + padding) {
+          segmentHeight = lineHeight + padding;
+        }
+      }
+
+      // Draw cell borders for this segment
+      let x = startX;
+      columns.forEach((col) => {
+        const colWidth = pageWidth * col.width;
+        doc.rect(x, currentY, colWidth, segmentHeight).stroke();
+        x += colWidth;
+      });
+
+      // Draw cell contents
+      x = startX;
+      doc.font(this.fontRegular).fontSize(fontSize);
+
+      columns.forEach((col) => {
+        const colWidth = pageWidth * col.width;
+
+        if (col.key === 'remarks') {
+          // Only draw remarks on first segment
+          if (isFirstSegment) {
+            this.drawRemarksCell(
+              doc,
+              entry,
+              x,
+              currentY,
+              colWidth,
+              segmentHeight,
+              padding,
+              fontSize,
+              signatureCache,
+            );
+          }
+          x += colWidth;
+          return;
+        }
+
+        const value = cellContents.get(col.key) || '';
+        if (value) {
+          // Save graphics state and clip to cell
+          doc.save();
+          doc.rect(x, currentY, colWidth, segmentHeight).clip();
+
+          const textHeight = doc.heightOfString(value, {
+            width: colWidth - padding * 2,
+            lineGap: 1,
+          });
+
+          const shouldCenter =
+            col.key === 'srNo' || col.key === 'completionDate';
+
+          // Calculate Y position - offset by already rendered content
+          let textY: number;
+          if (shouldCenter && textHeight <= segmentHeight - padding * 2) {
+            // Center short content vertically
+            textY = currentY + (segmentHeight - textHeight) / 2;
+          } else {
+            // For long content, offset by rendered height to show continuation
+            textY = currentY + padding - renderedHeight;
+          }
+
+          doc.text(value, x + padding, textY, {
+            width: colWidth - padding * 2,
+            lineGap: 1,
+            align: shouldCenter ? 'center' : 'left',
+          });
+
+          doc.restore();
+        }
+        x += colWidth;
+      });
+
+      renderedHeight += segmentHeight;
+      currentY += segmentHeight;
+      isFirstSegment = false;
+
+      // Check if we need to continue on next page
+      if (renderedHeight < maxHeight) {
+        doc.addPage();
+        currentY = drawHeadersOnNewPage();
+      }
+    }
+
+    return currentY;
+  }
+
+  /**
+   * Draw the remarks cell with signature image (if available) or fallback to badge text
+   */
+  private drawRemarksCell(
+    doc: PDFKit.PDFDocument,
+    entry: InspectionEntryWithRelations,
+    x: number,
+    y: number,
+    colWidth: number,
+    rowHeight: number,
+    padding: number,
+    fontSize: number,
+    signatureCache: Map<string, Buffer>,
+  ): void {
+    const status = this.formatStatus(entry.status);
+    const signUser = entry.officeSignUser;
+    const signDate = entry.officeSignDate
+      ? new Date(entry.officeSignDate).toLocaleDateString()
+      : '';
+
+    // Check if we have a signature image for this user
+    const signatureBuffer = signUser ? signatureCache.get(signUser.id) : null;
+
+    doc.save();
+    doc.rect(x + 1, y + 1, colWidth - 2, rowHeight - 2).clip();
+
+    if (signatureBuffer && signUser) {
+      // Calculate total content height for vertical centering
+      doc.font(this.fontRegular).fontSize(fontSize);
+      const statusText = status;
+      const statusHeight = doc.heightOfString(statusText, {
+        width: colWidth - padding * 2,
+      });
+      const signatureHeight = 25;
+      doc.fontSize(fontSize - 1);
+      const nameAndDate = [signUser.name, signDate].filter(Boolean).join(' - ');
+      const nameDateHeight = doc.heightOfString(nameAndDate || 'X', {
+        width: colWidth - padding * 2,
+      });
+      const totalContentHeight =
+        statusHeight + signatureHeight + nameDateHeight + 6; // 6 for gaps
+      const verticalOffset = Math.max(
+        padding,
+        (rowHeight - totalContentHeight) / 2,
+      );
+
+      // Draw status text - horizontally centered
+      doc.font(this.fontRegular).fontSize(fontSize);
+      doc.text(statusText, x + padding, y + verticalOffset, {
+        width: colWidth - padding * 2,
+        align: 'center',
+      });
+
+      // Draw signature image - horizontally centered
+      const signatureWidth = Math.min(colWidth - padding * 2, 60);
+      const signatureStartY = y + verticalOffset + statusHeight + 2;
+      const signatureX = x + (colWidth - signatureWidth) / 2;
+
+      try {
+        doc.image(signatureBuffer, signatureX, signatureStartY, {
+          width: signatureWidth,
+          height: signatureHeight,
+          fit: [signatureWidth, signatureHeight],
+        });
+
+        // Draw signer name and date below signature - horizontally centered
+        const textY = signatureStartY + signatureHeight + 2;
+        doc.fontSize(fontSize - 1);
+        doc.text(nameAndDate, x + padding, textY, {
+          width: colWidth - padding * 2,
+          align: 'center',
+        });
+      } catch (error) {
+        // If signature image fails, fall back to text
+        const errorMessage =
+          error instanceof Error ? error.message : 'Unknown error';
+        this.logger.warn(`Failed to render signature image: ${errorMessage}`);
+        this.drawRemarksFallback(
+          doc,
+          x,
+          y,
+          colWidth,
+          rowHeight,
+          padding,
+          fontSize,
+          status,
+          signUser?.name || '',
+          signDate,
+        );
+      }
+    } else {
+      // Fallback: Draw badge-style text (status, name, date)
+      this.drawRemarksFallback(
+        doc,
+        x,
+        y,
+        colWidth,
+        rowHeight,
+        padding,
+        fontSize,
+        status,
+        signUser?.name || '',
+        signDate,
+      );
+    }
+
+    doc.restore();
+  }
+
+  /**
+   * Fallback method to draw remarks as text (badge style) - center aligned
+   */
+  private drawRemarksFallback(
+    doc: PDFKit.PDFDocument,
+    x: number,
+    y: number,
+    colWidth: number,
+    rowHeight: number,
+    padding: number,
+    fontSize: number,
+    status: string,
+    signerName: string,
+    signDate: string,
+  ): void {
+    const value = [status, signerName, signDate].filter(Boolean).join('\n');
+
+    if (value) {
+      doc.font(this.fontRegular).fontSize(fontSize);
+      const textHeight = doc.heightOfString(value, {
+        width: colWidth - padding * 2,
+        align: 'center',
+      });
+      const verticalOffset = Math.max(padding, (rowHeight - textHeight) / 2);
+
+      doc.text(value, x + padding, y + verticalOffset, {
+        width: colWidth - padding * 2,
+        lineGap: 1,
+        align: 'center',
+      });
     }
   }
 
@@ -630,20 +1089,51 @@ export class PdfService {
     pageWidth: number,
     fontSize: number,
     padding: number,
+    signatureCache?: Map<string, Buffer>,
   ): number {
     let maxHeight = 20;
 
     columns.forEach((col) => {
-      const colWidth = pageWidth * col.width - padding * 2;
+      // Use the same width calculation as in drawEntryRow for consistency
+      const colWidth = pageWidth * col.width;
+      const textWidth = colWidth - padding * 2;
       let text = '';
 
       if (col.key === 'remarks') {
-        const status = this.formatStatus(entry.status);
-        const sign = entry.officeSignUser?.name || '';
-        const date = entry.officeSignDate
-          ? new Date(entry.officeSignDate).toLocaleDateString()
-          : '';
-        text = [status, sign, date].filter(Boolean).join('\n');
+        // Check if this entry has a signature image
+        const signUser = entry.officeSignUser;
+        const hasSignature =
+          signUser && signatureCache && signatureCache.has(signUser.id);
+
+        if (hasSignature) {
+          // Need more height for: status text + signature image + name/date
+          // Status text height + signature (25) + name/date text + padding
+          const status = this.formatStatus(entry.status);
+          doc.fontSize(fontSize);
+          const statusHeight = doc.heightOfString(status, {
+            width: textWidth,
+            lineGap: 1,
+          });
+          const signatureHeight = 25;
+          const nameDate = [signUser?.name, entry.officeSignDate ? 'date' : '']
+            .filter(Boolean)
+            .join(' - ');
+          doc.fontSize(fontSize - 1);
+          const nameDateHeight = doc.heightOfString(nameDate || 'X', {
+            width: textWidth,
+            lineGap: 1,
+          });
+          const totalHeight =
+            statusHeight + signatureHeight + nameDateHeight + padding * 3 + 6;
+          maxHeight = Math.max(maxHeight, totalHeight);
+        } else {
+          const status = this.formatStatus(entry.status);
+          const sign = entry.officeSignUser?.name || '';
+          const date = entry.officeSignDate
+            ? new Date(entry.officeSignDate).toLocaleDateString()
+            : '';
+          text = [status, sign, date].filter(Boolean).join('\n');
+        }
       } else if (col.key === 'completionDate') {
         text = entry.completionDate
           ? new Date(entry.completionDate).toLocaleDateString()
@@ -654,14 +1144,18 @@ export class PdfService {
 
       if (text) {
         doc.fontSize(fontSize);
+        // Include lineGap in height calculation to match actual rendering
         const textHeight = doc.heightOfString(text, {
-          width: colWidth,
+          width: textWidth,
+          lineGap: 1,
         });
         maxHeight = Math.max(maxHeight, textHeight + padding * 2);
       }
     });
 
-    return Math.min(maxHeight, 100); // Cap max height
+    // Return the exact calculated height - no capping
+    // The drawing logic will handle page overflow
+    return maxHeight;
   }
 
   private getEntryValue(

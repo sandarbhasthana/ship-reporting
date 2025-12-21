@@ -177,6 +177,43 @@ export class S3Service {
   }
 
   /**
+   * Download a file from S3 as a Buffer
+   * @param s3Key - The S3 object key
+   * @returns Buffer containing the file data, or null if download fails
+   */
+  async downloadFile(s3Key: string): Promise<Buffer | null> {
+    if (!this.isS3Enabled() || !s3Key) {
+      return null;
+    }
+
+    try {
+      const command = new GetObjectCommand({
+        Bucket: this.bucketName,
+        Key: s3Key,
+      });
+
+      const response = await this.s3Client!.send(command);
+
+      if (!response.Body) {
+        return null;
+      }
+
+      // Convert the readable stream to a buffer
+      const chunks: Uint8Array[] = [];
+      for await (const chunk of response.Body as AsyncIterable<Uint8Array>) {
+        chunks.push(chunk);
+      }
+
+      return Buffer.concat(chunks);
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+      this.logger.error(`Failed to download file from S3: ${errorMessage}`);
+      return null;
+    }
+  }
+
+  /**
    * Delete a file from S3
    */
   async deleteFile(s3Key: string): Promise<void> {
