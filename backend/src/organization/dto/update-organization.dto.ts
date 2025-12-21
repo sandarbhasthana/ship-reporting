@@ -1,10 +1,24 @@
-import { IsString, IsOptional, MaxLength } from 'class-validator';
+import { IsString, IsOptional, MaxLength, IsEmail } from 'class-validator';
 
 export class UpdateOrganizationDto {
   @IsString()
   @IsOptional()
   @MaxLength(255)
   name?: string;
+
+  @IsEmail()
+  @IsOptional()
+  email?: string;
+
+  @IsString()
+  @IsOptional()
+  @MaxLength(50)
+  phone?: string;
+
+  @IsString()
+  @IsOptional()
+  @MaxLength(255)
+  owner?: string;
 
   @IsString()
   @IsOptional()
@@ -20,4 +34,3 @@ export class UpdateOrganizationDto {
   @MaxLength(500)
   footerText?: string;
 }
-
