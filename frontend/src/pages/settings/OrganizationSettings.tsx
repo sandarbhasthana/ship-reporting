@@ -1,18 +1,19 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import {
   Form,
   Input,
   Button,
   Card,
   Upload,
-  message,
   Space,
   Typography,
-  Spin
+  Spin,
+  App
 } from "antd";
 import { UploadOutlined, SaveOutlined } from "@ant-design/icons";
 import { useGetIdentity, useApiUrl } from "@refinedev/core";
 import type { UploadFile, UploadProps } from "antd/es/upload/interface";
+import { useImageUrl } from "../../hooks";
 import styles from "./settings.module.css";
 
 const { Title, Text } = Typography;
@@ -41,14 +42,14 @@ export const OrganizationSettings: React.FC = () => {
   const [logoFileList, setLogoFileList] = useState<UploadFile[]>([]);
   const apiUrl = useApiUrl();
   const { data: identity } = useGetIdentity<UserIdentity>();
+  const { message } = App.useApp();
 
   const isAdmin = identity?.role === "ADMIN";
 
-  useEffect(() => {
-    fetchOrganization();
-  }, []);
+  // Use hook to resolve logo URL (handles both S3 and local paths)
+  const { url: resolvedLogoUrl } = useImageUrl(organization?.logoUrl);
 
-  const fetchOrganization = async () => {
+  const fetchOrganization = useCallback(async () => {
     try {
       const token = localStorage.getItem("access_token");
       const response = await fetch(`${apiUrl}/organization/my`, {
@@ -65,26 +66,43 @@ export const OrganizationSettings: React.FC = () => {
           defaultFormNo: data.defaultFormNo,
           footerText: data.footerText
         });
+        // Logo URL will be updated via useEffect when resolvedLogoUrl changes
         if (data.logoUrl) {
           setLogoFileList([
             {
               uid: "-1",
               name: "logo",
               status: "done",
-              url: data.logoUrl
+              url: "" // Will be updated by useEffect
             }
           ]);
         }
       }
     } catch (error) {
-      message.error("Failed to load organization settings");
+      message.error(`Failed to load organization settings: ${error}`);
     } finally {
       setLoading(false);
     }
-  };
+  }, [apiUrl, form, message]);
+
+  useEffect(() => {
+    fetchOrganization();
+  }, [fetchOrganization]);
+
+  // Update logo file list URL when resolved
+  useEffect(() => {
+    if (resolvedLogoUrl && logoFileList.length > 0) {
+      setLogoFileList((prev) =>
+        prev.map((file) => ({ ...file, url: resolvedLogoUrl }))
+      );
+    }
+  }, [resolvedLogoUrl, logoFileList.length]);
 
   const handleSave = async (values: Record<string, string>) => {
-    if (!organization) return;
+    if (!organization) {
+      message.error("Organization not loaded");
+      return;
+    }
 
     setSaving(true);
     try {
@@ -105,10 +123,12 @@ export const OrganizationSettings: React.FC = () => {
         message.success("Organization settings saved successfully");
         await fetchOrganization();
       } else {
-        message.error("Failed to save settings");
+        const errorData = await response.json().catch(() => ({}));
+        message.error(errorData.message || "Failed to save settings");
       }
     } catch (error) {
-      message.error("Failed to save settings");
+      console.error("Save error:", error);
+      message.error(`Failed to save settings: ${error}`);
     } finally {
       setSaving(false);
     }

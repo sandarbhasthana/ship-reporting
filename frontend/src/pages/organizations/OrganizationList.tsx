@@ -15,7 +15,6 @@ import type { MenuProps } from "antd";
 import {
   PlusOutlined,
   EditOutlined,
-  DeleteOutlined,
   SearchOutlined,
   MoreOutlined,
   BankOutlined,
@@ -24,6 +23,7 @@ import {
 } from "@ant-design/icons";
 import { Link, useNavigate } from "react-router";
 import { useGetIdentity, useApiUrl } from "@refinedev/core";
+import { S3Image, DeleteIcon } from "../../components";
 import styles from "./organizations.module.css";
 
 const { Title, Text } = Typography;
@@ -139,7 +139,7 @@ export const OrganizationList: React.FC = () => {
     {
       key: "delete",
       label: "Delete",
-      icon: <DeleteOutlined />,
+      icon: <DeleteIcon />,
       danger: true,
       onClick: () => handleDelete(record.id, record.name)
     }
@@ -160,7 +160,12 @@ export const OrganizationList: React.FC = () => {
       render: (name: string, record: OrganizationData) => (
         <Space>
           {record.logo ? (
-            <img src={record.logo} alt={name} className={styles.orgLogo} />
+            <S3Image
+              src={record.logo}
+              alt={name}
+              className={styles.orgLogo}
+              fallback={<BankOutlined className={styles.orgIcon} />}
+            />
           ) : (
             <BankOutlined className={styles.orgIcon} />
           )}

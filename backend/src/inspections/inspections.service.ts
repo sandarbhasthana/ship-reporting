@@ -154,7 +154,9 @@ export class InspectionsService {
         createdBy: {
           select: { id: true, name: true, email: true },
         },
-        _count: { select: { entries: true } },
+        entries: {
+          select: { id: true, status: true },
+        },
       },
       orderBy: { createdAt: 'desc' },
     });
@@ -178,7 +180,7 @@ export class InspectionsService {
           orderBy: { srNo: 'asc' },
           include: {
             officeSignUser: {
-              select: { id: true, name: true },
+              select: { id: true, name: true, signatureImage: true },
             },
           },
         },

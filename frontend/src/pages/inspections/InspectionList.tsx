@@ -15,11 +15,11 @@ import {
   PlusOutlined,
   EyeOutlined,
   EditOutlined,
-  DeleteOutlined,
   SearchOutlined,
   MoreOutlined
 } from "@ant-design/icons";
 import { useGetIdentity, useApiUrl } from "@refinedev/core";
+import { DeleteIcon } from "../../components";
 import { Link, useNavigate } from "react-router";
 import type { ColumnsType } from "antd/es/table";
 import dayjs from "dayjs";
@@ -148,7 +148,7 @@ export const InspectionList = () => {
       {
         key: "delete",
         label: "Delete",
-        icon: <DeleteOutlined />,
+        icon: <DeleteIcon />,
         danger: true,
         onClick: () => handleDelete(record.id)
       }

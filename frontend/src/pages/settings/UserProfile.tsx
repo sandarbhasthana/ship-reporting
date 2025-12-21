@@ -5,7 +5,7 @@ import {
   Button,
   Card,
   Upload,
-  message,
+  App,
   Space,
   Typography,
   Spin,
@@ -19,6 +19,7 @@ import {
 } from "@ant-design/icons";
 import { useApiUrl } from "@refinedev/core";
 import type { UploadFile, UploadProps } from "antd/es/upload/interface";
+import { useImageUrl } from "../../hooks";
 import styles from "./settings.module.css";
 
 const { Title, Text } = Typography;
@@ -42,11 +43,46 @@ export const UserProfile: React.FC = () => {
   const [user, setUser] = useState<UserData | null>(null);
   const [signatureFileList, setSignatureFileList] = useState<UploadFile[]>([]);
   const apiUrl = useApiUrl();
+  const { message } = App.useApp();
+
+  // Use hooks to resolve image URLs (handles both S3 and local paths)
+  const { url: profileImageUrl } = useImageUrl(user?.profileImage);
+  const { url: signatureImageUrl, loading: signatureLoading } = useImageUrl(
+    user?.signatureImage
+  );
 
   useEffect(() => {
     fetchProfile();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Update signature file list when URL is resolved or user changes
+  useEffect(() => {
+    if (user?.signatureImage) {
+      if (signatureImageUrl) {
+        // URL resolved - show the image
+        setSignatureFileList([
+          {
+            uid: "-1",
+            name: "signature",
+            status: "done",
+            url: signatureImageUrl
+          }
+        ]);
+      } else if (signatureLoading) {
+        // Still loading - show placeholder
+        setSignatureFileList([
+          {
+            uid: "-1",
+            name: "signature",
+            status: "uploading"
+          }
+        ]);
+      }
+    } else {
+      setSignatureFileList([]);
+    }
+  }, [user?.signatureImage, signatureImageUrl, signatureLoading]);
 
   const fetchProfile = async () => {
     try {
@@ -61,16 +97,7 @@ export const UserProfile: React.FC = () => {
           name: data.name,
           email: data.email
         });
-        if (data.signatureImage) {
-          setSignatureFileList([
-            {
-              uid: "-1",
-              name: "signature",
-              status: "done",
-              url: data.signatureImage
-            }
-          ]);
-        }
+        // Signature file list will be updated via useEffect when signatureImageUrl resolves
       }
     } catch (error) {
       message.error(`Failed to load profile: ${error}`);
@@ -186,13 +213,18 @@ export const UserProfile: React.FC = () => {
     listType: "picture",
     maxCount: 1,
     fileList: signatureFileList,
-    onChange(info) {
-      setSignatureFileList(info.fileList);
+    async onChange(info) {
+      // For S3 uploads, we need to resolve the URL after upload completes
       if (info.file.status === "done") {
         message.success("Signature uploaded successfully");
+        // Fetch updated profile to get the new signature path and resolve URL
         fetchProfile();
       } else if (info.file.status === "error") {
         message.error("Signature upload failed");
+        setSignatureFileList(info.fileList);
+      } else {
+        // For uploading state, update the file list normally
+        setSignatureFileList(info.fileList);
       }
     }
   };
@@ -217,7 +249,7 @@ export const UserProfile: React.FC = () => {
             <Avatar
               size={100}
               icon={<UserOutlined />}
-              src={user?.profileImage}
+              src={profileImageUrl}
               className={styles.profileAvatar}
             />
             <Upload {...profileImageUploadProps}>

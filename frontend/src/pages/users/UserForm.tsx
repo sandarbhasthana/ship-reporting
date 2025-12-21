@@ -283,20 +283,19 @@ export const UserForm: React.FC = () => {
               </Form.Item>
             </Col>
             <Col xs={24} md={12}>
-              <Form.Item
-                name="isActive"
-                label="Account Status"
-                valuePropName="checked"
-              >
-                <Switch
-                  checkedChildren="Active"
-                  unCheckedChildren="Inactive"
-                  style={{
-                    backgroundColor: isActive !== false ? "#059669" : "#e11d48",
-                    marginTop: 8
-                  }}
-                />
-              </Form.Item>
+              <div className={styles.switchInlineWrapper}>
+                <span className={styles.switchLabel}>Account Status</span>
+                <Form.Item name="isActive" valuePropName="checked" noStyle>
+                  <Switch
+                    checkedChildren="Active"
+                    unCheckedChildren="Inactive"
+                    style={{
+                      backgroundColor:
+                        isActive !== false ? "#059669" : "#e11d48"
+                    }}
+                  />
+                </Form.Item>
+              </div>
             </Col>
           </Row>
         </div>

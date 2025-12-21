@@ -8,20 +8,26 @@ import {
   Tag,
   Descriptions,
   Spin,
-  message
+  message,
+  Modal,
 } from "antd";
 import {
   EditOutlined,
   ArrowLeftOutlined,
   FilePdfOutlined,
-  PrinterOutlined
+  PrinterOutlined,
+  ExpandOutlined
 } from "@ant-design/icons";
 import { useGetIdentity, useApiUrl } from "@refinedev/core";
 import { useParams, Link } from "react-router";
 import dayjs from "dayjs";
+import { S3Image } from "../../components";
 import styles from "./inspections.module.css";
 
 const { Title, Text } = Typography;
+
+// Constants for text truncation
+const MAX_TEXT_LENGTH = 200;
 
 interface InspectionEntry {
   id: string;
@@ -34,7 +40,7 @@ interface InspectionEntry {
   companyAnalysis?: string;
   status: string;
   officeSignDate?: string;
-  officeSignUser?: { name: string };
+  officeSignUser?: { name: string; signatureImage?: string };
 }
 
 interface InspectionReport {
@@ -70,6 +76,11 @@ export const InspectionView = () => {
 
   const [inspection, setInspection] = useState<InspectionReport | null>(null);
   const [loading, setLoading] = useState(true);
+  const [expandedTextModal, setExpandedTextModal] = useState<{
+    visible: boolean;
+    title: string;
+    content: string;
+  }>({ visible: false, title: "", content: "" });
 
   const fetchInspection = useCallback(async () => {
     if (!id) return;
@@ -148,24 +159,78 @@ export const InspectionView = () => {
     }
   };
 
+  // Truncate text and show Read More link if content exceeds MAX_TEXT_LENGTH
+  const renderTruncatedText = (
+    text: string | undefined,
+    title: string
+  ): React.ReactNode => {
+    if (!text) return "-";
+
+    const needsTruncation = text.length > MAX_TEXT_LENGTH;
+
+    if (!needsTruncation) {
+      return <span className={styles.viewCellText}>{text}</span>;
+    }
+
+    const truncatedText = text.substring(0, MAX_TEXT_LENGTH);
+
+    return (
+      <div className={styles.truncatedTextContainer}>
+        <span className={styles.viewCellText}>
+          {truncatedText}
+          <span className={styles.ellipsis}>...</span>
+        </span>
+        <Button
+          type="link"
+          size="small"
+          className={styles.readMoreButton}
+          icon={<ExpandOutlined />}
+          onClick={(e) => {
+            e.stopPropagation();
+            setExpandedTextModal({
+              visible: true,
+              title,
+              content: text
+            });
+          }}
+        >
+          Read more
+        </Button>
+      </div>
+    );
+  };
+
   // Ship Staff columns (first 6 columns)
   const shipStaffColumns = [
     { title: "SR No", dataIndex: "srNo", key: "srNo", width: 60 },
-    { title: "Deficiency", dataIndex: "deficiency", key: "deficiency" },
+    {
+      title: "Deficiency",
+      dataIndex: "deficiency",
+      key: "deficiency",
+      width: 140,
+      render: (text: string) => renderTruncatedText(text, "Deficiency")
+    },
     {
       title: "Master's Cause Analysis",
       dataIndex: "mastersCauseAnalysis",
-      key: "mastersCauseAnalysis"
+      key: "mastersCauseAnalysis",
+      width: 140,
+      render: (text: string) =>
+        renderTruncatedText(text, "Master's Cause Analysis")
     },
     {
       title: "Corrective Action",
       dataIndex: "correctiveAction",
-      key: "correctiveAction"
+      key: "correctiveAction",
+      width: 140,
+      render: (text: string) => renderTruncatedText(text, "Corrective Action")
     },
     {
       title: "Preventive Action",
       dataIndex: "preventiveAction",
-      key: "preventiveAction"
+      key: "preventiveAction",
+      width: 140,
+      render: (text: string) => renderTruncatedText(text, "Preventive Action")
     },
     {
       title: "Compl. Date",
@@ -182,7 +247,10 @@ export const InspectionView = () => {
         {
           title: "Company Analysis",
           dataIndex: "companyAnalysis",
-          key: "companyAnalysis"
+          key: "companyAnalysis",
+          width: 200,
+          render: (text: string) =>
+            renderTruncatedText(text, "Company Analysis")
         },
         {
           title: "Remarks*",
@@ -200,7 +268,16 @@ export const InspectionView = () => {
                 <Text type="secondary" className={styles.remarksViewLabel}>
                   Sign:
                 </Text>
-                {record.officeSignUser?.name ? (
+                {record.officeSignUser?.signatureImage ? (
+                  <S3Image
+                    src={record.officeSignUser.signatureImage}
+                    alt={`${record.officeSignUser.name}'s signature`}
+                    style={{ maxHeight: 40, maxWidth: 100 }}
+                    fallback={
+                      <Tag color="blue">{record.officeSignUser.name}</Tag>
+                    }
+                  />
+                ) : record.officeSignUser?.name ? (
                   <Tag color="blue">{record.officeSignUser.name}</Tag>
                 ) : (
                   <Text>-</Text>
@@ -347,8 +424,34 @@ export const InspectionView = () => {
           pagination={false}
           scroll={{ x: 1000 }}
           size="small"
+          className={styles.viewTable}
         />
       </div>
+
+      {/* Modal for expanded text view */}
+      <Modal
+        title={expandedTextModal.title}
+        open={expandedTextModal.visible}
+        onCancel={() =>
+          setExpandedTextModal({ visible: false, title: "", content: "" })
+        }
+        footer={[
+          <Button
+            key="close"
+            onClick={() =>
+              setExpandedTextModal({ visible: false, title: "", content: "" })
+            }
+          >
+            Close
+          </Button>
+        ]}
+        width={600}
+        className={styles.textViewModal}
+      >
+        <div className={styles.textViewModalContent}>
+          {expandedTextModal.content}
+        </div>
+      </Modal>
     </Card>
   );
 };

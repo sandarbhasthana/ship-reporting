@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import PDFDocument from 'pdfkit';
 import {
@@ -11,6 +11,7 @@ import {
 } from '@ship-reporting/prisma';
 import * as path from 'path';
 import * as fs from 'fs';
+import { S3Service } from '../s3/s3.service';
 
 // Type for the full inspection report with all relations
 // Type for inspection entry with relations
@@ -34,11 +35,39 @@ interface ColumnDefinition {
 
 @Injectable()
 export class PdfService {
+  private readonly logger = new Logger(PdfService.name);
   // Font names (will be set to Roboto if available, otherwise Helvetica)
   private fontRegular = 'Helvetica';
   private fontBold = 'Helvetica-Bold';
 
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private s3Service: S3Service,
+  ) {}
+
+  /**
+   * Resolve logo path - handles both local paths and S3 paths
+   * For S3 paths (s3://...), returns null as we can't use them directly in PDFs
+   * For local paths (/uploads/...), returns the full filesystem path
+   */
+  private resolveLocalLogoPath(logoPath: string): string | null {
+    if (!logoPath) return null;
+
+    // S3 paths can't be used directly in PDFs (would need to download first)
+    if (logoPath.startsWith('s3://')) {
+      this.logger.warn(
+        'S3 logo paths are not yet supported in PDF generation. Logo will be skipped.',
+      );
+      return null;
+    }
+
+    // Local path - resolve to full filesystem path
+    // Handle both /uploads/... and uploads/... formats
+    const relativePath = logoPath.startsWith('/')
+      ? logoPath.slice(1)
+      : logoPath;
+    return path.join(process.cwd(), relativePath);
+  }
 
   private getFontPaths(): { regular: string; bold: string } {
     // Try multiple possible locations for fonts
@@ -141,7 +170,39 @@ export class PdfService {
     // Draw table
     this.drawTable(doc, report, pageWidth);
 
-    // Page numbers are shown in the header, no footer page numbers needed
+    // Draw footer on all pages
+    this.drawFooter(doc, report);
+  }
+
+  private drawFooter(
+    doc: PDFKit.PDFDocument,
+    report: InspectionReportWithRelations,
+  ): void {
+    const org = report.vessel?.organization;
+    const footerText = org?.footerText;
+
+    if (!footerText) return;
+
+    // Get total pages and iterate through each
+    const pages = doc.bufferedPageRange();
+    for (let i = 0; i < pages.count; i++) {
+      doc.switchToPage(i);
+
+      // Position footer at bottom left of page (within margins)
+      const footerY = doc.page.height - 25;
+
+      doc
+        .fontSize(8)
+        .font(this.fontRegular)
+        .fillColor('#666666')
+        .text(footerText, doc.page.margins.left, footerY, {
+          lineBreak: false,
+          continued: false,
+        });
+
+      // Reset fill color
+      doc.fillColor('#000000');
+    }
   }
 
   private drawHeader(
@@ -171,8 +232,8 @@ export class PdfService {
     // Try to add company logo
     let logoWidth = 0;
     if (org?.logo) {
-      const logoPath = path.join(process.cwd(), 'uploads', org.logo);
-      if (fs.existsSync(logoPath)) {
+      const logoPath = this.resolveLocalLogoPath(org.logo);
+      if (logoPath && fs.existsSync(logoPath)) {
         try {
           doc.image(logoPath, startX + 5, startY + 5, {
             width: 50,
@@ -181,6 +242,7 @@ export class PdfService {
           logoWidth = 55;
         } catch {
           // Logo failed to load
+          this.logger.warn(`Failed to load logo from path: ${logoPath}`);
         }
       }
     }

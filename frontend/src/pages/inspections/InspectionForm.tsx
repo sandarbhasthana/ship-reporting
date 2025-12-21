@@ -18,7 +18,6 @@ import {
 } from "antd";
 import {
   PlusOutlined,
-  DeleteOutlined,
   SaveOutlined,
   ArrowLeftOutlined,
   EditOutlined,
@@ -31,7 +30,9 @@ import dayjs from "dayjs";
 import {
   FloatingInput,
   FloatingSelect,
-  FloatingDatePicker
+  FloatingDatePicker,
+  S3Image,
+  DeleteIcon
 } from "../../components";
 import styles from "./inspections.module.css";
 
@@ -63,6 +64,7 @@ interface InspectionEntry {
   officeSignUserId?: string | null;
   officeSignUserName?: string | null;
   officeSignUserRole?: string | null;
+  officeSignUserSignature?: string | null;
   officeSignDate?: string | null;
 }
 
@@ -160,74 +162,107 @@ export const InspectionForm = () => {
     );
   };
 
-  const fetchVessels = useCallback(async () => {
-    try {
-      const token = localStorage.getItem("access_token");
-      const response = await fetch(`${apiUrl}/vessels`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setVessels(Array.isArray(data) ? data : data.data || []);
+  // Handle vessel change - auto-populate shipFileNo
+  const handleVesselChange = useCallback(
+    (vesselId: string) => {
+      const selectedVessel = vessels.find((v) => v.id === vesselId);
+      if (selectedVessel?.shipFileNo) {
+        form.setFieldValue("shipFileNo", selectedVessel.shipFileNo);
       }
-    } catch (error) {
-      console.error("Failed to fetch vessels:", error);
-    }
-  }, [apiUrl]);
+    },
+    [vessels, form]
+  );
 
-  const fetchInspection = useCallback(async () => {
-    if (!id) return;
-    setLoading(true);
-    try {
-      const token = localStorage.getItem("access_token");
-      const response = await fetch(`${apiUrl}/inspections/${id}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      if (response.ok) {
-        const data = await response.json();
-        form.setFieldsValue({
-          vesselId: data.vesselId,
-          inspectedBy: data.inspectedBy,
-          inspectionDate: data.inspectionDate
-            ? dayjs(data.inspectionDate)
-            : null,
-          shipFileNo: data.shipFileNo,
-          officeFileNo: data.officeFileNo,
-          revisionNo: data.revisionNo,
-          formNo: data.formNo,
-          applicableFomSections: data.applicableFomSections
-        });
-        setEntries(
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (data.entries || []).map((e: any, idx: number) => ({
-            ...e,
-            key: e.id || `new-${idx}`,
-            completionDate: e.completionDate,
-            officeSignUserId: e.officeSignUserId,
-            officeSignUserName: e.officeSignUser?.name || null,
-            officeSignDate: e.officeSignDate
-          }))
-        );
-      }
-    } catch (error) {
-      console.error("Failed to fetch inspection:", error);
-      message.error("Failed to load inspection");
-    } finally {
-      setLoading(false);
-    }
-  }, [apiUrl, id, form]);
-
+  // Initialize data on component mount - single useEffect for all initial data loading
   useEffect(() => {
-    fetchVessels();
-    if (isEdit) {
-      fetchInspection();
-    } else {
-      // For captain, auto-set their vessel
-      if (!isAdmin && identity?.assignedVesselId) {
-        form.setFieldValue("vesselId", identity.assignedVesselId);
+    let isMounted = true;
+
+    const initializeData = async () => {
+      const token = localStorage.getItem("access_token");
+
+      // Fetch vessels first
+      try {
+        const vesselsResponse = await fetch(`${apiUrl}/vessels`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (vesselsResponse.ok && isMounted) {
+          const vesselsData = await vesselsResponse.json();
+          const vesselList = Array.isArray(vesselsData)
+            ? vesselsData
+            : vesselsData.data || [];
+          setVessels(vesselList);
+
+          // For captain creating new inspection, auto-set their vessel
+          if (!isEdit && !isAdmin && identity?.assignedVesselId) {
+            form.setFieldValue("vesselId", identity.assignedVesselId);
+            const captainVessel = vesselList.find(
+              (v: { id: string; shipFileNo?: string }) =>
+                v.id === identity.assignedVesselId
+            );
+            if (captainVessel?.shipFileNo) {
+              form.setFieldValue("shipFileNo", captainVessel.shipFileNo);
+            }
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch vessels:", error);
       }
-    }
-  }, [fetchVessels, fetchInspection, isEdit, isAdmin, identity, form]);
+
+      // Fetch inspection if editing
+      if (isEdit && id) {
+        setLoading(true);
+        try {
+          const inspectionResponse = await fetch(
+            `${apiUrl}/inspections/${id}`,
+            {
+              headers: { Authorization: `Bearer ${token}` }
+            }
+          );
+          if (inspectionResponse.ok && isMounted) {
+            const data = await inspectionResponse.json();
+            form.setFieldsValue({
+              vesselId: data.vesselId,
+              inspectedBy: data.inspectedBy,
+              inspectionDate: data.inspectionDate
+                ? dayjs(data.inspectionDate)
+                : null,
+              shipFileNo: data.shipFileNo,
+              officeFileNo: data.officeFileNo,
+              revisionNo: data.revisionNo,
+              formNo: data.formNo,
+              applicableFomSections: data.applicableFomSections
+            });
+            setEntries(
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              (data.entries || []).map((e: any, idx: number) => ({
+                ...e,
+                key: e.id || `new-${idx}`,
+                completionDate: e.completionDate,
+                officeSignUserId: e.officeSignUserId,
+                officeSignUserName: e.officeSignUser?.name || null,
+                officeSignUserSignature:
+                  e.officeSignUser?.signatureImage || null,
+                officeSignDate: e.officeSignDate
+              }))
+            );
+          }
+        } catch (error) {
+          console.error("Failed to fetch inspection:", error);
+          message.error("Failed to load inspection");
+        } finally {
+          if (isMounted) setLoading(false);
+        }
+      }
+    };
+
+    initializeData();
+
+    return () => {
+      isMounted = false;
+    };
+    // Only run on mount and when id changes (for navigation between inspections)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
 
   const addEntry = () => {
     const newEntry: InspectionEntry = {
@@ -349,12 +384,14 @@ export const InspectionForm = () => {
       dataIndex: "srNo",
       width: 55,
       render: (_: unknown, record: InspectionEntry) => (
-        <Input
-          value={record.srNo}
-          onChange={(e) => updateEntry(record.key!, "srNo", e.target.value)}
-          maxLength={5}
-          className={styles.srNoInput}
-        />
+        <div className={styles.centeredCell}>
+          <Input
+            value={record.srNo}
+            onChange={(e) => updateEntry(record.key!, "srNo", e.target.value)}
+            maxLength={5}
+            className={styles.srNoInput}
+          />
+        </div>
       )
     },
     {
@@ -394,18 +431,20 @@ export const InspectionForm = () => {
       dataIndex: "completionDate",
       width: 100,
       render: (_: unknown, record: InspectionEntry) => (
-        <DatePicker
-          value={record.completionDate ? dayjs(record.completionDate) : null}
-          onChange={(date) =>
-            updateEntry(
-              record.key!,
-              "completionDate",
-              date?.toISOString() || null
-            )
-          }
-          format="DD/MM/YY"
-          className={styles.datePickerCompact}
-        />
+        <div className={styles.centeredCell}>
+          <DatePicker
+            value={record.completionDate ? dayjs(record.completionDate) : null}
+            onChange={(date) =>
+              updateEntry(
+                record.key!,
+                "completionDate",
+                date?.toISOString() || null
+              )
+            }
+            format="DD/MM/YY"
+            className={styles.datePickerCompact}
+          />
+        </div>
       )
     }
   ];
@@ -472,7 +511,29 @@ export const InspectionForm = () => {
               <Text type="secondary" className={styles.remarksLabel}>
                 Sign:
               </Text>
-              {record.officeSignUserName ? (
+              {record.officeSignUserSignature ? (
+                <S3Image
+                  src={record.officeSignUserSignature}
+                  alt={`${record.officeSignUserName}'s signature`}
+                  style={{ maxHeight: 40, maxWidth: 100 }}
+                  fallback={
+                    <span
+                      className={`${styles.userBadge} ${
+                        record.officeSignUserRole === "ADMIN"
+                          ? styles.adminBadge
+                          : styles.captainBadge
+                      }`}
+                    >
+                      {record.officeSignUserRole === "ADMIN" ? (
+                        <CrownOutlined className={styles.badgeIcon} />
+                      ) : (
+                        <UserOutlined className={styles.badgeIcon} />
+                      )}
+                      {record.officeSignUserName}
+                    </span>
+                  }
+                />
+              ) : record.officeSignUserName ? (
                 <span
                   className={`${styles.userBadge} ${
                     record.officeSignUserRole === "ADMIN"
@@ -522,18 +583,20 @@ export const InspectionForm = () => {
     title: "",
     width: 40,
     render: (_: unknown, record: InspectionEntry) => (
-      <Popconfirm
-        title="Remove entry?"
-        onConfirm={() => removeEntry(record.key!)}
-      >
-        <Button
-          type="text"
-          danger
-          icon={<DeleteOutlined />}
-          size="small"
-          className={styles.deleteButton}
-        />
-      </Popconfirm>
+      <div className={styles.centeredCell}>
+        <Popconfirm
+          title="Remove entry?"
+          onConfirm={() => removeEntry(record.key!)}
+        >
+          <Button
+            type="text"
+            danger
+            icon={<DeleteIcon />}
+            size="small"
+            className={styles.deleteButton}
+          />
+        </Popconfirm>
+      </div>
     )
   } as (typeof entryColumns)[0]);
 
@@ -583,17 +646,41 @@ export const InspectionForm = () => {
           </Title>
           <Row gutter={24}>
             <Col xs={24} sm={12} md={6}>
-              <Form.Item
-                name="vesselId"
-                rules={[{ required: true, message: "Please select a vessel" }]}
-              >
-                <FloatingSelect
-                  label="Vessel"
-                  required
-                  options={vessels.map((v) => ({ label: v.name, value: v.id }))}
-                  disabled={isEdit || Boolean(identity?.assignedVesselId)}
-                />
-              </Form.Item>
+              {/* Captain sees read-only vessel name, Admin sees dropdown */}
+              {!isAdmin && identity?.assignedVesselId ? (
+                <Form.Item>
+                  <Input type="hidden" />
+                  <Form.Item name="vesselId" hidden noStyle>
+                    <Input />
+                  </Form.Item>
+                  <FloatingInput
+                    label="Vessel"
+                    value={
+                      vessels.find((v) => v.id === identity.assignedVesselId)
+                        ?.name || ""
+                    }
+                    disabled
+                  />
+                </Form.Item>
+              ) : (
+                <Form.Item
+                  name="vesselId"
+                  rules={[
+                    { required: true, message: "Please select a vessel" }
+                  ]}
+                >
+                  <FloatingSelect
+                    label="Vessel"
+                    required
+                    options={vessels.map((v) => ({
+                      label: v.name,
+                      value: v.id
+                    }))}
+                    disabled={isEdit}
+                    onChange={handleVesselChange}
+                  />
+                </Form.Item>
+              )}
             </Col>
             <Col xs={24} sm={12} md={6}>
               <Form.Item name="inspectedBy">
@@ -647,14 +734,17 @@ export const InspectionForm = () => {
             <Title level={5} className={styles.formSectionTitle}>
               Deficiency Entries
             </Title>
-            <Button
-              type="primary"
-              onClick={addEntry}
-              icon={<PlusOutlined />}
-              disabled={entries.length >= 100}
-            >
-              Add Entry {entries.length >= 100 && "(Max 100)"}
-            </Button>
+            {/* Only captains can add new entries, admins can only edit existing ones */}
+            {!isAdmin && (
+              <Button
+                type="primary"
+                onClick={addEntry}
+                icon={<PlusOutlined />}
+                disabled={entries.length >= 100}
+              >
+                Add Entry {entries.length >= 100 && "(Max 100)"}
+              </Button>
+            )}
           </div>
           <Table
             columns={entryColumns}

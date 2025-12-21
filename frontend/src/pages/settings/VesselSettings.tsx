@@ -1,27 +1,14 @@
 import { useCallback, useEffect, useState } from "react";
-import {
-  Form,
-  Input,
-  Button,
-  Card,
-  Select,
-  Space,
-  Typography,
-  Spin,
-  Table,
-  Dropdown,
-  App
-} from "antd";
+import { Button, Card, Typography, Spin, Table, Dropdown, App } from "antd";
 import type { MenuProps } from "antd";
 import {
   EditOutlined,
-  SaveOutlined,
   PlusOutlined,
   EyeOutlined,
-  DeleteOutlined,
   MoreOutlined
 } from "@ant-design/icons";
 import { useGetIdentity, useApiUrl } from "@refinedev/core";
+import { DeleteIcon } from "../../components";
 import { useNavigate } from "react-router";
 import styles from "./settings.module.css";
 
@@ -37,25 +24,14 @@ interface VesselData {
   captain?: { id: string; name: string };
 }
 
-interface UserData {
-  id: string;
-  name: string;
-  role: string;
-}
-
 interface UserIdentity {
   id: string;
   role: string;
 }
 
 export const VesselSettings: React.FC = () => {
-  const [form] = Form.useForm();
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
   const [vessels, setVessels] = useState<VesselData[]>([]);
-  const [captains, setCaptains] = useState<UserData[]>([]);
-  const [editingVessel, setEditingVessel] = useState<VesselData | null>(null);
-  const [isModalMode, setIsModalMode] = useState(false);
   const apiUrl = useApiUrl();
   const { data: identity } = useGetIdentity<UserIdentity>();
   const navigate = useNavigate();
@@ -78,76 +54,14 @@ export const VesselSettings: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [apiUrl]);
-
-  const fetchCaptains = useCallback(async () => {
-    try {
-      const token = localStorage.getItem("access_token");
-      const response = await fetch(`${apiUrl}/users?role=CAPTAIN`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setCaptains(Array.isArray(data) ? data : data.data || []);
-      }
-    } catch (error) {
-      message.error(`Failed to load captains: ${error}`);
-    }
-  }, [apiUrl]);
+  }, [apiUrl, message]);
 
   useEffect(() => {
     fetchVessels();
-    if (isAdmin) {
-      fetchCaptains();
-    }
-  }, [isAdmin, fetchVessels, fetchCaptains]);
+  }, [fetchVessels]);
 
   const handleEdit = (vessel: VesselData) => {
-    setEditingVessel(vessel);
-    setIsModalMode(true);
-    form.setFieldsValue({
-      name: vessel.name,
-      imoNumber: vessel.imoNumber,
-      callSign: vessel.callSign,
-      flag: vessel.flag,
-      shipFileNo: vessel.shipFileNo,
-      captainId: vessel.captain?.id
-    });
-  };
-
-  const handleSave = async (values: Record<string, string>) => {
-    if (!editingVessel) return;
-    setSaving(true);
-    try {
-      const token = localStorage.getItem("access_token");
-      const response = await fetch(`${apiUrl}/vessels/${editingVessel.id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify(values)
-      });
-      if (response.ok) {
-        message.success("Vessel settings saved successfully");
-        setIsModalMode(false);
-        setEditingVessel(null);
-        form.resetFields();
-        await fetchVessels();
-      } else {
-        message.error("Failed to save vessel settings");
-      }
-    } catch (error) {
-      message.error(`Failed to save vessel settings: ${error}`);
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const handleCancel = () => {
-    setIsModalMode(false);
-    setEditingVessel(null);
-    form.resetFields();
+    navigate(`/vessels/edit/${vessel.id}`);
   };
 
   const handleDelete = (vessel: VesselData) => {
@@ -202,7 +116,7 @@ export const VesselSettings: React.FC = () => {
       {
         key: "delete",
         label: "Delete",
-        icon: <DeleteOutlined />,
+        icon: <DeleteIcon />,
         danger: true,
         onClick: () => handleDelete(record)
       }
@@ -276,71 +190,6 @@ export const VesselSettings: React.FC = () => {
     return (
       <Card>
         <Spin size="large" />
-      </Card>
-    );
-  }
-
-  if (isModalMode && editingVessel) {
-    return (
-      <Card>
-        <Title level={4}>Edit Vessel: {editingVessel.name}</Title>
-        <Form
-          form={form}
-          layout="vertical"
-          onFinish={handleSave}
-          className={styles.formContainer}
-        >
-          <Form.Item
-            name="name"
-            label="Vessel Name"
-            rules={[{ required: true, message: "Please enter vessel name" }]}
-          >
-            <Input placeholder="Enter vessel name" />
-          </Form.Item>
-
-          <Form.Item name="imoNumber" label="IMO Number">
-            <Input placeholder="e.g., IMO1234567" />
-          </Form.Item>
-
-          <Form.Item name="callSign" label="Call Sign">
-            <Input placeholder="Enter call sign" />
-          </Form.Item>
-
-          <Form.Item name="flag" label="Flag State">
-            <Input placeholder="e.g., Singapore, Panama" />
-          </Form.Item>
-
-          <Form.Item name="shipFileNo" label="Ship File Number">
-            <Input placeholder="Enter ship file number" />
-          </Form.Item>
-
-          {isAdmin && (
-            <Form.Item name="captainId" label="Assigned Captain">
-              <Select
-                placeholder="Select a captain"
-                allowClear
-                options={captains.map((c) => ({
-                  value: c.id,
-                  label: c.name
-                }))}
-              />
-            </Form.Item>
-          )}
-
-          <Form.Item>
-            <Space>
-              <Button
-                type="primary"
-                htmlType="submit"
-                icon={<SaveOutlined />}
-                loading={saving}
-              >
-                Save
-              </Button>
-              <Button onClick={handleCancel}>Cancel</Button>
-            </Space>
-          </Form.Item>
-        </Form>
       </Card>
     );
   }

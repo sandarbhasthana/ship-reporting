@@ -7,6 +7,7 @@
 export { ThemeToggle } from "./ThemeToggle";
 export { Header } from "./Header";
 export { CustomEmpty } from "./CustomEmpty";
+export { S3Image } from "./S3Image";
 export {
   FloatingInput,
   FloatingPassword,
@@ -15,3 +16,6 @@ export {
   FloatingInputNumber,
   FloatingDatePicker
 } from "./FloatingLabel";
+
+// Icons
+export { DeleteIcon } from "./icons/DeleteIcon";

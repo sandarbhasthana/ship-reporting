@@ -45,7 +45,11 @@
 }
 
 /* Modern Badge Styles */
-.badge {
+.badge,
+.badgeAdmin,
+.badgeCaptain,
+.badgeActive,
+.badgeInactive {
   display: inline-flex;
   align-items: center;
   padding: 2px 8px;
@@ -59,26 +63,22 @@
 
 /* Role Badges */
 .badgeAdmin {
-  composes: badge;
   background-color: #e8dbff;
   color: #7c3aed;
 }
 
 .badgeCaptain {
-  composes: badge;
   background-color: #cff5fe;
   color: #0891b2;
 }
 
 /* Status Badges */
 .badgeActive {
-  composes: badge;
   background-color: #d1fae5;
   color: #059669;
 }
 
 .badgeInactive {
-  composes: badge;
   background-color: #ffe4e6;
   color: #e11d48;
 }
@@ -147,6 +147,24 @@
   font-size: 12px;
   color: var(--text-secondary, #8c8c8c);
   margin-top: 4px;
+}
+
+/* Inline switch with label */
+.switchInlineWrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 40px;
+  margin-top: 5px;
+}
+
+.switchLabel {
+  font-size: 14px;
+  color: var(--text-primary, rgba(0, 0, 0, 0.88));
+}
+
+:global([data-theme="dark"]) .switchLabel {
+  color: var(--text-primary-dark, rgba(255, 255, 255, 0.85));
 }
 
 .vesselAssignment {

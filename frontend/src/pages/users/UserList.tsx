@@ -14,7 +14,6 @@ import type { MenuProps } from "antd";
 import {
   PlusOutlined,
   EditOutlined,
-  DeleteOutlined,
   SearchOutlined,
   MoreOutlined,
   CheckCircleOutlined,
@@ -22,6 +21,7 @@ import {
 } from "@ant-design/icons";
 import { Link, useNavigate } from "react-router";
 import { useGetIdentity, useApiUrl } from "@refinedev/core";
+import { DeleteIcon } from "../../components";
 import styles from "./users.module.css";
 
 const { Title, Text } = Typography;
@@ -211,7 +211,7 @@ export const UserList: React.FC = () => {
     items.push({
       key: "delete",
       label: "Delete Permanently",
-      icon: <DeleteOutlined />,
+      icon: <DeleteIcon />,
       danger: true,
       disabled: record.id === identity?.id,
       onClick: () => handleDelete(record.id)

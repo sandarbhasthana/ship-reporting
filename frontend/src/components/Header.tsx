@@ -14,6 +14,7 @@ import {
 import { useNavigate } from "react-router";
 import { useEffect, useState } from "react";
 import { ThemeToggle } from "./ThemeToggle";
+import { useImageUrl } from "../hooks";
 import styles from "./Header.module.css";
 
 const { Text } = Typography;
@@ -33,9 +34,14 @@ export function Header() {
   const { mutate: logout } = useLogout();
   const navigate = useNavigate();
   const apiUrl = useApiUrl();
-  const [profileImageUrl, setProfileImageUrl] = useState<string | undefined>();
+  const [profileImagePath, setProfileImagePath] = useState<
+    string | undefined
+  >();
 
-  // Fetch user profile to get profile image
+  // Use the hook to resolve the image URL (handles both S3 and local paths)
+  const { url: profileImageUrl } = useImageUrl(profileImagePath);
+
+  // Fetch user profile to get profile image path
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
@@ -47,7 +53,7 @@ export function Header() {
         });
         if (response.ok) {
           const data = await response.json();
-          setProfileImageUrl(data.profileImage);
+          setProfileImagePath(data.profileImage);
         }
       } catch (error) {
         console.error("Failed to fetch user profile:", error);

@@ -251,6 +251,7 @@ export const FloatingDatePicker = ({
       <DatePicker
         {...props}
         value={value}
+        placeholder=""
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
         style={{ width: "100%", ...props.style }}
