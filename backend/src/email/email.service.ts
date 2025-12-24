@@ -17,6 +17,15 @@ export interface WelcomeEmailData {
   loginUrl: string;
 }
 
+export interface UserOnboardingEmailData {
+  userName: string;
+  userEmail: string;
+  organizationName: string;
+  role: string;
+  temporaryPassword: string;
+  loginUrl: string;
+}
+
 export interface PasswordResetEmailData {
   userName: string;
   resetUrl: string;
@@ -211,6 +220,90 @@ If you didn't request this password reset, you can safely ignore this email.
 
     return this.sendEmail({
       to: data.email,
+      subject,
+      html,
+      text,
+    });
+  }
+
+  async sendUserOnboardingEmail(
+    data: UserOnboardingEmailData,
+  ): Promise<boolean> {
+    const subject = `Welcome to ${data.organizationName} - Ship Reporting`;
+    const roleDisplay =
+      data.role === 'CAPTAIN'
+        ? 'Captain'
+        : data.role === 'ADMIN'
+          ? 'Administrator'
+          : data.role;
+
+    const html = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <style>
+          body { font-family: 'Segoe UI', Arial, sans-serif; line-height: 1.6; color: #333; }
+          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+          .header { background: linear-gradient(135deg, #a05aff 0%, #7340bf 100%); padding: 30px; text-align: center; border-radius: 12px 12px 0 0; }
+          .header h1 { color: white; margin: 0; font-size: 24px; }
+          .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 12px 12px; }
+          .credentials { background: white; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #a05aff; }
+          .credentials p { margin: 8px 0; }
+          .credentials strong { color: #a05aff; }
+          .role-badge { display: inline-block; background: #a05aff; color: white; padding: 4px 12px; border-radius: 4px; font-size: 14px; }
+          .button { display: inline-block; background: #a05aff; color: white; padding: 12px 30px; text-decoration: none; border-radius: 8px; margin-top: 20px; }
+          .button:hover { background: #8a4ae0; }
+          .warning { background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 20px 0; border-radius: 4px; }
+          .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1>🚢 Welcome to Ship Reporting</h1>
+          </div>
+          <div class="content">
+            <p>Hello <strong>${data.userName}</strong>,</p>
+            <p>You have been added to <strong>${data.organizationName}</strong> as a <span class="role-badge">${roleDisplay}</span>.</p>
+            <p>Here are your login credentials:</p>
+            <div class="credentials">
+              <p><strong>Email:</strong> ${data.userEmail}</p>
+              <p><strong>Temporary Password:</strong> ${data.temporaryPassword}</p>
+            </div>
+            <div class="warning">
+              <p><strong>⚠️ Important:</strong> Please change your password after your first login for security.</p>
+            </div>
+            <a href="${data.loginUrl}" class="button">Login to Ship Reporting</a>
+          </div>
+          <div class="footer">
+            <p>This email was sent by Ship Reporting. If you didn't expect this, please contact your administrator.</p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+
+    const text = `
+Welcome to Ship Reporting!
+
+Hello ${data.userName},
+
+You have been added to ${data.organizationName} as a ${roleDisplay}.
+
+Login Credentials:
+Email: ${data.userEmail}
+Temporary Password: ${data.temporaryPassword}
+
+Please change your password after your first login for security.
+
+Login URL: ${data.loginUrl}
+
+If you didn't expect this email, please contact your administrator.
+    `;
+
+    return this.sendEmail({
+      to: data.userEmail,
       subject,
       html,
       text,

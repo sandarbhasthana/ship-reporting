@@ -209,6 +209,26 @@
   ) !important;
 }
 
+/* Statistic title styles - make card names more contrasty */
+.cardPrimary :global(.ant-statistic-title),
+.cardSecondary :global(.ant-statistic-title),
+.cardCoral :global(.ant-statistic-title),
+.cardBlue :global(.ant-statistic-title),
+.cardWarning :global(.ant-statistic-title),
+.cardInspection :global(.ant-statistic-title) {
+  color: rgba(0, 0, 0, 0.75) !important;
+  font-weight: 500;
+}
+
+:global([data-theme="dark"]) .cardPrimary :global(.ant-statistic-title),
+:global([data-theme="dark"]) .cardSecondary :global(.ant-statistic-title),
+:global([data-theme="dark"]) .cardCoral :global(.ant-statistic-title),
+:global([data-theme="dark"]) .cardBlue :global(.ant-statistic-title),
+:global([data-theme="dark"]) .cardWarning :global(.ant-statistic-title),
+:global([data-theme="dark"]) .cardInspection :global(.ant-statistic-title) {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
 /* Icon styles */
 .iconPrimary {
   color: var(--color-primary);

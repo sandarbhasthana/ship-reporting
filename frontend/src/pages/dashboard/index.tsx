@@ -734,11 +734,6 @@ export const DashboardPage = () => {
           {identity?.name || identity?.email}!
         </Text>
       </Title>
-      {identity?.organizationName && (
-        <Text type="secondary">
-          <BankOutlined /> {identity.organizationName}
-        </Text>
-      )}
 
       {/* Statistics Cards */}
       <Row gutter={[16, 16]} className={styles.statsRow}>

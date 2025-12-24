@@ -2,15 +2,24 @@ import {
   Injectable,
   NotFoundException,
   ConflictException,
+  Logger,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
 import { Prisma, RoleName } from '@ship-reporting/prisma';
 import { PrismaService } from '../prisma/prisma.service';
+import { EmailService } from '../email/email.service';
 import { CreateUserDto, UpdateUserDto } from './dto';
 
 @Injectable()
 export class UsersService {
-  constructor(private prisma: PrismaService) {}
+  private readonly logger = new Logger(UsersService.name);
+
+  constructor(
+    private prisma: PrismaService,
+    private emailService: EmailService,
+    private configService: ConfigService,
+  ) {}
 
   async create(createUserDto: CreateUserDto & { organizationId: string }) {
     const { password, ...rest } = createUserDto;
@@ -38,6 +47,25 @@ export class UsersService {
         assignedVessel: true,
       },
     });
+
+    // Send welcome email with credentials
+    try {
+      const frontendUrl =
+        this.configService.get<string>('FRONTEND_URL') ||
+        'http://localhost:5173';
+      await this.emailService.sendUserOnboardingEmail({
+        userName: user.name || user.email,
+        userEmail: user.email,
+        organizationName: user.organization?.name || 'Ship Reporting',
+        role: user.role,
+        temporaryPassword: password,
+        loginUrl: `${frontendUrl}/login`,
+      });
+      this.logger.log(`Welcome email sent to ${user.email}`);
+    } catch (error) {
+      // Log error but don't fail user creation
+      this.logger.error(`Failed to send welcome email to ${user.email}`, error);
+    }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { passwordHash: _, ...result } = user;
