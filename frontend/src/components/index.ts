@@ -19,3 +19,6 @@ export {
 
 // Icons
 export { DeleteIcon } from "./icons/DeleteIcon";
+
+// Lazy-loaded components (for code splitting)
+export { LazyLineChart } from "./LazyChart";

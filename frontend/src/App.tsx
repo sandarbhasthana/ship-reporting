@@ -5,7 +5,7 @@ import routerProvider, {
   UnsavedChangesNotifier
 } from "@refinedev/react-router";
 import { BrowserRouter, Routes, Route, Outlet, Navigate } from "react-router";
-import { ConfigProvider, App as AntdApp } from "antd";
+import { ConfigProvider, App as AntdApp, Spin } from "antd";
 import {
   DashboardOutlined,
   RocketOutlined,
@@ -14,23 +14,9 @@ import {
   SettingOutlined,
   BankOutlined
 } from "@ant-design/icons";
+import { lazy, Suspense } from "react";
 
 import { authProvider, dataProvider, accessControlProvider } from "./providers";
-import {
-  LoginPage,
-  DashboardPage,
-  OrganizationSettings,
-  VesselSettings,
-  VesselForm,
-  UserProfile,
-  InspectionList,
-  InspectionForm,
-  InspectionView,
-  UserList,
-  UserForm,
-  OrganizationList,
-  OrganizationForm
-} from "./pages";
 import { ThemeProvider, useTheme } from "./theme";
 import { Header, CustomEmpty } from "./components";
 import styles from "./App.module.css";
@@ -38,6 +24,69 @@ import styles from "./App.module.css";
 import "@refinedev/antd/dist/reset.css";
 import "./theme/variables.css";
 import "./theme/global.css";
+
+// Lazy load page components for code splitting
+const LoginPage = lazy(() =>
+  import("./pages/login").then((m) => ({ default: m.LoginPage }))
+);
+const DashboardPage = lazy(() =>
+  import("./pages/dashboard").then((m) => ({ default: m.DashboardPage }))
+);
+
+// Settings pages
+const OrganizationSettings = lazy(() =>
+  import("./pages/settings").then((m) => ({ default: m.OrganizationSettings }))
+);
+const VesselSettings = lazy(() =>
+  import("./pages/settings").then((m) => ({ default: m.VesselSettings }))
+);
+const VesselForm = lazy(() =>
+  import("./pages/settings").then((m) => ({ default: m.VesselForm }))
+);
+const UserProfile = lazy(() =>
+  import("./pages/settings").then((m) => ({ default: m.UserProfile }))
+);
+
+// Inspection pages
+const InspectionList = lazy(() =>
+  import("./pages/inspections").then((m) => ({ default: m.InspectionList }))
+);
+const InspectionForm = lazy(() =>
+  import("./pages/inspections").then((m) => ({ default: m.InspectionForm }))
+);
+const InspectionView = lazy(() =>
+  import("./pages/inspections").then((m) => ({ default: m.InspectionView }))
+);
+
+// User pages
+const UserList = lazy(() =>
+  import("./pages/users").then((m) => ({ default: m.UserList }))
+);
+const UserForm = lazy(() =>
+  import("./pages/users").then((m) => ({ default: m.UserForm }))
+);
+
+// Organization pages (Super Admin)
+const OrganizationList = lazy(() =>
+  import("./pages/organizations").then((m) => ({ default: m.OrganizationList }))
+);
+const OrganizationForm = lazy(() =>
+  import("./pages/organizations").then((m) => ({ default: m.OrganizationForm }))
+);
+
+// Loading spinner for lazy loaded components
+const PageLoader = () => (
+  <div
+    style={{
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      height: "50vh"
+    }}
+  >
+    <Spin size="large" />
+  </div>
+);
 
 /**
  * Inner App component that uses the theme context
@@ -106,68 +155,75 @@ function AppWithTheme() {
             projectId: "ship-reporting"
           }}
         >
-          <Routes>
-            {/* Public routes */}
-            <Route path="/login" element={<LoginPage />} />
+          <Suspense fallback={<PageLoader />}>
+            <Routes>
+              {/* Public routes */}
+              <Route path="/login" element={<LoginPage />} />
 
-            {/* Protected routes */}
-            <Route
-              element={
-                <Authenticated
-                  key="authenticated"
-                  fallback={<Navigate to="/login" />}
-                >
-                  <ThemedLayout
-                    Title={() => (
-                      <span className={styles.layoutTitle}>Ship Reporting</span>
-                    )}
-                    Header={() => <Header />}
+              {/* Protected routes */}
+              <Route
+                element={
+                  <Authenticated
+                    key="authenticated"
+                    fallback={<Navigate to="/login" />}
                   >
-                    <Outlet />
-                  </ThemedLayout>
-                </Authenticated>
-              }
-            >
-              <Route index element={<DashboardPage />} />
-              {/* Organization routes (Super Admin only) */}
-              <Route path="/organizations" element={<OrganizationList />} />
-              <Route
-                path="/organizations/create"
-                element={<OrganizationForm />}
-              />
-              <Route
-                path="/organizations/edit/:id"
-                element={<OrganizationForm />}
-              />
-              {/* Vessel routes */}
-              <Route path="/vessels" element={<VesselSettings />} />
-              <Route path="/vessels/create" element={<VesselForm />} />
-              <Route path="/vessels/edit/:id" element={<VesselForm />} />
-              {/* Inspection routes */}
-              <Route path="/inspections" element={<InspectionList />} />
-              <Route path="/inspections/create" element={<InspectionForm />} />
-              <Route
-                path="/inspections/edit/:id"
-                element={<InspectionForm />}
-              />
-              <Route
-                path="/inspections/show/:id"
-                element={<InspectionView />}
-              />
-              {/* User routes */}
-              <Route path="/users" element={<UserList />} />
-              <Route path="/users/create" element={<UserForm />} />
-              <Route path="/users/edit/:id" element={<UserForm />} />
-              {/* Settings routes */}
-              <Route path="/settings" element={<OrganizationSettings />} />
-              <Route
-                path="/settings/organization"
-                element={<OrganizationSettings />}
-              />
-              <Route path="/settings/vessels" element={<VesselSettings />} />
-              <Route path="/settings/profile" element={<UserProfile />} />
-            </Route>
-          </Routes>
+                    <ThemedLayout
+                      Title={() => (
+                        <span className={styles.layoutTitle}>
+                          Ship Reporting
+                        </span>
+                      )}
+                      Header={() => <Header />}
+                    >
+                      <Outlet />
+                    </ThemedLayout>
+                  </Authenticated>
+                }
+              >
+                <Route index element={<DashboardPage />} />
+                {/* Organization routes (Super Admin only) */}
+                <Route path="/organizations" element={<OrganizationList />} />
+                <Route
+                  path="/organizations/create"
+                  element={<OrganizationForm />}
+                />
+                <Route
+                  path="/organizations/edit/:id"
+                  element={<OrganizationForm />}
+                />
+                {/* Vessel routes */}
+                <Route path="/vessels" element={<VesselSettings />} />
+                <Route path="/vessels/create" element={<VesselForm />} />
+                <Route path="/vessels/edit/:id" element={<VesselForm />} />
+                {/* Inspection routes */}
+                <Route path="/inspections" element={<InspectionList />} />
+                <Route
+                  path="/inspections/create"
+                  element={<InspectionForm />}
+                />
+                <Route
+                  path="/inspections/edit/:id"
+                  element={<InspectionForm />}
+                />
+                <Route
+                  path="/inspections/show/:id"
+                  element={<InspectionView />}
+                />
+                {/* User routes */}
+                <Route path="/users" element={<UserList />} />
+                <Route path="/users/create" element={<UserForm />} />
+                <Route path="/users/edit/:id" element={<UserForm />} />
+                {/* Settings routes */}
+                <Route path="/settings" element={<OrganizationSettings />} />
+                <Route
+                  path="/settings/organization"
+                  element={<OrganizationSettings />}
+                />
+                <Route path="/settings/vessels" element={<VesselSettings />} />
+                <Route path="/settings/profile" element={<UserProfile />} />
+              </Route>
+            </Routes>
+          </Suspense>
           <UnsavedChangesNotifier />
           <DocumentTitleHandler />
         </Refine>

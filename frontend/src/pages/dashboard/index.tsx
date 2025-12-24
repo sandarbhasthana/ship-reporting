@@ -11,7 +11,7 @@ import {
   UserOutlined
 } from "@ant-design/icons";
 import { useGetIdentity, useApiUrl, useGo } from "@refinedev/core";
-import { Line } from "@ant-design/charts";
+import { LazyLineChart } from "../../components";
 import { useTheme } from "../../theme";
 import styles from "./dashboard.module.css";
 
@@ -512,7 +512,7 @@ export const DashboardPage = () => {
               <div className={styles.chartContainer}>
                 {analytics?.organizationGrowth &&
                 analytics.organizationGrowth.length > 0 ? (
-                  <Line
+                  <LazyLineChart
                     data={analytics.organizationGrowth}
                     xField="month"
                     yField="count"
@@ -561,7 +561,7 @@ export const DashboardPage = () => {
               <div className={styles.chartContainer}>
                 {analytics?.topOrganizations &&
                 analytics.topOrganizations.length > 0 ? (
-                  <Line
+                  <LazyLineChart
                     data={analytics.topOrganizations}
                     xField="name"
                     yField="inspections"
