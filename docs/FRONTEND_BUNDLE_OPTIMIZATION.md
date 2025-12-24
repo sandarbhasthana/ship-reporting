@@ -156,48 +156,49 @@ dist/assets/index.js (app)       205 KB  │ gzip:  65 KB
 
 ---
 
-## Phase 3: Advanced Optimizations (High Effort)
+## Phase 3: Advanced Optimizations (High Effort) ⏭️ SKIPPED
 
-**Timeline: 4-8 hours**
+**Status: Skipped - Low ROI after Phase 2 optimizations**
 
-### 3.1 Replace @ant-design/charts
+### Decision Rationale
 
-**Impact: HIGH | Effort: HIGH**
+Phase 2's lazy loading already provides 90% of the bundle optimization benefit:
 
-Consider lighter alternatives for dashboard charts:
+| Consideration              | Assessment                                     |
+| -------------------------- | ---------------------------------------------- |
+| Charts already lazy-loaded | ✅ Most users never download them              |
+| Replacement effort         | ⚠️ High - requires rewriting all chart configs |
+| Visual regression risk     | ⚠️ Different libraries have different styling  |
+| Dark/light mode            | ⚠️ Would need manual re-implementation         |
+| Testing burden             | ⚠️ Significant QA needed                       |
 
-| Library                    | Size (gzip) | Features              |
-| -------------------------- | ----------- | --------------------- |
-| @ant-design/charts         | ~200KB      | Full featured         |
-| Recharts                   | ~50KB       | Good for basic charts |
-| Chart.js + react-chartjs-2 | ~60KB       | Very flexible         |
-| Lightweight custom SVG     | ~5KB        | Full control          |
+**Recommendation:** Revisit Phase 3 only if:
 
-**Trade-off:** Less out-of-box features, more manual styling
+- Adding many more charts across the app
+- Dashboard load time becomes a user complaint
+- Planning a visual redesign anyway
 
-### 3.2 Implement Module Federation
+### 3.1 Replace @ant-design/charts (SKIPPED)
 
-**Impact: HIGH | Effort: HIGH**
+Lighter alternatives exist but not worth the trade-offs currently:
 
-For micro-frontend architecture:
+| Library                    | Size (gzip) | Trade-off                 |
+| -------------------------- | ----------- | ------------------------- |
+| @ant-design/charts         | ~200KB      | Current - well integrated |
+| Recharts                   | ~50KB       | Different API, styling    |
+| Chart.js + react-chartjs-2 | ~60KB       | Manual theme integration  |
 
-- Split app into independent deployable modules
-- Share common dependencies
-- Independent deployment per module
+### 3.2 Implement Module Federation (SKIPPED)
 
-**Best for:** Large teams, complex apps, independent deployments
+Not needed for current app scale. Consider when:
 
-### 3.3 Server-Side Rendering (SSR) / Static Generation
+- Multiple teams working on different features
+- Independent deployment requirements
+- App grows significantly larger
 
-**Impact: MEDIUM | Effort: HIGH**
+### 3.3 Server-Side Rendering (SSR) (SKIPPED)
 
-If SEO or initial load performance is critical:
-
-- Migrate to Next.js or Astro
-- Pre-render static pages
-- Stream dynamic content
-
-**Trade-off:** Significant architecture change
+Not applicable - this is a SaaS dashboard app, not a public-facing site requiring SEO.
 
 ---
 
