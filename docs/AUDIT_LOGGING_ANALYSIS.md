@@ -282,8 +282,8 @@ model AuditLog {
 
 #### Tasks:
 
-- [ ] **6.1** Add PDF generation/export tracking
-- [ ] **6.2** Add logout tracking (if sessions are implemented)
+- [x] **6.1** Add PDF generation/export tracking (Deferred)
+- [x] **6.2** Add logout tracking (if sessions are implemented) (Deferred)
 
 #### Files to Create/Modify:
 

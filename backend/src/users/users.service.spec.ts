@@ -66,6 +66,7 @@ describe('UsersService', () => {
         email: 'new@example.com',
         password: 'password123',
         name: 'New User',
+        organizationId: 'org-123',
       });
 
       expect(result).not.toHaveProperty('passwordHash');
@@ -80,6 +81,7 @@ describe('UsersService', () => {
           email: 'test@example.com',
           password: 'password123',
           name: 'Test User',
+          organizationId: 'org-123',
         }),
       ).rejects.toThrow(ConflictException);
     });
@@ -89,7 +91,7 @@ describe('UsersService', () => {
     it('should return all users without passwords', async () => {
       (prismaService.user.findMany as jest.Mock).mockResolvedValue([mockUser]);
 
-      const result = await service.findAll();
+      const result = await service.findAll('org-123');
 
       expect(result).toHaveLength(1);
       expect(result[0]).not.toHaveProperty('passwordHash');

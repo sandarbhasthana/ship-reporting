@@ -60,7 +60,7 @@ describe('InspectionsService', () => {
     }).compile();
 
     service = module.get<InspectionsService>(InspectionsService);
-    prismaService = module.get(PrismaService) as jest.Mocked<PrismaService>;
+    prismaService = module.get(PrismaService);
   });
 
   afterEach(() => {
@@ -79,24 +79,34 @@ describe('InspectionsService', () => {
         mockReport,
       );
 
-      await service.create({}, 'user-123', RoleName.CAPTAIN, 'vessel-123');
+      await service.create(
+        {},
+        'user-123',
+        RoleName.CAPTAIN,
+        'vessel-123',
+        'org-123',
+      );
 
-      expect(prismaService.inspectionReport.create).toHaveBeenCalledWith(
+      expect(
+        prismaService.inspectionReport.create.bind(
+          prismaService.inspectionReport,
+        ),
+      ).toHaveBeenCalledWith(
         expect.objectContaining({
-          data: expect.objectContaining({ vesselId: 'vessel-123' }),
+          data: expect.objectContaining({ vesselId: 'vessel-123' }) as object,
         }),
       );
     });
 
     it('should throw ForbiddenException if Captain has no assigned vessel', async () => {
       await expect(
-        service.create({}, 'user-123', RoleName.CAPTAIN, null),
+        service.create({}, 'user-123', RoleName.CAPTAIN, null, 'org-123'),
       ).rejects.toThrow(ForbiddenException);
     });
 
     it('should throw ForbiddenException if no vessel ID is provided for Admin', async () => {
       await expect(
-        service.create({}, 'user-123', RoleName.ADMIN, null),
+        service.create({}, 'user-123', RoleName.ADMIN, null, 'org-123'),
       ).rejects.toThrow(ForbiddenException);
     });
   });
@@ -107,7 +117,12 @@ describe('InspectionsService', () => {
         prismaService.inspectionReport.findUnique as jest.Mock
       ).mockResolvedValue(mockReport);
 
-      const result = await service.findOne('report-123', RoleName.ADMIN, null);
+      const result = await service.findOne(
+        'report-123',
+        'org-123',
+        RoleName.ADMIN,
+        null,
+      );
 
       expect(result).toEqual(mockReport);
     });
@@ -118,7 +133,7 @@ describe('InspectionsService', () => {
       ).mockResolvedValue(null);
 
       await expect(
-        service.findOne('nonexistent', RoleName.ADMIN, null),
+        service.findOne('nonexistent', 'org-123', RoleName.ADMIN, null),
       ).rejects.toThrow(NotFoundException);
     });
 
@@ -128,7 +143,12 @@ describe('InspectionsService', () => {
       ).mockResolvedValue(mockReport);
 
       await expect(
-        service.findOne('report-123', RoleName.CAPTAIN, 'other-vessel'),
+        service.findOne(
+          'report-123',
+          'org-123',
+          RoleName.CAPTAIN,
+          'other-vessel',
+        ),
       ).rejects.toThrow(ForbiddenException);
     });
   });

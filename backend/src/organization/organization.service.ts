@@ -147,14 +147,58 @@ export class OrganizationService {
     // Check if organization exists and get before state
     const before = await this.findOne(id);
 
-    await this.prisma.organization.delete({
-      where: { id },
-    });
-
-    // Log audit for organization deletion
+    // Log audit BEFORE deleting (platform-level, no organizationId since it's being deleted)
     await this.auditService.log('Organization', id, 'DELETE', before, null, {
       userId: deletedByUserId,
-      organizationId: id,
+      organizationId: null, // Platform-level audit - org is being deleted
+    });
+
+    // Delete all related records in a transaction
+    await this.prisma.$transaction(async (tx) => {
+      // First, get all inspection reports for this organization
+      const reports = await tx.inspectionReport.findMany({
+        where: { organizationId: id },
+        select: { id: true },
+      });
+      const reportIds = reports.map((r) => r.id);
+
+      // Delete inspection entries (they reference reports)
+      if (reportIds.length > 0) {
+        await tx.inspectionEntry.deleteMany({
+          where: { reportId: { in: reportIds } },
+        });
+      }
+
+      // Delete inspection reports
+      await tx.inspectionReport.deleteMany({
+        where: { organizationId: id },
+      });
+
+      // Delete audit logs for this organization
+      await tx.auditLog.deleteMany({
+        where: { organizationId: id },
+      });
+
+      // Unassign captains from vessels before deleting vessels
+      await tx.user.updateMany({
+        where: { organizationId: id, assignedVesselId: { not: null } },
+        data: { assignedVesselId: null },
+      });
+
+      // Delete vessels
+      await tx.vessel.deleteMany({
+        where: { organizationId: id },
+      });
+
+      // Delete users
+      await tx.user.deleteMany({
+        where: { organizationId: id },
+      });
+
+      // Finally, delete the organization
+      await tx.organization.delete({
+        where: { id },
+      });
     });
 
     return { deleted: true, id };

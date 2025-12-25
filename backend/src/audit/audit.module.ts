@@ -1,13 +1,13 @@
 import { Module, Global } from '@nestjs/common';
 import { ScheduleModule } from '@nestjs/schedule';
 import { AuditService } from './audit.service';
-import { AuditController } from './audit.controller';
+import { AuditController, PlatformAuditController } from './audit.controller';
 import { PrismaModule } from '../prisma/prisma.module';
 
 @Global()
 @Module({
   imports: [PrismaModule, ScheduleModule.forRoot()],
-  controllers: [AuditController],
+  controllers: [AuditController, PlatformAuditController],
   providers: [AuditService],
   exports: [AuditService],
 })

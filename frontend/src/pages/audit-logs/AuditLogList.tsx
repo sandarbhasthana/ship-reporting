@@ -54,7 +54,8 @@ interface UserIdentity {
   role: string;
 }
 
-const ACTION_OPTIONS = [
+// Action options for Org Admin
+const ORG_ACTION_OPTIONS = [
   { value: "CREATE", label: "Create" },
   { value: "UPDATE", label: "Update" },
   { value: "DELETE", label: "Delete" },
@@ -69,22 +70,43 @@ const ACTION_OPTIONS = [
   { value: "ROLE_CHANGE", label: "Role Change" }
 ];
 
-const ENTITY_OPTIONS = [
+// Action options for Super Admin (platform-level)
+const PLATFORM_ACTION_OPTIONS = [
+  { value: "CREATE", label: "Create" },
+  { value: "UPDATE", label: "Update" },
+  { value: "DELETE", label: "Delete" },
+  { value: "LOGIN", label: "Login" },
+  { value: "LOGIN_FAILED", label: "Login Failed" },
+  { value: "LOGOUT", label: "Logout" }
+];
+
+// Entity options for Org Admin
+const ORG_ENTITY_OPTIONS = [
   { value: "User", label: "User" },
   { value: "Vessel", label: "Vessel" },
-  { value: "Organization", label: "Organization" },
   { value: "InspectionReport", label: "Inspection Report" },
   { value: "InspectionEntry", label: "Inspection Entry" },
+  { value: "Auth", label: "Authentication" }
+];
+
+// Entity options for Super Admin (platform-level)
+const PLATFORM_ENTITY_OPTIONS = [
+  { value: "Organization", label: "Organization" },
+  { value: "User", label: "User" },
   { value: "Auth", label: "Authentication" }
 ];
 
 export const AuditLogList = () => {
   const apiUrl = useApiUrl();
   const { data: identity } = useGetIdentity<UserIdentity>();
-  const isAdmin =
-    identity?.role === "ADMIN" || identity?.role === "SUPER_ADMIN";
+  const isSuperAdmin = identity?.role === "SUPER_ADMIN";
+  const isOrgAdmin = identity?.role === "ADMIN";
+  const isAdmin = isSuperAdmin || isOrgAdmin;
   const navigate = useNavigate();
   const { message } = App.useApp();
+
+  // Use different API endpoints based on role
+  const auditEndpoint = isSuperAdmin ? "platform/audit-logs" : "audit-logs";
 
   const [logs, setLogs] = useState<AuditLog[]>([]);
   const [stats, setStats] = useState<AuditStats | null>(null);
@@ -120,7 +142,7 @@ export const AuditLogList = () => {
         params.append("startDate", startDate.startOf("day").toISOString());
       if (endDate) params.append("endDate", endDate.endOf("day").toISOString());
 
-      const response = await fetch(`${apiUrl}/audit-logs?${params}`, {
+      const response = await fetch(`${apiUrl}/${auditEndpoint}?${params}`, {
         headers: getAuthHeaders()
       });
 
@@ -141,6 +163,7 @@ export const AuditLogList = () => {
     }
   }, [
     apiUrl,
+    auditEndpoint,
     page,
     pageSize,
     entityType,
@@ -154,7 +177,7 @@ export const AuditLogList = () => {
 
   const fetchStats = useCallback(async () => {
     try {
-      const response = await fetch(`${apiUrl}/audit-logs/stats`, {
+      const response = await fetch(`${apiUrl}/${auditEndpoint}/stats`, {
         headers: getAuthHeaders()
       });
       if (response.ok) {
@@ -164,7 +187,7 @@ export const AuditLogList = () => {
     } catch {
       // Stats are optional, don't show error
     }
-  }, [apiUrl, getAuthHeaders]);
+  }, [apiUrl, auditEndpoint, getAuthHeaders]);
 
   useEffect(() => {
     if (isAdmin) {
@@ -185,9 +208,12 @@ export const AuditLogList = () => {
         params.append("endDate", endDate.toISOString());
       }
 
-      const response = await fetch(`${apiUrl}/audit-logs/export?${params}`, {
-        headers: getAuthHeaders()
-      });
+      const response = await fetch(
+        `${apiUrl}/${auditEndpoint}/export?${params}`,
+        {
+          headers: getAuthHeaders()
+        }
+      );
 
       if (response.ok) {
         const blob = await response.blob();
@@ -716,9 +742,13 @@ export const AuditLogList = () => {
       <div className={styles.headerContainer}>
         <div>
           <Title level={4} className={styles.headerTitle}>
-            Audit Logs
+            {isSuperAdmin ? "Platform Audit Logs" : "Audit Logs"}
           </Title>
-          <Text type="secondary">Track all system activities and changes</Text>
+          <Text type="secondary">
+            {isSuperAdmin
+              ? "Track platform-wide activities: organization management, super admin logins"
+              : "Track all system activities and changes in your organization"}
+          </Text>
         </div>
         <div className={styles.headerActions}>
           <Button icon={<ReloadOutlined />} onClick={fetchLogs}>
@@ -758,7 +788,7 @@ export const AuditLogList = () => {
           className={styles.filterItem}
           value={entityType}
           onChange={setEntityType}
-          options={ENTITY_OPTIONS}
+          options={isSuperAdmin ? PLATFORM_ENTITY_OPTIONS : ORG_ENTITY_OPTIONS}
         />
         <Select
           placeholder="Action"
@@ -766,7 +796,7 @@ export const AuditLogList = () => {
           className={styles.filterItem}
           value={action}
           onChange={setAction}
-          options={ACTION_OPTIONS}
+          options={isSuperAdmin ? PLATFORM_ACTION_OPTIONS : ORG_ACTION_OPTIONS}
         />
         <DatePicker
           placeholder="Start Date"
