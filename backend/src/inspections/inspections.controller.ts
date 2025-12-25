@@ -111,8 +111,9 @@ export class InspectionsController {
   remove(
     @Param('id') id: string,
     @OrganizationId() organizationId: string | null,
+    @CurrentUser('id') userId: string,
   ) {
-    return this.inspectionsService.remove(id, organizationId);
+    return this.inspectionsService.remove(id, organizationId, userId);
   }
 
   @Get(':id/pdf')

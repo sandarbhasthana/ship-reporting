@@ -25,8 +25,14 @@ export class OrganizationController {
   @Post()
   @Roles(RoleName.SUPER_ADMIN)
   @ApiOperation({ summary: 'Create organization (Super Admin only)' })
-  create(@Body() createOrganizationDto: CreateOrganizationDto) {
-    return this.organizationService.create(createOrganizationDto);
+  create(
+    @Body() createOrganizationDto: CreateOrganizationDto,
+    @CurrentUser('id') currentUserId: string,
+  ) {
+    return this.organizationService.create(
+      createOrganizationDto,
+      currentUserId,
+    );
   }
 
   @Get()
@@ -78,17 +84,22 @@ export class OrganizationController {
     @Body() updateOrganizationDto: UpdateOrganizationDto,
     @OrganizationId() organizationId: string | null,
     @CurrentUser('role') userRole: RoleName,
+    @CurrentUser('id') currentUserId: string,
   ) {
     // ADMIN can only update their own organization
     const targetId =
       userRole === RoleName.ADMIN && organizationId ? organizationId : id;
-    return this.organizationService.update(targetId, updateOrganizationDto);
+    return this.organizationService.update(
+      targetId,
+      updateOrganizationDto,
+      currentUserId,
+    );
   }
 
   @Delete(':id')
   @Roles(RoleName.SUPER_ADMIN)
   @ApiOperation({ summary: 'Delete organization (Super Admin only)' })
-  remove(@Param('id') id: string) {
-    return this.organizationService.remove(id);
+  remove(@Param('id') id: string, @CurrentUser('id') currentUserId: string) {
+    return this.organizationService.remove(id, currentUserId);
   }
 }

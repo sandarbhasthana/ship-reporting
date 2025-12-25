@@ -9,6 +9,7 @@ import * as bcrypt from 'bcrypt';
 import { Prisma, RoleName } from '@ship-reporting/prisma';
 import { PrismaService } from '../prisma/prisma.service';
 import { EmailService } from '../email/email.service';
+import { AuditService } from '../audit/audit.service';
 import { CreateUserDto, UpdateUserDto } from './dto';
 
 @Injectable()
@@ -19,9 +20,13 @@ export class UsersService {
     private prisma: PrismaService,
     private emailService: EmailService,
     private configService: ConfigService,
+    private auditService: AuditService,
   ) {}
 
-  async create(createUserDto: CreateUserDto & { organizationId: string }) {
+  async create(
+    createUserDto: CreateUserDto & { organizationId: string },
+    createdByUserId?: string,
+  ) {
     const { password, ...rest } = createUserDto;
 
     // Check if email already exists
@@ -46,6 +51,14 @@ export class UsersService {
         organization: true,
         assignedVessel: true,
       },
+    });
+
+    // Log audit for user creation (exclude sensitive data)
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { passwordHash: _ph, ...auditData } = user;
+    await this.auditService.log('User', user.id, 'CREATE', null, auditData, {
+      userId: createdByUserId,
+      organizationId: user.organizationId ?? undefined,
     });
 
     // Send welcome email with credentials
@@ -117,8 +130,9 @@ export class UsersService {
     id: string,
     updateUserDto: UpdateUserDto,
     organizationId?: string | null,
+    updatedByUserId?: string,
   ) {
-    await this.findOne(id, organizationId);
+    const before = await this.findOne(id, organizationId);
 
     const { password, ...rest } = updateUserDto;
 
@@ -139,24 +153,65 @@ export class UsersService {
       },
     });
 
+    // Determine the action type
+    let action = 'UPDATE';
+    if (before.role !== user.role) {
+      action = 'ROLE_CHANGE';
+    } else if (password) {
+      action = 'PASSWORD_RESET';
+    }
+
+    // Log audit (exclude sensitive data)
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { passwordHash: _ph, ...afterData } = user;
+    await this.auditService.log('User', id, action, before, afterData, {
+      userId: updatedByUserId,
+      organizationId: user.organizationId ?? undefined,
+    });
+
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { passwordHash, ...result } = user;
     return result;
   }
 
-  async remove(id: string, organizationId?: string | null) {
-    await this.findOne(id, organizationId);
+  async remove(
+    id: string,
+    organizationId?: string | null,
+    deletedByUserId?: string,
+  ) {
+    const before = await this.findOne(id, organizationId);
 
     // Soft delete by setting isActive to false
-    return this.prisma.user.update({
+    const user = await this.prisma.user.update({
       where: { id },
       data: { isActive: false },
     });
+
+    // Log audit for soft delete (DEACTIVATE action)
+    await this.auditService.log('User', id, 'DEACTIVATE', before, user, {
+      userId: deletedByUserId,
+      organizationId: user.organizationId ?? undefined,
+    });
+
+    return user;
   }
 
-  async hardDelete(id: string, organizationId?: string | null) {
-    await this.findOne(id, organizationId);
-    return this.prisma.user.delete({ where: { id } });
+  async hardDelete(
+    id: string,
+    organizationId?: string | null,
+    deletedByUserId?: string,
+  ) {
+    const before = await this.findOne(id, organizationId);
+
+    await this.prisma.user.delete({ where: { id } });
+
+    // Log audit for hard delete
+    await this.auditService.log('User', id, 'DELETE', before, null, {
+      userId: deletedByUserId,
+      organizationId: before.organizationId ?? undefined,
+    });
+
+    return { deleted: true, id };
   }
 
   /**

@@ -5,13 +5,20 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { AuditService } from '../audit/audit.service';
 import { CreateVesselDto, UpdateVesselDto } from './dto';
 
 @Injectable()
 export class VesselsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private auditService: AuditService,
+  ) {}
 
-  async create(createVesselDto: CreateVesselDto & { organizationId: string }) {
+  async create(
+    createVesselDto: CreateVesselDto & { organizationId: string },
+    createdByUserId?: string,
+  ) {
     // Check if IMO number already exists (if provided)
     if (createVesselDto.imoNumber) {
       const existing = await this.prisma.vessel.findUnique({
@@ -24,7 +31,7 @@ export class VesselsService {
       }
     }
 
-    return this.prisma.vessel.create({
+    const vessel = await this.prisma.vessel.create({
       data: createVesselDto,
       include: {
         organization: true,
@@ -37,6 +44,14 @@ export class VesselsService {
         },
       },
     });
+
+    // Log audit for vessel creation
+    await this.auditService.log('Vessel', vessel.id, 'CREATE', null, vessel, {
+      userId: createdByUserId,
+      organizationId: vessel.organizationId ?? undefined,
+    });
+
+    return vessel;
   }
 
   async findAll(
@@ -139,8 +154,9 @@ export class VesselsService {
     id: string,
     updateVesselDto: UpdateVesselDto,
     organizationId?: string | null,
+    updatedByUserId?: string,
   ) {
-    await this.findOne(id, organizationId);
+    const before = await this.findOne(id, organizationId);
 
     // Check IMO uniqueness if being updated
     if (updateVesselDto.imoNumber) {
@@ -157,7 +173,7 @@ export class VesselsService {
       }
     }
 
-    return this.prisma.vessel.update({
+    const vessel = await this.prisma.vessel.update({
       where: { id },
       data: updateVesselDto,
       include: {
@@ -171,11 +187,32 @@ export class VesselsService {
         },
       },
     });
+
+    // Log audit for vessel update
+    await this.auditService.log('Vessel', id, 'UPDATE', before, vessel, {
+      userId: updatedByUserId,
+      organizationId: vessel.organizationId ?? undefined,
+    });
+
+    return vessel;
   }
 
-  async remove(id: string, organizationId?: string | null) {
-    await this.findOne(id, organizationId);
-    return this.prisma.vessel.delete({ where: { id } });
+  async remove(
+    id: string,
+    organizationId?: string | null,
+    deletedByUserId?: string,
+  ) {
+    const before = await this.findOne(id, organizationId);
+
+    await this.prisma.vessel.delete({ where: { id } });
+
+    // Log audit for vessel deletion
+    await this.auditService.log('Vessel', id, 'DELETE', before, null, {
+      userId: deletedByUserId,
+      organizationId: before.organizationId ?? undefined,
+    });
+
+    return { deleted: true, id };
   }
 
   // Assign a captain to a vessel
@@ -183,14 +220,15 @@ export class VesselsService {
     vesselId: string,
     userId: string,
     organizationId?: string | null,
+    assignedByUserId?: string,
   ) {
     // Verify vessel exists and belongs to the organization (throws if not found)
-    await this.findOne(vesselId, organizationId);
+    const vessel = await this.findOne(vesselId, organizationId);
 
     // Verify the user belongs to the same organization
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
-      select: { organizationId: true },
+      select: { id: true, name: true, email: true, organizationId: true },
     });
 
     if (!user) {
@@ -203,21 +241,55 @@ export class VesselsService {
       );
     }
 
-    return this.prisma.user.update({
+    const updatedUser = await this.prisma.user.update({
       where: { id: userId },
       data: { assignedVesselId: vesselId },
     });
+
+    // Log audit for captain assignment
+    await this.auditService.log(
+      'Vessel',
+      vesselId,
+      'ASSIGN',
+      { captain: null },
+      { captain: { id: user.id, name: user.name, email: user.email } },
+      {
+        userId: assignedByUserId,
+        organizationId: vessel.organizationId ?? undefined,
+      },
+    );
+
+    return updatedUser;
   }
 
   // Remove captain from vessel
-  async removeCaptain(vesselId: string, organizationId?: string | null) {
+  async removeCaptain(
+    vesselId: string,
+    organizationId?: string | null,
+    unassignedByUserId?: string,
+  ) {
     const vessel = await this.findOne(vesselId, organizationId);
 
     if (vessel.captain) {
-      return this.prisma.user.update({
+      const updatedUser = await this.prisma.user.update({
         where: { id: vessel.captain.id },
         data: { assignedVesselId: null },
       });
+
+      // Log audit for captain unassignment
+      await this.auditService.log(
+        'Vessel',
+        vesselId,
+        'UNASSIGN',
+        { captain: vessel.captain },
+        { captain: null },
+        {
+          userId: unassignedByUserId,
+          organizationId: vessel.organizationId ?? undefined,
+        },
+      );
+
+      return updatedUser;
     }
 
     return null;

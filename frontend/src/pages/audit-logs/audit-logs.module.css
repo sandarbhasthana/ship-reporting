@@ -1,0 +1,473 @@
+.headerContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.headerTitle {
+  margin: 0 0 4px 0 !important;
+}
+
+.headerActions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.filterRow {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.filterItem {
+  min-width: 150px;
+}
+
+.filterItemWide {
+  min-width: 200px;
+}
+
+.spinnerContainer {
+  text-align: center;
+  padding: 50px;
+}
+
+/* Action Badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  border: none;
+}
+
+.badgeCreate {
+  background-color: #d1fae5;
+  color: #059669;
+}
+
+.badgeUpdate {
+  background-color: #dbeafe;
+  color: #2563eb;
+}
+
+.badgeDelete {
+  background-color: #ffe4e6;
+  color: #e11d48;
+}
+
+.badgeLogin {
+  background-color: #cff5fe;
+  color: #0891b2;
+}
+
+.badgeLoginFailed {
+  background-color: #fef3c7;
+  color: #d97706;
+}
+
+.badgeSign {
+  background-color: #e8dbff;
+  color: #7c3aed;
+}
+
+.badgeAssign {
+  background-color: #fce7f3;
+  color: #db2777;
+}
+
+.badgeDefault {
+  background-color: #f3f4f6;
+  color: #6b7280;
+}
+
+/* Entity Type Badges */
+.entityBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  background-color: #f3f4f6;
+  color: #374151;
+}
+
+/* Details Panel */
+.detailsPanel {
+  background: var(--bg-secondary, #fafafa);
+  padding: 16px;
+  border-radius: 8px;
+  margin: 8px 0;
+}
+
+.detailsTitle {
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: var(--text-primary, #262626);
+}
+
+.diffContainer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+@media (max-width: 768px) {
+  .diffContainer {
+    grid-template-columns: 1fr;
+  }
+}
+
+.diffBox {
+  background: var(--bg-primary, #ffffff);
+  padding: 12px;
+  border-radius: 6px;
+  border: 1px solid var(--border-color, #e5e7eb);
+  overflow-x: auto;
+}
+
+.diffBoxTitle {
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--text-secondary, #6b7280);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.jsonContent {
+  font-family: "Fira Code", "Monaco", "Consolas", monospace;
+  font-size: 12px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: var(--text-primary, #374151);
+}
+
+/* Changes Table */
+.changesTable {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.changesHeader {
+  display: grid;
+  grid-template-columns: 180px 1fr 1fr;
+  background: var(--bg-tertiary, #f3f4f6);
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-secondary, #6b7280);
+}
+
+.changesHeaderCell {
+  padding: 10px 12px;
+  border-right: 1px solid var(--border-color, #e5e7eb);
+}
+
+.changesHeaderCell:last-child {
+  border-right: none;
+}
+
+.changesRow {
+  display: grid;
+  grid-template-columns: 180px 1fr 1fr;
+  border-top: 1px solid var(--border-color, #e5e7eb);
+}
+
+.changesRow:hover {
+  background: var(--bg-hover, rgba(0, 0, 0, 0.02));
+}
+
+.changesCell {
+  padding: 10px 12px;
+  border-right: 1px solid var(--border-color, #e5e7eb);
+  font-size: 13px;
+  word-break: break-word;
+  overflow: hidden;
+}
+
+.changesCell:last-child {
+  border-right: none;
+}
+
+.changesCell code {
+  font-family: "Fira Code", "Monaco", "Consolas", monospace;
+  font-size: 12px;
+  background: transparent;
+  padding: 0;
+  color: inherit;
+}
+
+.changesCellBefore {
+  background: rgba(239, 68, 68, 0.05);
+  color: #b91c1c;
+}
+
+.changesCellAfter {
+  background: rgba(34, 197, 94, 0.08);
+  color: #15803d;
+}
+
+.fieldName {
+  font-weight: 500;
+  color: var(--text-primary, #374151);
+}
+
+.changeTagAdded {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 1px 6px;
+  font-size: 9px;
+  font-weight: 600;
+  border-radius: 4px;
+  background: #d1fae5;
+  color: #059669;
+}
+
+.changeTagRemoved {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 1px 6px;
+  font-size: 9px;
+  font-weight: 600;
+  border-radius: 4px;
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+@media (max-width: 768px) {
+  .changesHeader,
+  .changesRow {
+    grid-template-columns: 1fr;
+  }
+
+  .changesHeaderCell:first-child {
+    display: block;
+  }
+
+  .changesHeaderCell:not(:first-child) {
+    display: none;
+  }
+
+  .changesCell {
+    border-right: none;
+    border-bottom: 1px solid var(--border-color, #e5e7eb);
+  }
+
+  .changesCell:last-child {
+    border-bottom: none;
+  }
+
+  .changesCellBefore::before {
+    content: "Before: ";
+    font-weight: 600;
+    color: #b91c1c;
+  }
+
+  .changesCellAfter::before {
+    content: "After: ";
+    font-weight: 600;
+    color: #15803d;
+  }
+}
+
+/* Collapsible Value */
+.collapsibleValue {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.collapseToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  padding: 2px 4px;
+  margin: -2px -4px;
+  cursor: pointer;
+  font-family: "Fira Code", "Monaco", "Consolas", monospace;
+  font-size: 12px;
+  color: var(--primary-color, #1890ff);
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.collapseToggle:hover {
+  background: rgba(24, 144, 255, 0.1);
+}
+
+.collapseToggle .anticon {
+  font-size: 10px;
+}
+
+.collapseSummary {
+  font-weight: 500;
+}
+
+.expandedJson {
+  margin-top: 8px;
+  padding: 10px;
+  background: var(--bg-secondary, #f9fafb);
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 6px;
+  font-family: "Fira Code", "Monaco", "Consolas", monospace;
+  font-size: 11px;
+  line-height: 1.5;
+  overflow-x: auto;
+  max-height: 300px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* Diff highlighting within expanded JSON */
+.diffLineRemoved {
+  display: block;
+  background: rgba(239, 68, 68, 0.15);
+  margin: 0 -10px;
+  padding: 0 10px;
+  border-left: 3px solid #ef4444;
+}
+
+.diffLineAdded {
+  display: block;
+  background: rgba(34, 197, 94, 0.15);
+  margin: 0 -10px;
+  padding: 0 10px;
+  border-left: 3px solid #22c55e;
+}
+
+/* Stats Cards */
+.statsContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.statCard {
+  padding: 16px;
+  background: linear-gradient(145deg, #ffffff 0%, #f9fafb 100%);
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  text-align: center;
+}
+
+/* Dark Mode Support */
+:global([data-theme="dark"]) .detailsPanel {
+  background: rgba(30, 30, 30, 0.9);
+}
+
+:global([data-theme="dark"]) .diffBox {
+  background: rgba(38, 38, 38, 0.9);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+:global([data-theme="dark"]) .diffBoxTitle {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+:global([data-theme="dark"]) .jsonContent {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+:global([data-theme="dark"]) .detailsTitle {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+:global([data-theme="dark"]) .statCard {
+  background: linear-gradient(
+    145deg,
+    rgba(30, 30, 30, 0.9) 0%,
+    rgba(38, 38, 38, 0.9) 100%
+  );
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+/* Dark mode for changes table */
+:global([data-theme="dark"]) .changesTable {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+:global([data-theme="dark"]) .changesHeader {
+  background: rgba(50, 50, 50, 0.9);
+  color: rgba(255, 255, 255, 0.65);
+}
+
+:global([data-theme="dark"]) .changesHeaderCell,
+:global([data-theme="dark"]) .changesCell {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+:global([data-theme="dark"]) .changesRow {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+:global([data-theme="dark"]) .changesRow:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+:global([data-theme="dark"]) .fieldName {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+:global([data-theme="dark"]) .changesCellBefore {
+  background: rgba(239, 68, 68, 0.15);
+  color: #fca5a5;
+}
+
+:global([data-theme="dark"]) .changesCellAfter {
+  background: rgba(34, 197, 94, 0.15);
+  color: #86efac;
+}
+
+:global([data-theme="dark"]) .changeTagAdded {
+  background: rgba(34, 197, 94, 0.25);
+  color: #86efac;
+}
+
+:global([data-theme="dark"]) .changeTagRemoved {
+  background: rgba(239, 68, 68, 0.25);
+  color: #fca5a5;
+}
+
+/* Dark mode for collapsible */
+:global([data-theme="dark"]) .collapseToggle {
+  color: #60a5fa;
+}
+
+:global([data-theme="dark"]) .collapseToggle:hover {
+  background: rgba(96, 165, 250, 0.15);
+}
+
+:global([data-theme="dark"]) .expandedJson {
+  background: rgba(38, 38, 38, 0.9);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.85);
+}
+
+:global([data-theme="dark"]) .diffLineRemoved {
+  background: rgba(239, 68, 68, 0.25);
+  border-left-color: #f87171;
+}
+
+:global([data-theme="dark"]) .diffLineAdded {
+  background: rgba(34, 197, 94, 0.25);
+  border-left-color: #4ade80;
+}

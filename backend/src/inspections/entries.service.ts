@@ -19,14 +19,6 @@ const SHIP_STAFF_FIELDS = [
   'completionDate',
 ];
 
-// Office fields that only admins can edit
-const OFFICE_FIELDS = [
-  'companyAnalysis',
-  'status',
-  'officeSignDate',
-  'officeSignUserId',
-];
-
 @Injectable()
 export class EntriesService {
   constructor(
@@ -84,6 +76,7 @@ export class EntriesService {
     userId: string,
     userRole: RoleName,
     assignedVesselId: string | null,
+    organizationId?: string | null,
   ) {
     await this.verifyReportAccess(reportId, userRole, assignedVesselId);
 
@@ -124,7 +117,7 @@ export class EntriesService {
       },
     });
 
-    // Log audit
+    // Log audit with organization context
     await this.auditService.log(
       'InspectionEntry',
       entry.id,
@@ -133,6 +126,7 @@ export class EntriesService {
       entry,
       {
         userId,
+        organizationId: organizationId ?? undefined,
       },
     );
 
@@ -188,8 +182,14 @@ export class EntriesService {
     userId: string,
     userRole: RoleName,
     assignedVesselId: string | null,
+    organizationId?: string | null,
   ) {
-    const before = await this.findOne(reportId, entryId, userRole, assignedVesselId);
+    const before = await this.findOne(
+      reportId,
+      entryId,
+      userRole,
+      assignedVesselId,
+    );
 
     // Filter fields based on role
     const filteredData = this.filterFieldsByRole(updateEntryDto, userRole);
@@ -206,10 +206,10 @@ export class EntriesService {
 
     // Handle date conversions
     if (filteredData.completionDate) {
-      updateData.completionDate = new Date(filteredData.completionDate as string);
+      updateData.completionDate = new Date(String(filteredData.completionDate));
     }
     if (filteredData.officeSignDate) {
-      updateData.officeSignDate = new Date(filteredData.officeSignDate as string);
+      updateData.officeSignDate = new Date(String(filteredData.officeSignDate));
     }
 
     const after = await this.prisma.inspectionEntry.update({
@@ -222,18 +222,44 @@ export class EntriesService {
       },
     });
 
-    // Determine if status changed
-    const action = before.status !== after.status ? 'STATUS_CHANGE' : 'UPDATE';
+    // Determine the action type based on what changed
+    let action = 'UPDATE';
 
-    // Log audit
-    await this.auditService.log('InspectionEntry', entryId, action, before, after, {
-      userId,
-    });
+    // Check for office signature added
+    if (!before.officeSignUserId && after.officeSignUserId) {
+      action = 'OFFICE_SIGN';
+    }
+    // Check for office signature removed
+    else if (before.officeSignUserId && !after.officeSignUserId) {
+      action = 'OFFICE_UNSIGN';
+    }
+    // Check for status change
+    else if (before.status !== after.status) {
+      action = 'STATUS_CHANGE';
+    }
+
+    // Log audit with organization context
+    await this.auditService.log(
+      'InspectionEntry',
+      entryId,
+      action,
+      before,
+      after,
+      {
+        userId,
+        organizationId: organizationId ?? undefined,
+      },
+    );
 
     return after;
   }
 
-  async remove(reportId: string, entryId: string, userId?: string) {
+  async remove(
+    reportId: string,
+    entryId: string,
+    userId?: string,
+    organizationId?: string | null,
+  ) {
     const entry = await this.prisma.inspectionEntry.findFirst({
       where: { id: entryId, reportId },
     });
@@ -246,10 +272,18 @@ export class EntriesService {
       where: { id: entryId },
     });
 
-    // Log audit
-    await this.auditService.log('InspectionEntry', entryId, 'DELETE', entry, null, {
-      userId,
-    });
+    // Log audit with organization context
+    await this.auditService.log(
+      'InspectionEntry',
+      entryId,
+      'DELETE',
+      entry,
+      null,
+      {
+        userId,
+        organizationId: organizationId ?? undefined,
+      },
+    );
 
     return { deleted: true };
   }

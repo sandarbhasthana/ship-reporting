@@ -290,9 +290,13 @@ export class InspectionsService {
     return after;
   }
 
-  async remove(id: string, organizationId: string | null) {
+  async remove(id: string, organizationId: string | null, userId?: string) {
     const report = await this.prisma.inspectionReport.findUnique({
       where: { id },
+      include: {
+        vessel: { select: { id: true, name: true } },
+        entries: true,
+      },
     });
 
     if (!report) {
@@ -304,8 +308,20 @@ export class InspectionsService {
       throw new NotFoundException('Inspection report not found');
     }
 
-    return this.prisma.inspectionReport.delete({
+    await this.prisma.inspectionReport.delete({
       where: { id },
     });
+
+    // Log audit for deletion
+    await this.auditService.log(
+      'InspectionReport',
+      id,
+      'DELETE',
+      report,
+      null,
+      { userId, organizationId: organizationId ?? undefined },
+    );
+
+    return { deleted: true, id };
   }
 }

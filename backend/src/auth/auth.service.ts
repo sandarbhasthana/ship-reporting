@@ -6,6 +6,7 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../prisma/prisma.service';
+import { AuditService } from '../audit/audit.service';
 import { LoginDto, RegisterDto } from './dto';
 import { RoleName } from '@ship-reporting/prisma';
 
@@ -14,9 +15,10 @@ export class AuthService {
   constructor(
     private prisma: PrismaService,
     private jwtService: JwtService,
+    private auditService: AuditService,
   ) {}
 
-  async login(loginDto: LoginDto) {
+  async login(loginDto: LoginDto, ip?: string, userAgent?: string) {
     const { email, password } = loginDto;
 
     const user = await this.prisma.user.findUnique({
@@ -28,15 +30,52 @@ export class AuthService {
     });
 
     if (!user) {
+      // Log failed login attempt (user not found)
+      await this.auditService.log(
+        'Auth',
+        'unknown',
+        'LOGIN_FAILED',
+        null,
+        { email, reason: 'User not found' },
+        { ip, userAgent },
+      );
       throw new UnauthorizedException('Invalid credentials');
     }
 
     if (!user.isActive) {
+      // Log failed login attempt (account disabled)
+      await this.auditService.log(
+        'Auth',
+        user.id,
+        'LOGIN_FAILED',
+        null,
+        { email, reason: 'Account disabled' },
+        {
+          userId: user.id,
+          organizationId: user.organizationId ?? undefined,
+          ip,
+          userAgent,
+        },
+      );
       throw new UnauthorizedException('Account is disabled');
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
     if (!isPasswordValid) {
+      // Log failed login attempt (invalid password)
+      await this.auditService.log(
+        'Auth',
+        user.id,
+        'LOGIN_FAILED',
+        null,
+        { email, reason: 'Invalid password' },
+        {
+          userId: user.id,
+          organizationId: user.organizationId ?? undefined,
+          ip,
+          userAgent,
+        },
+      );
       throw new UnauthorizedException('Invalid credentials');
     }
 
@@ -50,6 +89,21 @@ export class AuthService {
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { passwordHash: _hash, ...userWithoutPassword } = user;
+
+    // Log successful login
+    await this.auditService.log(
+      'Auth',
+      user.id,
+      'LOGIN',
+      null,
+      { email, role: user.role },
+      {
+        userId: user.id,
+        organizationId: user.organizationId ?? undefined,
+        ip,
+        userAgent,
+      },
+    );
 
     return {
       access_token: this.jwtService.sign(payload),
@@ -129,6 +183,8 @@ export class AuthService {
     userId: string,
     currentPassword: string,
     newPassword: string,
+    ip?: string,
+    userAgent?: string,
   ) {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
@@ -143,6 +199,20 @@ export class AuthService {
       user.passwordHash,
     );
     if (!isPasswordValid) {
+      // Log failed password change attempt
+      await this.auditService.log(
+        'Auth',
+        userId,
+        'PASSWORD_CHANGE_FAILED',
+        null,
+        { reason: 'Invalid current password' },
+        {
+          userId,
+          organizationId: user.organizationId ?? undefined,
+          ip,
+          userAgent,
+        },
+      );
       throw new UnauthorizedException('Current password is incorrect');
     }
 
@@ -153,6 +223,21 @@ export class AuthService {
       where: { id: userId },
       data: { passwordHash: newPasswordHash },
     });
+
+    // Log successful password change
+    await this.auditService.log(
+      'Auth',
+      userId,
+      'PASSWORD_CHANGE',
+      null,
+      { success: true },
+      {
+        userId,
+        organizationId: user.organizationId ?? undefined,
+        ip,
+        userAgent,
+      },
+    );
 
     return { message: 'Password changed successfully' };
   }

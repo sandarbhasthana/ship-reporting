@@ -12,7 +12,8 @@ import {
   FileTextOutlined,
   UserOutlined,
   SettingOutlined,
-  BankOutlined
+  BankOutlined,
+  AuditOutlined
 } from "@ant-design/icons";
 import { lazy, Suspense } from "react";
 
@@ -72,6 +73,11 @@ const OrganizationList = lazy(() =>
 );
 const OrganizationForm = lazy(() =>
   import("./pages/organizations").then((m) => ({ default: m.OrganizationForm }))
+);
+
+// Audit Log pages (Admin/Super Admin)
+const AuditLogList = lazy(() =>
+  import("./pages/audit-logs").then((m) => ({ default: m.AuditLogList }))
 );
 
 // Loading spinner for lazy loaded components
@@ -147,6 +153,11 @@ function AppWithTheme() {
               name: "settings",
               list: "/settings",
               meta: { label: "Settings", icon: <SettingOutlined /> }
+            },
+            {
+              name: "audit-logs",
+              list: "/audit-logs",
+              meta: { label: "Audit Logs", icon: <AuditOutlined /> }
             }
           ]}
           options={{
@@ -221,6 +232,8 @@ function AppWithTheme() {
                 />
                 <Route path="/settings/vessels" element={<VesselSettings />} />
                 <Route path="/settings/profile" element={<UserProfile />} />
+                {/* Audit Logs routes (Admin/Super Admin) */}
+                <Route path="/audit-logs" element={<AuditLogList />} />
               </Route>
             </Routes>
           </Suspense>

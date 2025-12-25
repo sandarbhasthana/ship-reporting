@@ -1,10 +1,12 @@
-import { Controller, Get, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Query, UseGuards, Res, Header } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiTags,
   ApiOperation,
   ApiQuery,
+  ApiProduces,
 } from '@nestjs/swagger';
+import { Response } from 'express';
 import { AuditService } from './audit.service';
 import { Roles, OrganizationId } from '../auth/decorators';
 import { RolesGuard, TenantGuard } from '../auth/guards';
@@ -22,14 +24,28 @@ export class AuditController {
   @ApiOperation({ summary: 'List audit logs (Admin only, filtered by org)' })
   @ApiQuery({ name: 'entityType', required: false })
   @ApiQuery({ name: 'entityId', required: false })
+  @ApiQuery({ name: 'action', required: false })
   @ApiQuery({ name: 'userId', required: false })
+  @ApiQuery({
+    name: 'startDate',
+    required: false,
+    description: 'ISO date string',
+  })
+  @ApiQuery({
+    name: 'endDate',
+    required: false,
+    description: 'ISO date string',
+  })
   @ApiQuery({ name: 'skip', required: false, type: Number })
   @ApiQuery({ name: 'take', required: false, type: Number })
   findAll(
     @OrganizationId() organizationId: string | null,
     @Query('entityType') entityType?: string,
     @Query('entityId') entityId?: string,
+    @Query('action') action?: string,
     @Query('userId') userId?: string,
+    @Query('startDate') startDate?: string,
+    @Query('endDate') endDate?: string,
     @Query('skip') skip?: string,
     @Query('take') take?: string,
   ) {
@@ -37,7 +53,10 @@ export class AuditController {
       organizationId,
       entityType,
       entityId,
+      action,
       userId,
+      startDate: startDate ? new Date(startDate) : undefined,
+      endDate: endDate ? new Date(endDate) : undefined,
       skip: skip ? parseInt(skip, 10) : undefined,
       take: take ? parseInt(take, 10) : undefined,
     });
@@ -53,5 +72,50 @@ export class AuditController {
     @Query('entityId') entityId: string,
   ) {
     return this.auditService.findByEntity(entityType, entityId, organizationId);
+  }
+
+  @Get('export')
+  @ApiOperation({ summary: 'Export audit logs as CSV (Admin only)' })
+  @ApiProduces('text/csv')
+  @ApiQuery({ name: 'entityType', required: false })
+  @ApiQuery({ name: 'action', required: false })
+  @ApiQuery({ name: 'userId', required: false })
+  @ApiQuery({
+    name: 'startDate',
+    required: false,
+    description: 'ISO date string',
+  })
+  @ApiQuery({
+    name: 'endDate',
+    required: false,
+    description: 'ISO date string',
+  })
+  @Header('Content-Type', 'text/csv')
+  @Header('Content-Disposition', 'attachment; filename="audit-logs.csv"')
+  async exportCSV(
+    @OrganizationId() organizationId: string | null,
+    @Query('entityType') entityType?: string,
+    @Query('action') action?: string,
+    @Query('userId') userId?: string,
+    @Query('startDate') startDate?: string,
+    @Query('endDate') endDate?: string,
+    @Res() res?: Response,
+  ) {
+    const csvContent = await this.auditService.exportToCSV({
+      organizationId,
+      entityType,
+      action,
+      userId,
+      startDate: startDate ? new Date(startDate) : undefined,
+      endDate: endDate ? new Date(endDate) : undefined,
+    });
+
+    res?.send(csvContent);
+  }
+
+  @Get('stats')
+  @ApiOperation({ summary: 'Get audit log statistics (Admin only)' })
+  getStats(@OrganizationId() organizationId: string | null) {
+    return this.auditService.getStats(organizationId);
   }
 }

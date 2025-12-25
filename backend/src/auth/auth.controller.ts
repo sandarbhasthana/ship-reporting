@@ -6,9 +6,11 @@ import {
   UseGuards,
   HttpCode,
   HttpStatus,
+  Req,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
+import { Request } from 'express';
 import { AuthService } from './auth.service';
 import { LoginDto, RegisterDto, ChangePasswordDto } from './dto';
 import { Public } from './decorators/public.decorator';
@@ -27,8 +29,10 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   // Stricter rate limit for login attempts (5 per minute)
   @Throttle({ default: { ttl: 60000, limit: 5 } })
-  async login(@Body() loginDto: LoginDto) {
-    return this.authService.login(loginDto);
+  async login(@Body() loginDto: LoginDto, @Req() req: Request) {
+    const ip = req.ip || req.socket.remoteAddress;
+    const userAgent = req.headers['user-agent'];
+    return this.authService.login(loginDto, ip, userAgent);
   }
 
   @ApiBearerAuth()
@@ -51,11 +55,16 @@ export class AuthController {
   async changePassword(
     @CurrentUser('id') userId: string,
     @Body() changePasswordDto: ChangePasswordDto,
+    @Req() req: Request,
   ) {
+    const ip = req.ip || req.socket.remoteAddress;
+    const userAgent = req.headers['user-agent'];
     return this.authService.changePassword(
       userId,
       changePasswordDto.currentPassword,
       changePasswordDto.newPassword,
+      ip,
+      userAgent,
     );
   }
 }

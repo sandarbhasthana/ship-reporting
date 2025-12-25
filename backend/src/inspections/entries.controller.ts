@@ -11,15 +11,14 @@ import {
 import { ApiBearerAuth, ApiTags, ApiOperation } from '@nestjs/swagger';
 import { EntriesService } from './entries.service';
 import { CreateEntryDto, UpdateEntryDto } from './dto';
-import { Roles } from '../auth/decorators/roles.decorator';
-import { RolesGuard } from '../auth/guards/roles.guard';
-import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { Roles, CurrentUser, OrganizationId } from '../auth/decorators';
+import { RolesGuard, TenantGuard } from '../auth/guards';
 import { RoleName } from '@ship-reporting/prisma';
 
 @ApiTags('Inspection Entries')
 @ApiBearerAuth()
 @Controller('inspections/:reportId/entries')
-@UseGuards(RolesGuard)
+@UseGuards(TenantGuard, RolesGuard)
 export class EntriesController {
   constructor(private readonly entriesService: EntriesService) {}
 
@@ -31,6 +30,7 @@ export class EntriesController {
     @CurrentUser('id') userId: string,
     @CurrentUser('role') userRole: RoleName,
     @CurrentUser('assignedVesselId') assignedVesselId: string | null,
+    @OrganizationId() organizationId: string | null,
   ) {
     return this.entriesService.create(
       reportId,
@@ -38,6 +38,7 @@ export class EntriesController {
       userId,
       userRole,
       assignedVesselId,
+      organizationId,
     );
   }
 
@@ -76,6 +77,7 @@ export class EntriesController {
     @CurrentUser('id') userId: string,
     @CurrentUser('role') userRole: RoleName,
     @CurrentUser('assignedVesselId') assignedVesselId: string | null,
+    @OrganizationId() organizationId: string | null,
   ) {
     return this.entriesService.update(
       reportId,
@@ -84,6 +86,7 @@ export class EntriesController {
       userId,
       userRole,
       assignedVesselId,
+      organizationId,
     );
   }
 
@@ -94,7 +97,13 @@ export class EntriesController {
     @Param('reportId') reportId: string,
     @Param('entryId') entryId: string,
     @CurrentUser('id') userId: string,
+    @OrganizationId() organizationId: string | null,
   ) {
-    return this.entriesService.remove(reportId, entryId, userId);
+    return this.entriesService.remove(
+      reportId,
+      entryId,
+      userId,
+      organizationId,
+    );
   }
 }

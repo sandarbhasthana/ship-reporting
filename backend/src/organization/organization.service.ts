@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../prisma/prisma.service';
+import { AuditService } from '../audit/audit.service';
 import { CreateOrganizationDto, UpdateOrganizationDto } from './dto';
 import { EmailService } from '../email/email.service';
 import { RoleName } from '@ship-reporting/prisma';
@@ -12,9 +13,13 @@ export class OrganizationService {
     private prisma: PrismaService,
     private emailService: EmailService,
     private configService: ConfigService,
+    private auditService: AuditService,
   ) {}
 
-  async create(createOrganizationDto: CreateOrganizationDto) {
+  async create(
+    createOrganizationDto: CreateOrganizationDto,
+    createdByUserId?: string,
+  ) {
     const { adminPassword, email, owner, ...orgData } = createOrganizationDto;
 
     // Hash the admin password
@@ -50,6 +55,16 @@ export class OrganizationService {
 
       return organization;
     });
+
+    // Log audit for organization creation
+    await this.auditService.log(
+      'Organization',
+      result.id,
+      'CREATE',
+      null,
+      result,
+      { userId: createdByUserId, organizationId: result.id },
+    );
 
     // Send welcome email to the admin (non-blocking)
     const frontendUrl =
@@ -106,23 +121,43 @@ export class OrganizationService {
     return organization;
   }
 
-  async update(id: string, updateOrganizationDto: UpdateOrganizationDto) {
-    // Check if organization exists
-    await this.findOne(id);
+  async update(
+    id: string,
+    updateOrganizationDto: UpdateOrganizationDto,
+    updatedByUserId?: string,
+  ) {
+    // Check if organization exists and get before state
+    const before = await this.findOne(id);
 
-    return this.prisma.organization.update({
+    const after = await this.prisma.organization.update({
       where: { id },
       data: updateOrganizationDto,
     });
+
+    // Log audit for organization update
+    await this.auditService.log('Organization', id, 'UPDATE', before, after, {
+      userId: updatedByUserId,
+      organizationId: id,
+    });
+
+    return after;
   }
 
-  async remove(id: string) {
-    // Check if organization exists
-    await this.findOne(id);
+  async remove(id: string, deletedByUserId?: string) {
+    // Check if organization exists and get before state
+    const before = await this.findOne(id);
 
-    return this.prisma.organization.delete({
+    await this.prisma.organization.delete({
       where: { id },
     });
+
+    // Log audit for organization deletion
+    await this.auditService.log('Organization', id, 'DELETE', before, null, {
+      userId: deletedByUserId,
+      organizationId: id,
+    });
+
+    return { deleted: true, id };
   }
 
   // Get organization by user's organizationId

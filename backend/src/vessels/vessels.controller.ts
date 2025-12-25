@@ -29,6 +29,7 @@ export class VesselsController {
   create(
     @Body() createVesselDto: CreateVesselDto,
     @OrganizationId() organizationId: string | null,
+    @CurrentUser('id') currentUserId: string,
   ) {
     if (!organizationId) {
       throw new ForbiddenException(
@@ -36,10 +37,13 @@ export class VesselsController {
       );
     }
     // Ensure vessel is created in user's organization
-    return this.vesselsService.create({
-      ...createVesselDto,
-      organizationId,
-    });
+    return this.vesselsService.create(
+      {
+        ...createVesselDto,
+        organizationId,
+      },
+      currentUserId,
+    );
   }
 
   @Get()
@@ -73,8 +77,14 @@ export class VesselsController {
     @Param('id') id: string,
     @Body() updateVesselDto: UpdateVesselDto,
     @OrganizationId() organizationId: string | null,
+    @CurrentUser('id') currentUserId: string,
   ) {
-    return this.vesselsService.update(id, updateVesselDto, organizationId);
+    return this.vesselsService.update(
+      id,
+      updateVesselDto,
+      organizationId,
+      currentUserId,
+    );
   }
 
   @Delete(':id')
@@ -82,8 +92,9 @@ export class VesselsController {
   remove(
     @Param('id') id: string,
     @OrganizationId() organizationId: string | null,
+    @CurrentUser('id') currentUserId: string,
   ) {
-    return this.vesselsService.remove(id, organizationId);
+    return this.vesselsService.remove(id, organizationId, currentUserId);
   }
 
   @Post(':id/assign-captain/:userId')
@@ -92,8 +103,14 @@ export class VesselsController {
     @Param('id') id: string,
     @Param('userId') userId: string,
     @OrganizationId() organizationId: string | null,
+    @CurrentUser('id') currentUserId: string,
   ) {
-    return this.vesselsService.assignCaptain(id, userId, organizationId);
+    return this.vesselsService.assignCaptain(
+      id,
+      userId,
+      organizationId,
+      currentUserId,
+    );
   }
 
   @Delete(':id/captain')
@@ -101,7 +118,8 @@ export class VesselsController {
   removeCaptain(
     @Param('id') id: string,
     @OrganizationId() organizationId: string | null,
+    @CurrentUser('id') currentUserId: string,
   ) {
-    return this.vesselsService.removeCaptain(id, organizationId);
+    return this.vesselsService.removeCaptain(id, organizationId, currentUserId);
   }
 }

@@ -6,6 +6,7 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { TenantGuard, RolesGuard } from './guards';
+import { AuditModule } from '../audit/audit.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { TenantGuard, RolesGuard } from './guards';
       },
       inject: [ConfigService],
     }),
+    AuditModule,
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy, TenantGuard, RolesGuard],

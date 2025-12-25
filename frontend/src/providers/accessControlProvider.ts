@@ -24,6 +24,10 @@ export const accessControlProvider: AccessControlProvider = {
 
     // SUPER_ADMIN specific access
     if (role === "SUPER_ADMIN") {
+      // SUPER_ADMIN can access audit logs
+      if (resource === "audit-logs") {
+        return { can: true };
+      }
       // SUPER_ADMIN cannot access vessels directly - they manage at organization level
       if (resource === "vessels") {
         return {
@@ -71,6 +75,14 @@ export const accessControlProvider: AccessControlProvider = {
         return { can: true };
       }
       return { can: false, reason: "Only admins can access settings" };
+    }
+
+    // Audit logs resource is admin-only (ADMIN and SUPER_ADMIN)
+    if (resource === "audit-logs") {
+      if (role === "ADMIN") {
+        return { can: true };
+      }
+      return { can: false, reason: "Only admins can access audit logs" };
     }
 
     // All other resources are accessible to all authenticated users

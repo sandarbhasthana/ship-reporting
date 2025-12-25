@@ -26,6 +26,7 @@ export class UsersController {
   create(
     @Body() createUserDto: CreateUserDto,
     @OrganizationId() organizationId: string | null,
+    @CurrentUser('id') currentUserId: string,
   ) {
     if (!organizationId) {
       throw new ForbiddenException(
@@ -33,10 +34,13 @@ export class UsersController {
       );
     }
     // Ensure user is created in admin's organization
-    return this.usersService.create({
-      ...createUserDto,
-      organizationId,
-    });
+    return this.usersService.create(
+      {
+        ...createUserDto,
+        organizationId,
+      },
+      currentUserId,
+    );
   }
 
   @Get()
@@ -71,8 +75,14 @@ export class UsersController {
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
     @OrganizationId() organizationId: string | null,
+    @CurrentUser('id') currentUserId: string,
   ) {
-    return this.usersService.update(id, updateUserDto, organizationId);
+    return this.usersService.update(
+      id,
+      updateUserDto,
+      organizationId,
+      currentUserId,
+    );
   }
 
   @Delete(':id')
@@ -80,8 +90,9 @@ export class UsersController {
   remove(
     @Param('id') id: string,
     @OrganizationId() organizationId: string | null,
+    @CurrentUser('id') currentUserId: string,
   ) {
-    return this.usersService.remove(id, organizationId);
+    return this.usersService.remove(id, organizationId, currentUserId);
   }
 
   @Delete(':id/hard')
@@ -89,7 +100,8 @@ export class UsersController {
   hardDelete(
     @Param('id') id: string,
     @OrganizationId() organizationId: string | null,
+    @CurrentUser('id') currentUserId: string,
   ) {
-    return this.usersService.hardDelete(id, organizationId);
+    return this.usersService.hardDelete(id, organizationId, currentUserId);
   }
 }

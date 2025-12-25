@@ -8,4 +8,5 @@ export {
 } from "./settings";
 export { InspectionList, InspectionForm, InspectionView } from "./inspections";
 export { UserList, UserForm } from "./users";
+export { AuditLogList } from "./audit-logs";
 export { OrganizationList, OrganizationForm } from "./organizations";

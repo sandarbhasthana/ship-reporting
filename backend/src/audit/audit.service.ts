@@ -1,4 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
+import { Cron, CronExpression } from '@nestjs/schedule';
+import { ConfigService } from '@nestjs/config';
 import { Prisma } from '@ship-reporting/prisma';
 import { PrismaService } from '../prisma/prisma.service';
 
@@ -10,9 +12,30 @@ export interface AuditContext {
   requestId?: string;
 }
 
+export interface AuditExportOptions {
+  organizationId?: string | null;
+  entityType?: string;
+  action?: string;
+  userId?: string;
+  startDate?: Date;
+  endDate?: Date;
+}
+
 @Injectable()
 export class AuditService {
-  constructor(private readonly prisma: PrismaService) {}
+  private readonly logger = new Logger(AuditService.name);
+  private readonly retentionDays: number;
+
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly configService: ConfigService,
+  ) {
+    // Default retention: 90 days, configurable via environment variable
+    this.retentionDays = this.configService.get<number>(
+      'AUDIT_LOG_RETENTION_DAYS',
+      90,
+    );
+  }
 
   async log(
     entityType: string,
@@ -50,7 +73,10 @@ export class AuditService {
     organizationId?: string | null;
     entityType?: string;
     entityId?: string;
+    action?: string;
     userId?: string;
+    startDate?: Date;
+    endDate?: Date;
     skip?: number;
     take?: number;
   }) {
@@ -60,7 +86,15 @@ export class AuditService {
     if (options?.organizationId) where.organizationId = options.organizationId;
     if (options?.entityType) where.entityType = options.entityType;
     if (options?.entityId) where.entityId = options.entityId;
+    if (options?.action) where.action = options.action;
     if (options?.userId) where.userId = options.userId;
+
+    // Date range filter
+    if (options?.startDate || options?.endDate) {
+      where.createdAt = {};
+      if (options.startDate) where.createdAt.gte = options.startDate;
+      if (options.endDate) where.createdAt.lte = options.endDate;
+    }
 
     const [data, total] = await Promise.all([
       this.prisma.auditLog.findMany({
@@ -105,5 +139,162 @@ export class AuditService {
       },
       orderBy: { createdAt: 'desc' },
     });
+  }
+
+  /**
+   * Scheduled job to clean up old audit logs
+   * Runs daily at 2:00 AM
+   */
+  @Cron(CronExpression.EVERY_DAY_AT_2AM)
+  async cleanupOldLogs() {
+    const cutoffDate = new Date();
+    cutoffDate.setDate(cutoffDate.getDate() - this.retentionDays);
+
+    try {
+      const result = await this.prisma.auditLog.deleteMany({
+        where: {
+          createdAt: {
+            lt: cutoffDate,
+          },
+        },
+      });
+
+      this.logger.log(
+        `Audit log cleanup completed: deleted ${result.count} records older than ${this.retentionDays} days`,
+      );
+
+      return result;
+    } catch (error) {
+      this.logger.error('Audit log cleanup failed', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Export audit logs as CSV data
+   */
+  async exportToCSV(options: AuditExportOptions): Promise<string> {
+    const where: Prisma.AuditLogWhereInput = {};
+
+    if (options.organizationId) where.organizationId = options.organizationId;
+    if (options.entityType) where.entityType = options.entityType;
+    if (options.action) where.action = options.action;
+    if (options.userId) where.userId = options.userId;
+
+    if (options.startDate || options.endDate) {
+      where.createdAt = {};
+      if (options.startDate) where.createdAt.gte = options.startDate;
+      if (options.endDate) where.createdAt.lte = options.endDate;
+    }
+
+    const logs = await this.prisma.auditLog.findMany({
+      where,
+      include: {
+        user: {
+          select: { name: true, email: true },
+        },
+        organization: {
+          select: { name: true },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+      take: 10000, // Limit export to 10,000 records
+    });
+
+    // CSV Header
+    const headers = [
+      'ID',
+      'Timestamp',
+      'User',
+      'User Email',
+      'Organization',
+      'Entity Type',
+      'Entity ID',
+      'Action',
+      'IP Address',
+      'User Agent',
+      'Before',
+      'After',
+    ];
+
+    // CSV Rows
+    const rows = logs.map((log) => [
+      log.id,
+      log.createdAt.toISOString(),
+      log.user?.name || 'System',
+      log.user?.email || '',
+      log.organization?.name || '',
+      log.entityType,
+      log.entityId,
+      log.action,
+      log.ip || '',
+      log.userAgent || '',
+      log.before ? JSON.stringify(log.before) : '',
+      log.after ? JSON.stringify(log.after) : '',
+    ]);
+
+    // Escape CSV values
+    const escapeCSV = (value: string) => {
+      if (value.includes(',') || value.includes('"') || value.includes('\n')) {
+        return `"${value.replace(/"/g, '""')}"`;
+      }
+      return value;
+    };
+
+    const csvContent = [
+      headers.join(','),
+      ...rows.map((row) =>
+        row.map((cell) => escapeCSV(String(cell))).join(','),
+      ),
+    ].join('\n');
+
+    return csvContent;
+  }
+
+  /**
+   * Get audit log statistics
+   */
+  async getStats(organizationId?: string | null) {
+    const where: Prisma.AuditLogWhereInput = {};
+    if (organizationId) where.organizationId = organizationId;
+
+    const [total, byAction, byEntityType, recentActivity] = await Promise.all([
+      this.prisma.auditLog.count({ where }),
+      this.prisma.auditLog.groupBy({
+        by: ['action'],
+        where,
+        _count: { action: true },
+        orderBy: { _count: { action: 'desc' } },
+        take: 10,
+      }),
+      this.prisma.auditLog.groupBy({
+        by: ['entityType'],
+        where,
+        _count: { entityType: true },
+        orderBy: { _count: { entityType: 'desc' } },
+        take: 10,
+      }),
+      this.prisma.auditLog.count({
+        where: {
+          ...where,
+          createdAt: {
+            gte: new Date(Date.now() - 24 * 60 * 60 * 1000), // Last 24 hours
+          },
+        },
+      }),
+    ]);
+
+    return {
+      total,
+      recentActivity,
+      byAction: byAction.map((a) => ({
+        action: a.action,
+        count: a._count.action,
+      })),
+      byEntityType: byEntityType.map((e) => ({
+        entityType: e.entityType,
+        count: e._count.entityType,
+      })),
+    };
   }
 }

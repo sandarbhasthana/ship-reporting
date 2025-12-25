@@ -9,7 +9,7 @@ import {
   Descriptions,
   Spin,
   message,
-  Modal,
+  Modal
 } from "antd";
 import {
   EditOutlined,
@@ -19,7 +19,7 @@ import {
   ExpandOutlined
 } from "@ant-design/icons";
 import { useGetIdentity, useApiUrl } from "@refinedev/core";
-import { useParams, Link } from "react-router";
+import { useParams, Link, useLocation } from "react-router";
 import dayjs from "dayjs";
 import { S3Image } from "../../components";
 import styles from "./inspections.module.css";
@@ -71,8 +71,13 @@ interface UserIdentity {
 export const InspectionView = () => {
   const { id } = useParams<{ id: string }>();
   const apiUrl = useApiUrl();
+  const location = useLocation();
   const { data: identity } = useGetIdentity<UserIdentity>();
   const isAdmin = identity?.role === "ADMIN";
+
+  // Check if navigated from audit logs
+  const fromAuditLogs =
+    (location.state as { from?: string })?.from === "audit-logs";
 
   const [inspection, setInspection] = useState<InspectionReport | null>(null);
   const [loading, setLoading] = useState(true);
@@ -341,13 +346,13 @@ export const InspectionView = () => {
     <Card className="print-container">
       <div className={styles.headerContainer}>
         <div>
-          <Link to="/inspections">
+          <Link to={fromAuditLogs ? "/audit-logs" : "/inspections"}>
             <Button
               icon={<ArrowLeftOutlined />}
               type="default"
               className="no-print"
             >
-              Back to List
+              {fromAuditLogs ? "Back to Audit Logs" : "Back to List"}
             </Button>
           </Link>
           <Title
