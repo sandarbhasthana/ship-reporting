@@ -177,6 +177,17 @@ export interface PrismaClient<in LogOpts extends Prisma.LogLevel = never, in out
     get auditLog(): Prisma.AuditLogDelegate<ExtArgs, {
         omit: OmitOpts;
     }>;
+    /**
+     * `prisma.passwordResetToken`: Exposes CRUD operations for the **PasswordResetToken** model.
+      * Example usage:
+      * ```ts
+      * // Fetch zero or more PasswordResetTokens
+      * const passwordResetTokens = await prisma.passwordResetToken.findMany()
+      * ```
+      */
+    get passwordResetToken(): Prisma.PasswordResetTokenDelegate<ExtArgs, {
+        omit: OmitOpts;
+    }>;
 }
 export declare function getPrismaClientClass(): PrismaClientConstructor;
 //# sourceMappingURL=class.d.ts.map

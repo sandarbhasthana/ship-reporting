@@ -129,6 +129,19 @@
   margin-bottom: 24px;
 }
 
+/* Description labels styled like table headers */
+.viewSection :global(.ant-descriptions-item-label) {
+  background: var(--color-primary-light, #e8dbff) !important;
+  color: var(--color-primary-dark, #7340bf) !important;
+  font-weight: 600 !important;
+}
+
+:global([data-theme="dark"])
+  .viewSection
+  :global(.ant-descriptions-item-label) {
+  color: var(--color-primary, #a05aff) !important;
+}
+
 .viewLabel {
   font-weight: 500;
   color: var(--text-secondary);

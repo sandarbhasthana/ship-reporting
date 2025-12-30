@@ -49,4 +49,9 @@ export type InspectionEntry = Prisma.InspectionEntryModel;
  *
  */
 export type AuditLog = Prisma.AuditLogModel;
+/**
+ * Model PasswordResetToken
+ *
+ */
+export type PasswordResetToken = Prisma.PasswordResetTokenModel;
 //# sourceMappingURL=client.d.ts.map

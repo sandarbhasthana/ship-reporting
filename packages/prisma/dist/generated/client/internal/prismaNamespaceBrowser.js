@@ -48,7 +48,7 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.JsonNullValueFilter = exports.NullsOrder = exports.QueryMode = exports.NullableJsonNullValueInput = exports.SortOrder = exports.AuditLogScalarFieldEnum = exports.InspectionEntryScalarFieldEnum = exports.InspectionReportScalarFieldEnum = exports.VesselScalarFieldEnum = exports.UserScalarFieldEnum = exports.OrganizationScalarFieldEnum = exports.TransactionIsolationLevel = exports.ModelName = exports.AnyNull = exports.JsonNull = exports.DbNull = exports.NullTypes = exports.Decimal = void 0;
+exports.JsonNullValueFilter = exports.NullsOrder = exports.QueryMode = exports.NullableJsonNullValueInput = exports.SortOrder = exports.PasswordResetTokenScalarFieldEnum = exports.AuditLogScalarFieldEnum = exports.InspectionEntryScalarFieldEnum = exports.InspectionReportScalarFieldEnum = exports.VesselScalarFieldEnum = exports.UserScalarFieldEnum = exports.OrganizationScalarFieldEnum = exports.TransactionIsolationLevel = exports.ModelName = exports.AnyNull = exports.JsonNull = exports.DbNull = exports.NullTypes = exports.Decimal = void 0;
 const runtime = __importStar(require("@prisma/client/runtime/index-browser"));
 exports.Decimal = runtime.Decimal;
 exports.NullTypes = {
@@ -80,7 +80,8 @@ exports.ModelName = {
     Vessel: 'Vessel',
     InspectionReport: 'InspectionReport',
     InspectionEntry: 'InspectionEntry',
-    AuditLog: 'AuditLog'
+    AuditLog: 'AuditLog',
+    PasswordResetToken: 'PasswordResetToken'
 };
 /*
  * Enums
@@ -172,6 +173,14 @@ exports.AuditLogScalarFieldEnum = {
     ip: 'ip',
     userAgent: 'userAgent',
     requestId: 'requestId',
+    createdAt: 'createdAt'
+};
+exports.PasswordResetTokenScalarFieldEnum = {
+    id: 'id',
+    token: 'token',
+    userId: 'userId',
+    expiresAt: 'expiresAt',
+    usedAt: 'usedAt',
     createdAt: 'createdAt'
 };
 exports.SortOrder = {

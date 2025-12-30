@@ -13,5 +13,6 @@ export interface ThemeContextType {
   setTheme: (mode: ThemeMode) => void;
   themeConfig: ThemeConfig;
   isDark: boolean;
+  accentColor: string;
+  setAccentColor: (colorId: string) => void;
 }
-

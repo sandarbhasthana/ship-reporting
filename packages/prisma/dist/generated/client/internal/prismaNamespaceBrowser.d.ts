@@ -32,6 +32,7 @@ export declare const ModelName: {
     readonly InspectionReport: "InspectionReport";
     readonly InspectionEntry: "InspectionEntry";
     readonly AuditLog: "AuditLog";
+    readonly PasswordResetToken: "PasswordResetToken";
 };
 export type ModelName = (typeof ModelName)[keyof typeof ModelName];
 export declare const TransactionIsolationLevel: {
@@ -130,6 +131,15 @@ export declare const AuditLogScalarFieldEnum: {
     readonly createdAt: "createdAt";
 };
 export type AuditLogScalarFieldEnum = (typeof AuditLogScalarFieldEnum)[keyof typeof AuditLogScalarFieldEnum];
+export declare const PasswordResetTokenScalarFieldEnum: {
+    readonly id: "id";
+    readonly token: "token";
+    readonly userId: "userId";
+    readonly expiresAt: "expiresAt";
+    readonly usedAt: "usedAt";
+    readonly createdAt: "createdAt";
+};
+export type PasswordResetTokenScalarFieldEnum = (typeof PasswordResetTokenScalarFieldEnum)[keyof typeof PasswordResetTokenScalarFieldEnum];
 export declare const SortOrder: {
     readonly asc: "asc";
     readonly desc: "desc";

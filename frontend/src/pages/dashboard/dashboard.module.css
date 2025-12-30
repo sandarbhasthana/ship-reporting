@@ -157,6 +157,15 @@
   margin-top: 24px;
 }
 
+/* Table header dividers for dashboard tables */
+.usersCard :global(.ant-table-thead > tr > th) {
+  border-right: 1px solid rgba(160, 90, 255, 0.4);
+}
+
+.usersCard :global(.ant-table-thead > tr > th:last-child) {
+  border-right: none;
+}
+
 /* Vessel text under captain name */
 .vesselText {
   display: block;

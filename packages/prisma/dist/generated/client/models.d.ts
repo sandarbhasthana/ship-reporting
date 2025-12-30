@@ -4,5 +4,6 @@ export type * from './models/Vessel';
 export type * from './models/InspectionReport';
 export type * from './models/InspectionEntry';
 export type * from './models/AuditLog';
+export type * from './models/PasswordResetToken';
 export type * from './commonInputTypes';
 //# sourceMappingURL=models.d.ts.map

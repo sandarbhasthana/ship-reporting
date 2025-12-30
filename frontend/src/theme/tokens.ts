@@ -9,7 +9,114 @@
 import type { ThemeConfig } from "antd";
 
 /**
- * Brand color palette
+ * Accent color preset definition
+ */
+export interface AccentColorPreset {
+  id: string;
+  name: string;
+  primary: string;
+  hover: string;
+  active: string;
+  light: string;
+  dark: string;
+  lightModeBg: string; // For dark mode adjusted light color
+}
+
+/**
+ * Available accent color presets
+ */
+export const accentColorPresets: AccentColorPreset[] = [
+  {
+    id: "purple",
+    name: "Purple",
+    primary: "#A05AFF",
+    hover: "#B574FF",
+    active: "#8A4AE0",
+    light: "#E8DBFF",
+    dark: "#7340BF",
+    lightModeBg: "#3D2866"
+  },
+  {
+    id: "teal",
+    name: "Teal",
+    primary: "#1BCFB4",
+    hover: "#3ED9C2",
+    active: "#15B59D",
+    light: "#D0F5EF",
+    dark: "#129683",
+    lightModeBg: "#164E44"
+  },
+  {
+    id: "blue",
+    name: "Blue",
+    primary: "#4BCBEB",
+    hover: "#6ED5F0",
+    active: "#2FBDE3",
+    light: "#D6F2FA",
+    dark: "#1A8FAD",
+    lightModeBg: "#1A3D47"
+  },
+  {
+    id: "coral",
+    name: "Coral",
+    primary: "#FE9496",
+    hover: "#FEAAAC",
+    active: "#FE7E80",
+    light: "#FFE5E6",
+    dark: "#D4686A",
+    lightModeBg: "#4D2C2D"
+  },
+  {
+    id: "green",
+    name: "Green",
+    primary: "#52C41A",
+    hover: "#73D13D",
+    active: "#389E0D",
+    light: "#D9F7BE",
+    dark: "#237804",
+    lightModeBg: "#1D3712"
+  },
+  {
+    id: "orange",
+    name: "Orange",
+    primary: "#FA8C16",
+    hover: "#FFA940",
+    active: "#D46B08",
+    light: "#FFE7BA",
+    dark: "#AD4E00",
+    lightModeBg: "#3D2607"
+  },
+  {
+    id: "pink",
+    name: "Pink",
+    primary: "#EB2F96",
+    hover: "#F759AB",
+    active: "#C41D7F",
+    light: "#FFD6E7",
+    dark: "#9E1068",
+    lightModeBg: "#3D1228"
+  },
+  {
+    id: "cyan",
+    name: "Cyan",
+    primary: "#13C2C2",
+    hover: "#36CFC9",
+    active: "#08979C",
+    light: "#B5F5EC",
+    dark: "#006D75",
+    lightModeBg: "#112D2D"
+  }
+];
+
+/**
+ * Get accent color preset by ID
+ */
+export const getAccentPreset = (id: string): AccentColorPreset => {
+  return accentColorPresets.find((p) => p.id === id) || accentColorPresets[0];
+};
+
+/**
+ * Brand color palette (default purple)
  */
 export const brandColors = {
   primary: "#A05AFF",

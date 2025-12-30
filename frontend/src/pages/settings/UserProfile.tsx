@@ -15,11 +15,13 @@ import {
   UploadOutlined,
   SaveOutlined,
   UserOutlined,
-  CameraOutlined
+  CameraOutlined,
+  CheckOutlined
 } from "@ant-design/icons";
 import { useApiUrl } from "@refinedev/core";
 import type { UploadFile, UploadProps } from "antd/es/upload/interface";
 import { useImageUrl } from "../../hooks";
+import { useTheme, accentColorPresets } from "../../theme";
 import styles from "./settings.module.css";
 
 const { Title, Text } = Typography;
@@ -44,6 +46,7 @@ export const UserProfile: React.FC = () => {
   const [signatureFileList, setSignatureFileList] = useState<UploadFile[]>([]);
   const apiUrl = useApiUrl();
   const { message } = App.useApp();
+  const { accentColor, setAccentColor } = useTheme();
 
   // Use hooks to resolve image URLs (handles both S3 and local paths)
   const { url: profileImageUrl } = useImageUrl(user?.profileImage);
@@ -263,8 +266,40 @@ export const UserProfile: React.FC = () => {
             </Upload>
           </div>
           <Text type="secondary" className={styles.helpText}>
-            Click the camera icon to upload a new image. Max size: 2MB.
+            Click the camera icon to upload a new image. Max size: 2MB. Accepted
+            formats: JPG, PNG, WebP.
           </Text>
+        </div>
+      </Card>
+
+      <Card>
+        <Title level={4}>Accent Color</Title>
+        <Text type="secondary">
+          Choose an accent color that will be applied across the entire
+          application.
+        </Text>
+        <div className={styles.colorPickerContainer}>
+          <div className={styles.selectedColorName}>
+            {accentColorPresets.find((p) => p.id === accentColor)?.name ||
+              "Purple"}
+          </div>
+          <div className={styles.colorPickerGrid}>
+            {accentColorPresets.map((preset) => (
+              <div
+                key={preset.id}
+                className={`${styles.colorSwatch} ${
+                  accentColor === preset.id ? styles.colorSwatchSelected : ""
+                }`}
+                style={{ backgroundColor: preset.primary }}
+                onClick={() => setAccentColor(preset.id)}
+                title={preset.name}
+              >
+                {accentColor === preset.id && (
+                  <CheckOutlined style={{ color: "#fff", fontSize: 16 }} />
+                )}
+              </div>
+            ))}
+          </div>
         </div>
       </Card>
 

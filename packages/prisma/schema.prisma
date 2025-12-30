@@ -73,6 +73,7 @@ model User {
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
   auditLogs AuditLog[]
+  passwordResetTokens PasswordResetToken[]
 }
 
 model Vessel {
@@ -194,4 +195,18 @@ model AuditLog {
   @@index([entityType, entityId])
   @@index([userId])
   @@index([organizationId])
+}
+
+// Password reset tokens
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
+
+  @@index([token])
+  @@index([userId])
 }

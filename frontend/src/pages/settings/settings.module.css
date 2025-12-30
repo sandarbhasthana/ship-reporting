@@ -212,3 +212,53 @@
 :global([data-theme="dark"]) .profileAvatar {
   border-color: rgba(255, 255, 255, 0.15);
 }
+
+/* Accent Color Picker */
+.colorPickerContainer {
+  margin-top: 12px;
+}
+
+.selectedColorName {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-primary, #a05aff);
+  margin-bottom: 12px;
+}
+
+.colorPickerGrid {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.colorSwatch {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid transparent;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.colorSwatch:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.colorSwatchSelected {
+  border-color: var(--text-primary, #1f1f1f);
+  box-shadow:
+    0 0 0 2px var(--bg-primary, #ffffff),
+    0 0 0 4px var(--text-primary, #1f1f1f);
+}
+
+:global([data-theme="dark"]) .colorSwatchSelected {
+  border-color: var(--text-primary, #ffffff);
+  box-shadow:
+    0 0 0 2px var(--bg-primary, #141414),
+    0 0 0 4px var(--text-primary, #ffffff);
+}

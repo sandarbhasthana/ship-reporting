@@ -2,18 +2,21 @@
 .floatingLabelContainer {
   position: relative;
   width: 100%;
+  padding-top: 24px; /* Space for label above input */
 }
 
 /* The floating label */
 .floatingLabel {
   position: absolute;
   left: 12px;
-  top: 50%;
+  top: calc(
+    24px + 24px
+  ); /* padding-top (24px) + half of input height (48px/2 = 24px) */
   transform: translateY(-50%);
   font-size: 14px;
   color: var(--text-secondary, rgba(255, 255, 255, 0.45));
   pointer-events: none;
-  transition: all 0.2s ease-out;
+  transition: all 0.25s ease-out;
   background: transparent;
   padding: 0;
   z-index: 1;
@@ -31,27 +34,21 @@
   color: #ff4d4f;
 }
 
-/* Floating state - label moves to top-left */
+/* Floating state - label moves completely above input */
 .floating .floatingLabel {
   top: 0;
-  left: 12px;
-  transform: translateY(-50%);
-  font-size: 11px;
+  left: 0;
+  transform: translateY(0);
+  font-size: 14px;
   color: var(--color-primary, #a05aff);
-  padding: 0 4px;
+  padding: 0;
   font-weight: 500;
-  /* Use CSS variable for card/container background */
-  background: var(--card-bg, #ffffff);
+  background: transparent; /* No background needed - label is above input */
 }
 
-/* Dark mode background */
-:global([data-theme="dark"]) .floating .floatingLabel {
-  background: var(--card-bg, #1f1f1f);
-}
-
-/* Override for inputs with prefix when floating - still top-left */
+/* Override for inputs with prefix when floating - align to left edge */
 .floating.hasPrefix .floatingLabel {
-  left: 12px;
+  left: 0;
 }
 
 /* Make sure ant-design inputs have proper sizing for floating labels */

@@ -392,17 +392,22 @@ export const DashboardPage = () => {
       title: "Title",
       dataIndex: "title",
       key: "title",
+      align: "center" as const,
       render: (title: string) => <Text strong>{title}</Text>
     },
     {
       title: "Vessel",
       dataIndex: "vesselName",
-      key: "vesselName"
+      key: "vesselName",
+      align: "center" as const
     },
     {
       title: "Status",
       dataIndex: "status",
       key: "status",
+      align: "center" as const,
+      sorter: (a: RecentDocument, b: RecentDocument) =>
+        a.status.localeCompare(b.status),
       render: (status: string) => {
         const colorMap: Record<string, string> = {
           "In Progress": "orange",
@@ -415,6 +420,7 @@ export const DashboardPage = () => {
     {
       title: "Open Items",
       key: "openItems",
+      align: "center" as const,
       render: (_: unknown, record: RecentDocument) => (
         <span>
           {record.openCount} / {record.totalCount}
@@ -425,6 +431,9 @@ export const DashboardPage = () => {
       title: "Last Updated",
       dataIndex: "updatedAt",
       key: "updatedAt",
+      align: "center" as const,
+      sorter: (a: RecentDocument, b: RecentDocument) =>
+        new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime(),
       render: (date: string) => new Date(date).toLocaleString()
     }
   ];

@@ -30,6 +30,12 @@ import "./theme/global.css";
 const LoginPage = lazy(() =>
   import("./pages/login").then((m) => ({ default: m.LoginPage }))
 );
+const ForgotPasswordPage = lazy(() =>
+  import("./pages/auth").then((m) => ({ default: m.ForgotPasswordPage }))
+);
+const ResetPasswordPage = lazy(() =>
+  import("./pages/auth").then((m) => ({ default: m.ResetPasswordPage }))
+);
 const DashboardPage = lazy(() =>
   import("./pages/dashboard").then((m) => ({ default: m.DashboardPage }))
 );
@@ -170,6 +176,8 @@ function AppWithTheme() {
             <Routes>
               {/* Public routes */}
               <Route path="/login" element={<LoginPage />} />
+              <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+              <Route path="/reset-password" element={<ResetPasswordPage />} />
 
               {/* Protected routes */}
               <Route

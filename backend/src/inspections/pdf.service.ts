@@ -230,45 +230,240 @@ export class PdfService {
     const pageWidth =
       doc.page.width - doc.page.margins.left - doc.page.margins.right;
 
-    // Draw header
+    // Draw header on first page
     this.drawHeader(doc, report, pageWidth);
 
-    // Draw table with signature images
+    // Draw table with signature images (this handles page breaks internally)
     this.drawTable(doc, report, pageWidth, signatureCache);
 
-    // Draw footer on all pages
-    this.drawFooter(doc, report);
+    // Draw header and footer on all pages (after content is complete)
+    this.drawHeaderAndFooterOnAllPages(doc, report, pageWidth);
   }
 
-  private drawFooter(
+  private drawHeaderAndFooterOnAllPages(
     doc: PDFKit.PDFDocument,
     report: InspectionReportWithRelations,
+    pageWidth: number,
   ): void {
     const org = report.vessel?.organization;
     const footerText = org?.footerText;
 
-    if (!footerText) return;
-
-    // Get total pages and iterate through each
+    // Get total pages
     const pages = doc.bufferedPageRange();
-    for (let i = 0; i < pages.count; i++) {
+    const totalPages = pages.count;
+
+    // Iterate through each page (skip first page for header as it's already drawn)
+    for (let i = 0; i < totalPages; i++) {
       doc.switchToPage(i);
 
-      // Position footer at bottom left of page (within margins)
-      const footerY = doc.page.height - 25;
+      // Draw header on pages after the first (page 0 already has header)
+      if (i > 0) {
+        this.drawPageHeader(doc, report, pageWidth, i + 1, totalPages);
+      } else {
+        // Update page number on first page
+        this.updatePageNumber(doc, report, pageWidth, 1, totalPages);
+      }
 
-      doc
-        .fontSize(8)
-        .font(this.fontRegular)
-        .fillColor('#666666')
-        .text(footerText, doc.page.margins.left, footerY, {
-          lineBreak: false,
-          continued: false,
-        });
-
-      // Reset fill color
-      doc.fillColor('#000000');
+      // Draw footer on all pages
+      if (footerText) {
+        const footerY = doc.page.height - 25;
+        doc
+          .fontSize(8)
+          .font(this.fontRegular)
+          .fillColor('#666666')
+          .text(footerText, doc.page.margins.left, footerY, {
+            lineBreak: false,
+            continued: false,
+          });
+        doc.fillColor('#000000');
+      }
     }
+  }
+
+  /**
+   * Update the page number on the first page (overwrites the "1/1" placeholder)
+   */
+  private updatePageNumber(
+    doc: PDFKit.PDFDocument,
+    _report: InspectionReportWithRelations,
+    pageWidth: number,
+    currentPage: number,
+    totalPages: number,
+  ): void {
+    const startX = doc.page.margins.left;
+    const startY = doc.page.margins.top;
+    const leftColWidth = pageWidth * 0.55;
+    const rightColWidth = pageWidth * 0.45;
+    const rightStartX = startX + leftColWidth;
+    const rightCellWidth = rightColWidth / 2;
+    const fileRowY = startY + 42;
+    const topCellHeight = fileRowY - startY;
+    const topRowTextY = startY + (topCellHeight - 10) / 2 + 2;
+
+    // Calculate position for PAGE field (second cell in top row of right section)
+    const pageFieldX = rightStartX + rightCellWidth + 5;
+
+    // Calculate the width of "PAGE " label to know where the number starts
+    doc.fontSize(8).font(this.fontBold);
+    const pageLabelWidth = doc.widthOfString('PAGE ');
+
+    // Draw white rectangle to cover old page number (starting right after "PAGE ")
+    doc
+      .rect(pageFieldX + pageLabelWidth, topRowTextY - 2, 40, 14)
+      .fill('#ffffff');
+
+    // Draw new page number
+    doc
+      .fontSize(8)
+      .font(this.fontRegular)
+      .fillColor('#000000')
+      .text(
+        `${currentPage}/${totalPages}`,
+        pageFieldX + pageLabelWidth,
+        topRowTextY,
+        {
+          lineBreak: false,
+        },
+      );
+  }
+
+  /**
+   * Draw the document header on subsequent pages (pages 2+)
+   */
+  private drawPageHeader(
+    doc: PDFKit.PDFDocument,
+    report: InspectionReportWithRelations,
+    pageWidth: number,
+    currentPage: number,
+    totalPages: number,
+  ): void {
+    const org = report.vessel?.organization;
+    const startX = doc.page.margins.left;
+    const startY = doc.page.margins.top;
+
+    // ========== TOP HEADER BOX ==========
+    const headerBoxHeight = 70;
+    const leftColWidth = pageWidth * 0.55;
+    const rightColWidth = pageWidth * 0.45;
+
+    // Draw outer border
+    doc.rect(startX, startY, pageWidth, headerBoxHeight).stroke();
+
+    // Draw vertical divider
+    doc
+      .moveTo(startX + leftColWidth, startY)
+      .lineTo(startX + leftColWidth, startY + headerBoxHeight)
+      .stroke();
+
+    // LEFT SIDE - Company name and form info
+    let logoWidth = 0;
+    if (org?.logo) {
+      const logoPath = this.resolveLocalLogoPath(org.logo);
+      if (logoPath && fs.existsSync(logoPath)) {
+        try {
+          doc.image(logoPath, startX + 5, startY + 5, {
+            width: 50,
+            height: 50,
+          });
+          logoWidth = 55;
+        } catch {
+          this.logger.warn(`Failed to load logo from path: ${logoPath}`);
+        }
+      }
+    }
+
+    // Company name
+    doc.fontSize(11).font(this.fontBold).fillColor('#000000');
+    doc.text(
+      org?.name || 'SHIPPING COMPANY',
+      startX + logoWidth + 10,
+      startY + 10,
+      {
+        width: leftColWidth - logoWidth - 20,
+        align: 'center',
+      },
+    );
+
+    doc.fontSize(9).font(this.fontRegular);
+    doc.text('FORM MANUAL', startX + logoWidth + 10, startY + 25, {
+      width: leftColWidth - logoWidth - 20,
+      align: 'center',
+    });
+
+    // Ship's File No and Office File No row
+    const fileRowY = startY + 42;
+    doc
+      .moveTo(startX, fileRowY)
+      .lineTo(startX + leftColWidth, fileRowY)
+      .stroke();
+
+    const fileRowMidX = startX + leftColWidth / 2;
+
+    doc.fontSize(8).font(this.fontBold);
+    doc.text(`SHIP'S FILE NO: `, startX + 5, fileRowY + 8, { continued: true });
+    doc
+      .font(this.fontRegular)
+      .text(report.shipFileNo || report.vessel?.shipFileNo || '-');
+
+    doc
+      .font(this.fontBold)
+      .text(`OFFICE FILE NO: `, fileRowMidX + 5, fileRowY + 8, {
+        continued: true,
+      });
+    doc.font(this.fontRegular).text(report.officeFileNo || '-');
+
+    // Vertical divider in file row
+    doc
+      .moveTo(fileRowMidX, fileRowY)
+      .lineTo(fileRowMidX, startY + headerBoxHeight)
+      .stroke();
+
+    // RIGHT SIDE - Revision, Page, Form No, Date
+    const rightStartX = startX + leftColWidth;
+    const rightCellWidth = rightColWidth / 2;
+    const rightRowDividerY = fileRowY;
+    const topCellHeight = rightRowDividerY - startY;
+    const bottomCellHeight = startY + headerBoxHeight - rightRowDividerY;
+
+    // Grid lines for right side
+    doc
+      .moveTo(rightStartX + rightCellWidth, startY)
+      .lineTo(rightStartX + rightCellWidth, startY + headerBoxHeight)
+      .stroke();
+    doc
+      .moveTo(rightStartX, rightRowDividerY)
+      .lineTo(rightStartX + rightColWidth, rightRowDividerY)
+      .stroke();
+
+    // Top row text
+    const topRowTextY = startY + (topCellHeight - 10) / 2 + 2;
+    doc.fontSize(8).font(this.fontBold);
+    doc.text(`REVISION# `, rightStartX + 5, topRowTextY, { continued: true });
+    doc.font(this.fontRegular).text(report.revisionNo || '1');
+
+    doc
+      .font(this.fontBold)
+      .text(`PAGE `, rightStartX + rightCellWidth + 5, topRowTextY, {
+        continued: true,
+      });
+    doc.font(this.fontRegular).text(`${currentPage}/${totalPages}`);
+
+    // Bottom row text
+    const bottomRowTextY = rightRowDividerY + (bottomCellHeight - 10) / 2 + 2;
+    doc.font(this.fontBold).text(`FORM NO: `, rightStartX + 5, bottomRowTextY, {
+      continued: true,
+    });
+    doc.font(this.fontRegular).text(report.formNo || '-');
+
+    const inspectionDate = report.inspectionDate
+      ? new Date(report.inspectionDate).toLocaleDateString()
+      : '-';
+    doc
+      .font(this.fontBold)
+      .text(`DATE `, rightStartX + rightCellWidth + 5, bottomRowTextY, {
+        continued: true,
+      });
+    doc.font(this.fontRegular).text(inspectionDate);
   }
 
   private drawHeader(
@@ -484,8 +679,8 @@ export class PdfService {
       { header: 'CORRECTIVE ACTION', width: 0.12, key: 'correctiveAction' },
       { header: 'PREVENTIVE ACTION', width: 0.12, key: 'preventiveAction' },
       { header: 'COMPL DATE', width: 0.08, key: 'completionDate' },
-      { header: 'COMPANY ANALYSIS', width: 0.15, key: 'companyAnalysis' },
-      { header: 'REMARKS*', width: 0.23, key: 'remarks' },
+      { header: 'COMPANY ANALYSIS', width: 0.2, key: 'companyAnalysis' },
+      { header: 'REMARKS*', width: 0.18, key: 'remarks' },
     ];
 
     const rowHeight = 20;
@@ -562,8 +757,13 @@ export class PdfService {
     doc.font(this.fontRegular).fontSize(fontSize);
 
     // Helper function to draw headers on a new page
+    // Note: The document header (company info, form details) will be drawn later
+    // by drawHeaderAndFooterOnAllPages, so we need to leave space for it
+    const documentHeaderHeight = 70; // Header box height
+    const documentHeaderGap = 25; // Gap between document header and table
     const drawHeadersOnNewPage = (): number => {
-      let y = doc.page.margins.top;
+      // Start after document header space (header will be drawn later)
+      let y = doc.page.margins.top + documentHeaderHeight + documentHeaderGap;
 
       // Redraw group headers on new page
       doc.fontSize(8).font(this.fontBold);
@@ -941,6 +1141,85 @@ export class PdfService {
   }
 
   /**
+   * Get badge colors based on status
+   */
+  private getStatusBadgeColors(status: string): {
+    bg: string;
+    border: string;
+    text: string;
+  } {
+    switch (status) {
+      case 'Closed':
+        return { bg: '#f6ffed', border: '#b7eb8f', text: '#389e0d' };
+      case 'Action Needed':
+        return { bg: '#fffbe6', border: '#ffe58f', text: '#d48806' };
+      case 'Open':
+      default:
+        return { bg: '#fff1f0', border: '#ffa39e', text: '#cf1322' };
+    }
+  }
+
+  /**
+   * Get badge colors for admin/user role
+   */
+  private getUserBadgeColors(role?: string): {
+    bg: string;
+    border: string;
+    text: string;
+  } {
+    if (role === 'ADMIN' || role === 'SUPER_ADMIN') {
+      return { bg: '#f9f0ff', border: '#d3adf7', text: '#722ed1' }; // Purple for admin
+    }
+    return { bg: '#e6f7ff', border: '#91d5ff', text: '#1890ff' }; // Blue for captain
+  }
+
+  /**
+   * Draw a rounded badge with text
+   */
+  private drawBadge(
+    doc: PDFKit.PDFDocument,
+    text: string,
+    centerX: number,
+    y: number,
+    colors: { bg: string; border: string; text: string },
+    fontSize: number,
+  ): number {
+    doc.font(this.fontBold).fontSize(fontSize);
+    const textWidth = doc.widthOfString(text);
+    const badgePaddingH = 8; // Horizontal padding
+    const badgePaddingV = 4; // Vertical padding
+    const badgeWidth = textWidth + badgePaddingH * 2;
+    const badgeHeight = fontSize + badgePaddingV * 2;
+    const badgeX = centerX - badgeWidth / 2;
+    const cornerRadius = 4;
+
+    // Draw badge background with rounded corners
+    doc
+      .roundedRect(badgeX, y, badgeWidth, badgeHeight, cornerRadius)
+      .fill(colors.bg);
+
+    // Draw badge border
+    doc
+      .roundedRect(badgeX, y, badgeWidth, badgeHeight, cornerRadius)
+      .lineWidth(0.5)
+      .stroke(colors.border);
+
+    // Draw badge text - vertically centered
+    // PDFKit positions text from top, subtract offset to move text up for visual centering
+    const textY = y + badgePaddingV - 1.5; // Move text up to visually center
+    doc.fillColor(colors.text).text(text, badgeX, textY, {
+      width: badgeWidth,
+      align: 'center',
+      lineBreak: false,
+    });
+
+    // Reset fill color
+    doc.fillColor('#000000');
+
+    return badgeHeight;
+  }
+
+  /**
    * Draw the remarks cell with signature image (if available) or fallback to badge text
    */
   private drawRemarksCell(
@@ -966,83 +1245,108 @@ export class PdfService {
     doc.save();
     doc.rect(x + 1, y + 1, colWidth - 2, rowHeight - 2).clip();
 
+    const centerX = x + colWidth / 2;
+    const badgeFontSize = fontSize + 1; // Larger font for better readability
+    const elementGap = 8; // Increased gap between elements
+
     if (signatureBuffer && signUser) {
-      // Calculate total content height for vertical centering
-      doc.font(this.fontRegular).fontSize(fontSize);
-      const statusText = status;
-      const statusHeight = doc.heightOfString(statusText, {
-        width: colWidth - padding * 2,
-      });
+      // Calculate heights for vertical centering
+      const statusBadgeHeight = badgeFontSize + 8;
       const signatureHeight = 25;
-      doc.fontSize(fontSize - 1);
-      const nameAndDate = [signUser.name, signDate].filter(Boolean).join(' - ');
-      const nameDateHeight = doc.heightOfString(nameAndDate || 'X', {
-        width: colWidth - padding * 2,
-      });
+      const nameBadgeHeight = badgeFontSize + 8;
+      const dateHeight = badgeFontSize;
       const totalContentHeight =
-        statusHeight + signatureHeight + nameDateHeight + 6; // 6 for gaps
+        statusBadgeHeight +
+        elementGap +
+        signatureHeight +
+        elementGap +
+        nameBadgeHeight +
+        4 +
+        dateHeight;
       const verticalOffset = Math.max(
         padding,
         (rowHeight - totalContentHeight) / 2,
       );
 
-      // Draw status text - horizontally centered
-      doc.font(this.fontRegular).fontSize(fontSize);
-      doc.text(statusText, x + padding, y + verticalOffset, {
-        width: colWidth - padding * 2,
-        align: 'center',
-      });
+      let currentY = y + verticalOffset;
+
+      // Draw status badge
+      const statusColors = this.getStatusBadgeColors(status);
+      this.drawBadge(
+        doc,
+        status,
+        centerX,
+        currentY,
+        statusColors,
+        badgeFontSize,
+      );
+      currentY += statusBadgeHeight + elementGap;
 
       // Draw signature image - horizontally centered
       const signatureWidth = Math.min(colWidth - padding * 2, 60);
-      const signatureStartY = y + verticalOffset + statusHeight + 2;
       const signatureX = x + (colWidth - signatureWidth) / 2;
 
       try {
-        doc.image(signatureBuffer, signatureX, signatureStartY, {
+        doc.image(signatureBuffer, signatureX, currentY, {
           width: signatureWidth,
           height: signatureHeight,
           fit: [signatureWidth, signatureHeight],
         });
+        currentY += signatureHeight + elementGap;
 
-        // Draw signer name and date below signature - horizontally centered
-        const textY = signatureStartY + signatureHeight + 2;
-        doc.fontSize(fontSize - 1);
-        doc.text(nameAndDate, x + padding, textY, {
-          width: colWidth - padding * 2,
-          align: 'center',
-        });
+        // Draw user name badge
+        if (signUser.name) {
+          const userColors = this.getUserBadgeColors(signUser.role);
+          this.drawBadge(
+            doc,
+            signUser.name,
+            centerX,
+            currentY,
+            userColors,
+            badgeFontSize,
+          );
+          currentY += nameBadgeHeight + 4;
+        }
+
+        // Draw date below name badge
+        if (signDate) {
+          doc
+            .font(this.fontRegular)
+            .fontSize(badgeFontSize)
+            .fillColor('#666666');
+          doc.text(signDate, x + padding, currentY, {
+            width: colWidth - padding * 2,
+            align: 'center',
+          });
+          doc.fillColor('#000000');
+        }
       } catch (error) {
-        // If signature image fails, fall back to text
+        // If signature image fails, fall back to badges
         const errorMessage =
           error instanceof Error ? error.message : 'Unknown error';
         this.logger.warn(`Failed to render signature image: ${errorMessage}`);
         this.drawRemarksFallback(
           doc,
+          entry,
           x,
           y,
           colWidth,
           rowHeight,
           padding,
           fontSize,
-          status,
-          signUser?.name || '',
-          signDate,
         );
       }
     } else {
-      // Fallback: Draw badge-style text (status, name, date)
+      // Fallback: Draw badge-style elements
       this.drawRemarksFallback(
         doc,
+        entry,
         x,
         y,
         colWidth,
         rowHeight,
         padding,
         fontSize,
-        status,
-        signUser?.name || '',
-        signDate,
       );
     }
 
@@ -1050,35 +1354,67 @@ export class PdfService {
   }
 
   /**
-   * Fallback method to draw remarks as text (badge style) - center aligned
+   * Fallback method to draw remarks as badges - center aligned
    */
   private drawRemarksFallback(
     doc: PDFKit.PDFDocument,
+    entry: InspectionEntryWithRelations,
     x: number,
     y: number,
     colWidth: number,
     rowHeight: number,
     padding: number,
     fontSize: number,
-    status: string,
-    signerName: string,
-    signDate: string,
   ): void {
-    const value = [status, signerName, signDate].filter(Boolean).join('\n');
+    const status = this.formatStatus(entry.status);
+    const signUser = entry.officeSignUser;
+    const signDate = entry.officeSignDate
+      ? new Date(entry.officeSignDate).toLocaleDateString()
+      : '';
 
-    if (value) {
-      doc.font(this.fontRegular).fontSize(fontSize);
-      const textHeight = doc.heightOfString(value, {
+    const centerX = x + colWidth / 2;
+    const badgeFontSize = fontSize + 1; // Larger font for better readability
+    const elementGap = 8;
+
+    // Calculate total height
+    const statusBadgeHeight = badgeFontSize + 8;
+    const nameBadgeHeight = signUser?.name ? badgeFontSize + 8 : 0;
+    const dateHeight = signDate ? badgeFontSize : 0;
+    const totalHeight =
+      statusBadgeHeight +
+      (signUser?.name ? elementGap + nameBadgeHeight : 0) +
+      (signDate ? 4 + dateHeight : 0);
+
+    const verticalOffset = Math.max(padding, (rowHeight - totalHeight) / 2);
+    let currentY = y + verticalOffset;
+
+    // Draw status badge
+    const statusColors = this.getStatusBadgeColors(status);
+    this.drawBadge(doc, status, centerX, currentY, statusColors, badgeFontSize);
+    currentY += statusBadgeHeight + elementGap;
+
+    // Draw user name badge if available
+    if (signUser?.name) {
+      const userColors = this.getUserBadgeColors(signUser.role);
+      this.drawBadge(
+        doc,
+        signUser.name,
+        centerX,
+        currentY,
+        userColors,
+        badgeFontSize,
+      );
+      currentY += nameBadgeHeight + 4;
+    }
+
+    // Draw date
+    if (signDate) {
+      doc.font(this.fontRegular).fontSize(badgeFontSize).fillColor('#666666');
+      doc.text(signDate, x + padding, currentY, {
         width: colWidth - padding * 2,
         align: 'center',
       });
-      const verticalOffset = Math.max(padding, (rowHeight - textHeight) / 2);
-
-      doc.text(value, x + padding, y + verticalOffset, {
-        width: colWidth - padding * 2,
-        lineGap: 1,
-        align: 'center',
-      });
+      doc.fillColor('#000000');
     }
   }
 
