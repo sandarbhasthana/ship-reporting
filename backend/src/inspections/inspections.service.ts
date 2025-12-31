@@ -141,8 +141,13 @@ export class InspectionsService {
       where.organizationId = organizationId;
     }
 
-    // Captains can only see reports for their vessel
-    if (userRole === RoleName.CAPTAIN && assignedVesselId) {
+    // Captains can only see reports for their assigned vessel
+    // If a Captain has no assigned vessel, they should see NO reports
+    if (userRole === RoleName.CAPTAIN) {
+      if (!assignedVesselId) {
+        // Captain without assigned vessel sees no reports
+        return [];
+      }
       where.vesselId = assignedVesselId;
     }
 

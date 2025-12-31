@@ -3,7 +3,8 @@ import { Button, Form, Alert, Result } from "antd";
 import { LockOutlined } from "@ant-design/icons";
 import { Link, useSearchParams } from "react-router";
 import { FloatingPassword } from "../../components/FloatingLabel";
-import { API_URL } from "../../providers/dataProvider";
+import { 
+  API_URL } from "../../providers/dataProvider";
 import styles from "./auth.module.css";
 
 interface ResetPasswordFormValues {
