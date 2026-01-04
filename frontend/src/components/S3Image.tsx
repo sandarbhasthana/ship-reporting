@@ -14,6 +14,8 @@ interface S3ImageProps {
   fallback?: React.ReactNode;
   width?: number | string;
   height?: number | string;
+  /** If true, inverts colors in dark mode (useful for signatures with transparent backgrounds) */
+  invertInDarkMode?: boolean;
 }
 
 /**
@@ -27,7 +29,8 @@ export const S3Image: React.FC<S3ImageProps> = ({
   style,
   fallback,
   width,
-  height
+  height,
+  invertInDarkMode = false
 }) => {
   const { url, loading } = useImageUrl(src);
 
@@ -53,15 +56,18 @@ export const S3Image: React.FC<S3ImageProps> = ({
     return fallback ? <>{fallback}</> : null;
   }
 
+  const combinedClassName = invertInDarkMode
+    ? `${className || ""} signature-dark-mode-invert`.trim()
+    : className;
+
   return (
     <img
       src={url}
       alt={alt}
-      className={className}
+      className={combinedClassName}
       style={{ ...style, width, height }}
     />
   );
 };
 
 export default S3Image;
-

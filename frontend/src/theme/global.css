@@ -203,3 +203,14 @@ pre {
 [data-theme="dark"] .ant-table-thead > tr > th {
   color: var(--color-primary);
 }
+
+/* Signature/image inversion for dark mode */
+/* Inverts dark signatures to be visible on dark backgrounds */
+[data-theme="dark"] .signature-dark-mode-invert {
+  filter: invert(1) hue-rotate(180deg);
+}
+
+/* Also handle signature previews in Ant Upload component */
+[data-theme="dark"] .ant-upload-list-item-image {
+  filter: invert(1) hue-rotate(180deg);
+}

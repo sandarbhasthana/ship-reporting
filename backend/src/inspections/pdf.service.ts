@@ -698,6 +698,9 @@ export class PdfService {
       .slice(6)
       .reduce((sum, col) => sum + pageWidth * col.width, 0);
 
+    // Light purple background for Office columns
+    const officeHeaderBg = '#F3E8FF'; // Light purple shade
+
     doc.fontSize(8).font(this.fontBold);
 
     // SHIP STAFF header
@@ -707,10 +710,11 @@ export class PdfService {
       align: 'center',
     });
 
-    // OFFICE header
+    // OFFICE header - with light purple background
     doc
       .rect(startX + shipStaffWidth, startY, officeWidth, groupHeaderHeight)
-      .stroke();
+      .fillAndStroke(officeHeaderBg, '#000000');
+    doc.fillColor('#000000'); // Reset fill color for text
     doc.text('OFFICE', startX + shipStaffWidth, startY + 4, {
       width: officeWidth,
       align: 'center',
@@ -722,10 +726,20 @@ export class PdfService {
     doc.fontSize(fontSize).font(this.fontBold);
     let x = startX;
 
-    // First draw all header cell borders
+    // Office column keys that should have background
+    const officeColumnKeys = ['companyAnalysis', 'remarks'];
+
+    // First draw all header cell borders (with background for office columns)
     columns.forEach((col) => {
       const colWidth = pageWidth * col.width;
-      doc.rect(x, startY, colWidth, headerHeight).stroke();
+      if (officeColumnKeys.includes(col.key)) {
+        doc
+          .rect(x, startY, colWidth, headerHeight)
+          .fillAndStroke(officeHeaderBg, '#000000');
+        doc.fillColor('#000000');
+      } else {
+        doc.rect(x, startY, colWidth, headerHeight).stroke();
+      }
       x += colWidth;
     });
 
@@ -775,10 +789,11 @@ export class PdfService {
         align: 'center',
       });
 
-      // OFFICE header
+      // OFFICE header - with light purple background
       doc
         .rect(startX + shipStaffWidth, y, officeWidth, groupHeaderHeight)
-        .stroke();
+        .fillAndStroke(officeHeaderBg, '#000000');
+      doc.fillColor('#000000');
       doc.text('OFFICE', startX + shipStaffWidth, y + 4, {
         width: officeWidth,
         align: 'center',
@@ -786,13 +801,20 @@ export class PdfService {
 
       y += groupHeaderHeight;
 
-      // Redraw column headers on new page - first borders
+      // Redraw column headers on new page - first borders (with background for office columns)
       doc.fontSize(fontSize).font(this.fontBold);
       let headerX = startX;
 
       columns.forEach((col) => {
         const colWidth = pageWidth * col.width;
-        doc.rect(headerX, y, colWidth, headerHeight).stroke();
+        if (officeColumnKeys.includes(col.key)) {
+          doc
+            .rect(headerX, y, colWidth, headerHeight)
+            .fillAndStroke(officeHeaderBg, '#000000');
+          doc.fillColor('#000000');
+        } else {
+          doc.rect(headerX, y, colWidth, headerHeight).stroke();
+        }
         headerX += colWidth;
       });
 

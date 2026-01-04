@@ -516,6 +516,7 @@ export const InspectionForm = () => {
                   src={record.officeSignUserSignature}
                   alt={`${record.officeSignUserName}'s signature`}
                   style={{ maxHeight: 40, maxWidth: 100 }}
+                  invertInDarkMode
                   fallback={
                     <span
                       className={`${styles.userBadge} ${

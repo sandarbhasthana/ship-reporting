@@ -144,7 +144,20 @@ export const InspectionView = () => {
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = `inspection-report-${id}.pdf`;
+
+        // Extract filename from Content-Disposition header, fallback to default
+        const contentDisposition = response.headers.get("Content-Disposition");
+        let filename = `inspection-report-${id}.pdf`;
+        if (contentDisposition) {
+          const filenameMatch = contentDisposition.match(
+            /filename="?([^";\n]+)"?/
+          );
+          if (filenameMatch && filenameMatch[1]) {
+            filename = filenameMatch[1];
+          }
+        }
+
+        a.download = filename;
         a.click();
         window.URL.revokeObjectURL(url);
         message.success({
@@ -278,6 +291,7 @@ export const InspectionView = () => {
                     src={record.officeSignUser.signatureImage}
                     alt={`${record.officeSignUser.name}'s signature`}
                     style={{ maxHeight: 40, maxWidth: 100 }}
+                    invertInDarkMode
                     fallback={
                       <Tag color="blue">{record.officeSignUser.name}</Tag>
                     }

@@ -149,6 +149,11 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
       },
       components: {
         ...baseTheme.components,
+        Button: {
+          ...baseTheme.components?.Button,
+          colorPrimaryHover: preset.hover,
+          colorPrimaryActive: preset.active
+        },
         Menu: {
           ...baseTheme.components?.Menu,
           itemSelectedBg: menuSelectedBg,

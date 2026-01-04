@@ -126,8 +126,8 @@ export class InspectionsController {
     @CurrentUser('assignedVesselId') assignedVesselId: string | null,
     @Res() res: Response,
   ) {
-    // Validate access first (same logic as findOne)
-    await this.inspectionsService.findOne(
+    // Validate access and get report data
+    const report = await this.inspectionsService.findOne(
       id,
       organizationId,
       userRole,
@@ -136,9 +136,32 @@ export class InspectionsController {
 
     const pdfBuffer = await this.pdfService.generateInspectionPdf(id);
 
+    // Generate filename: Inspection-report-{reportType}-{shipName}-{dateTime(ddmmyyyyhhmmss)}.pdf
+    const now = new Date();
+    const dateTime = [
+      String(now.getDate()).padStart(2, '0'),
+      String(now.getMonth() + 1).padStart(2, '0'),
+      String(now.getFullYear()),
+      String(now.getHours()).padStart(2, '0'),
+      String(now.getMinutes()).padStart(2, '0'),
+      String(now.getSeconds()).padStart(2, '0'),
+    ].join('');
+
+    // Sanitize for filename (remove special chars, replace spaces with hyphens)
+    const sanitize = (str: string, toUpper = false) =>
+      str
+        .replace(/[^a-zA-Z0-9\s-]/g, '')
+        .replace(/\s+/g, '-')
+        [toUpper ? 'toUpperCase' : 'toLowerCase']();
+
+    const reportType = sanitize(report.inspectedBy || 'UNKNOWN', true); // Keep uppercase
+    const shipName = sanitize(report.vessel?.name || 'unknown');
+
+    const filename = `Inspection-report-${reportType}-${shipName}-${dateTime}.pdf`;
+
     res.set({
       'Content-Type': 'application/pdf',
-      'Content-Disposition': `attachment; filename="inspection-report-${id}.pdf"`,
+      'Content-Disposition': `attachment; filename="${filename}"`,
       'Content-Length': pdfBuffer.length,
     });
 
